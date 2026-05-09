@@ -1,0 +1,16 @@
+{
+  "title": "首頁",
+  "welcome": "{{name}}，今天的隊務一覽",
+  "sections": {
+    "announcements": "公告",
+    "pinned": "置頂公告",
+    "general": "一般公告",
+    "calendar": "行事曆",
+    "teamEvents": "球隊行程",
+    "personalEvents": "個人行程"
+  },
+  "placeholder": {
+    "announcements": "Phase 3 將串接公告管理功能；目前先顯示骨架。",
+    "calendar": "Phase 2 將整合 FullCalendar 與球隊行程資料。"
+  }
+}

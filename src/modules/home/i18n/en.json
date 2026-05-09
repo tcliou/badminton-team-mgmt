@@ -1,0 +1,16 @@
+{
+  "title": "Home",
+  "welcome": "Hi {{name}}, here is today's overview",
+  "sections": {
+    "announcements": "Announcements",
+    "pinned": "Pinned",
+    "general": "General",
+    "calendar": "Calendar",
+    "teamEvents": "Team events",
+    "personalEvents": "Personal events"
+  },
+  "placeholder": {
+    "announcements": "Phase 3 will wire up the announcement module. Showing a skeleton for now.",
+    "calendar": "Phase 2 will integrate FullCalendar with team data."
+  }
+}

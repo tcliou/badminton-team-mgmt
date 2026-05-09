@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 確保同一個 branch 不會有兩個 deploy 同時跑
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 從 secrets 注入 Supabase 設定與 base path
+      - name: Build production bundle
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SYNTHETIC_EMAIL_DOMAIN: ${{ vars.VITE_SYNTHETIC_EMAIL_DOMAIN || 'team.local' }}
+          VITE_APP_NAME: ${{ vars.VITE_APP_NAME || '羽球校隊管理系統' }}
+          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
+        run: pnpm build
+
+      # SPA 路由 fallback：把 index.html 複製為 404.html
+      # 讓使用者直接打開 /players 不會被 GitHub Pages 回 404
+      - name: Create 404.html SPA fallback
+        run: cp dist/index.html dist/404.html
+
+      # Jekyll 預設會吃掉 _ 開頭檔案；放空 .nojekyll 關掉
+      - name: Disable Jekyll
+        run: touch dist/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

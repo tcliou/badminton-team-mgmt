@@ -1,0 +1,58 @@
+{
+  "appName": "Badminton Team Manager",
+  "nav": {
+    "home": "Home",
+    "players": "Players",
+    "leaves": "Leaves",
+    "payments": "Payments",
+    "training": "Training",
+    "announcements": "Announcements",
+    "finance": "Finance",
+    "admin": "Admin",
+    "more": "More",
+    "logout": "Sign out"
+  },
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "submit": "Submit",
+    "back": "Back",
+    "yes": "Yes",
+    "no": "No",
+    "empty": "No data yet",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "language": "Language",
+    "theme": "Theme",
+    "comingSoon": "Coming soon"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "signIn": "Sign in",
+    "signInError": "Incorrect username or password",
+    "signOut": "Sign out",
+    "mustChangePassword": "Please change your password on first sign-in",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "changePasswordSuccess": "Password updated",
+    "changePassword": "Change password"
+  },
+  "errors": {
+    "forbiddenTitle": "Forbidden",
+    "forbiddenDesc": "Your role does not have permission to view this page.",
+    "notFoundTitle": "Not found",
+    "notFoundDesc": "The page you are looking for does not exist.",
+    "goHome": "Back to home"
+  }
+}
