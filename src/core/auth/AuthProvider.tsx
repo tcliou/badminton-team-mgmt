@@ -8,21 +8,21 @@ import { fetchMyProfile } from './authApi';
  * AuthProvider：應用程式啟動時恢復 session、訂閱後續變化、
  * 同步把 profile + roles + permissions 載入 Zustand store。
  *
- * 採 Supabase 官方建議的雙 path 模式：
- *   1. **啟動一次性**用 `getSession()` 取得目前狀態並結束 loading
- *   2. **後續事件**用 `onAuthStateChange`，跳過 INITIAL_SESSION 避免 race
+ * **關鍵設計：onAuthStateChange callback 本身必須是同步的**
+ * Supabase JS v2 在 callback 執行期間持有內部 auth lock，如果 callback 是 async
+ * 並在裡面呼叫 supabase.from()，那個 query 需要 auth token、token 取用又需要
+ * 同一把 lock，會永久死結（症狀：fetchMyProfile 永遠 await 不會回來）。
  *
- * 防呆：
- *   - 任何路徑都會結束 loading（finally 區塊不再用 mounted guard 擋）
- *   - 5 秒 watchdog：getSession 真的 hang 時也會強制解除 loading
- *   - `[auth]` 前綴的 log 方便你在 console 追執行流程
+ * 解法：把所有 async 工作用 setTimeout(0) 推到下一個 tick，讓 callback 直接
+ * return、lock 立即釋放，然後 deferred 那段在乾淨的 stack 上跑。
+ *
+ * 這是 Supabase 官方文件特別記載的注意事項：
+ *   https://supabase.com/docs/reference/javascript/auth-onauthstatechange
  */
 const WATCHDOG_MS = 5000;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // 直接從 store 取 setter（穩定 reference），不要 destructure useAuthStore()
-    // 否則 AuthProvider 會訂閱整個 store，任何狀態變動都會 re-render
     const { setSession, setProfile, setLoading, reset } = useAuthStore.getState();
     let mounted = true;
     const t0 = performance.now();
@@ -30,13 +30,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log(`[auth +${Math.round(performance.now() - t0)}ms]`, ...args);
     log('AuthProvider mounted');
 
-    /** 共用：把 session 同步到 store，並依 session 狀態決定要不要拉 profile */
-    const applySession = async (session: Session | null): Promise<void> => {
+    /** 把 session 套到 store 並（必要時）拉 profile。一律在自己的 tick 跑。 */
+    const handleSession = async (session: Session | null, source: string): Promise<void> => {
       if (!mounted) {
-        log('applySession: skipped (unmounted)');
+        log(`handleSession[${source}]: skipped (unmounted)`);
         return;
       }
-      log('applySession: session=', session ? `user=${session.user.id}` : 'null');
+      log(`handleSession[${source}]: session=`, session ? `user=${session.user.id}` : 'null');
       setSession(session);
 
       if (!session) {
@@ -45,9 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        log('applySession: fetchMyProfile start');
+        log(`handleSession[${source}]: fetchMyProfile start`);
         const profile = await fetchMyProfile();
-        log('applySession: fetchMyProfile resolved, profile=', profile ? 'ok' : 'null');
+        log(`handleSession[${source}]: fetchMyProfile resolved, profile=`, profile ? 'ok' : 'null');
+        if (!mounted) return;
         if (!profile) {
           console.warn('[auth] session exists but no profile row; signing out');
           await supabase.auth.signOut();
@@ -57,42 +58,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error('[auth] fetchMyProfile failed', err);
         await supabase.auth.signOut().catch(() => {});
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
 
-    // 5 秒 watchdog：若初始化還沒結束就強制解除 loading，避免畫面永遠卡 spinner
-    const watchdog = setTimeout(() => {
+    // Watchdog：5 秒還沒結束就強制解 loading，避免畫面永遠卡 spinner
+    const watchdog = window.setTimeout(() => {
       if (useAuthStore.getState().loading) {
         console.error('[auth] watchdog fired after', WATCHDOG_MS, 'ms — forcing loading=false');
         setLoading(false);
       }
     }, WATCHDOG_MS);
 
-    // ── 1. 啟動時抓一次 session ──
-    void (async () => {
-      try {
-        log('getSession start');
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        log('getSession resolved');
-        await applySession(session);
-      } catch (err) {
-        console.error('[auth] getSession failed', err);
-      } finally {
-        // 故意不擋 mounted：即使元件卸載也要把 loading 設 false
-        // 才能讓下一次掛載拿到正確初始狀態。Zustand 的 set 對未掛載元件無害。
-        clearTimeout(watchdog);
-        log('init finished, setLoading(false)');
-        setLoading(false);
-      }
-    })();
-
-    // ── 2. 訂閱後續變化（INITIAL_SESSION 由 step 1 處理，這邊跳過避免 race）──
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // ── onAuthStateChange：callback 必須同步，async 工作 setTimeout 推 deferred ──
+    // 注意：Supabase 在訂閱當下會 fire 一個事件（INITIAL_SESSION 或 SIGNED_IN，
+    // 視 client 內部狀態而定），所以光靠這個 listener 就足以處理初始狀態，
+    // 不需要另外呼叫 getSession()——那會跟 lock 搶資源、容易死結。
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
       log('onAuthStateChange event=', event);
-      if (event === 'INITIAL_SESSION') return;
-      await applySession(session);
+      // 全部用 setTimeout 推到下一個 tick，讓 Supabase 釋放 auth lock
+      window.setTimeout(() => {
+        void handleSession(session, event);
+      }, 0);
     });
 
     return () => {
