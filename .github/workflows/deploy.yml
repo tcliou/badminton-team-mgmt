@@ -50,10 +50,8 @@ jobs:
           VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
         run: pnpm build
 
-      # SPA 路由 fallback：把 index.html 複製為 404.html
-      # 讓使用者直接打開 /players 不會被 GitHub Pages 回 404
-      - name: Create 404.html SPA fallback
-        run: cp dist/index.html dist/404.html
+      # SPA 路由 fallback：public/404.html 已含 spa-github-pages 重導腳本，
+      # Vite build 會自動把它複製到 dist/404.html，不需要再 cp index.html。
 
       # Jekyll 預設會吃掉 _ 開頭檔案；放空 .nojekyll 關掉
       - name: Disable Jekyll

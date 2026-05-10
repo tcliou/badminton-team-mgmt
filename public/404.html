@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>羽球校隊管理系統</title>
+    <!--
+      Single Page Apps for GitHub Pages
+      https://github.com/rafgraph/spa-github-pages
+
+      使用者直連 /<repo>/login 時，GitHub Pages 找不到實體檔案會回 404 + 此頁。
+      下面這段把目前 path 編碼成 query string 重導到 base 根目錄，
+      再由 index.html 內的還原腳本把 history 改回正確的 path，
+      整個過程是同步的，使用者只會看到一閃，console 不會留下 404。
+    -->
+    <script>
+      // 專案頁（user.github.io/<repo>/）保留 1 段路徑（即 /<repo>/）；
+      // 用 user.github.io 根網域時改成 0
+      var pathSegmentsToKeep = 1;
+
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+          l.pathname
+            .split('/')
+            .slice(0, 1 + pathSegmentsToKeep)
+            .join('/') +
+          '/?/' +
+          l.pathname
+            .slice(1)
+            .split('/')
+            .slice(pathSegmentsToKeep)
+            .join('/')
+            .replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash,
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
