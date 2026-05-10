@@ -24,10 +24,13 @@ export function CalendarPanel() {
   const { t, i18n } = useTranslation();
   const calRef = useRef<FullCalendar | null>(null);
 
-  // 我們先抓「上個月初到下個月底」的範圍，覆蓋常見的月/週切換
-  const today = new Date();
-  const rangeFrom = subMonths(today, 1);
-  const rangeTo = addMonths(today, 2);
+  // ⚠️ 必須 useMemo：直接 new Date() 在 render body 會讓每次 render 產生
+  // 不同的時間戳，傳到 useQuery 的 queryKey 也跟著變，造成 TanStack Query
+  // 每次 render 都判定 key 變了→重新 fetch→re-render→…無限循環。
+  const { rangeFrom, rangeTo } = useMemo(() => {
+    const today = new Date();
+    return { rangeFrom: subMonths(today, 1), rangeTo: addMonths(today, 2) };
+  }, []);
 
   const team = useTeamEvents(rangeFrom, rangeTo);
   const personal = usePersonalEvents(rangeFrom, rangeTo);

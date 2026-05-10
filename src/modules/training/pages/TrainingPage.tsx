@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { addDays, subMonths } from 'date-fns';
 import { TrainingList } from '../components/TrainingList';
@@ -15,10 +15,16 @@ export default function TrainingPage() {
   const canManage = useCan(PERMISSIONS.ActionTrainingManage);
   const [tab, setTab] = useState<Tab>('upcoming');
 
-  const now = new Date();
-  const upcoming = { from: now, to: addDays(now, 30) };
-  const past = { from: subMonths(now, 3), to: now };
-  const range = tab === 'upcoming' ? upcoming : past;
+  // useMemo 鎖定範圍，避免 new Date() 每次 render 變動造成 useTrainings
+  // 的 queryKey 不穩、無限 refetch
+  const { upcomingRange, pastRange } = useMemo(() => {
+    const now = new Date();
+    return {
+      upcomingRange: { from: now, to: addDays(now, 30) },
+      pastRange: { from: subMonths(now, 3), to: now },
+    };
+  }, []);
+  const range = tab === 'upcoming' ? upcomingRange : pastRange;
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
