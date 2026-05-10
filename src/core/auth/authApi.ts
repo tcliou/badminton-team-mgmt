@@ -15,18 +15,31 @@ export async function signOut() {
   if (error) throw error;
 }
 
-/** 改密碼（以及把 must_change_password 設為 false） */
+/**
+ * 改密碼（以及把 must_change_password 設為 false）。
+ *
+ * 順序很關鍵：必須**先**更新 profile，**後**更新 password。
+ * 因為 supabase.auth.updateUser 會觸發 USER_UPDATED 事件，AuthProvider 監聽到
+ * 之後會非同步重新 fetch profile。如果先更新密碼再更新 profile，那次 fetch
+ * 可能會在 profile update 之前完成，撈到 must_change_password=true 的舊狀態，
+ * 把 Zustand store 蓋成舊值，使用者就會被 ProtectedRoute 永遠 bounce 回改密頁。
+ */
 export async function changePassword(newPassword: string) {
-  const { data: pwData, error: pwErr } = await supabase.auth.updateUser({ password: newPassword });
+  const { data: userData, error: userErr } = await supabase.auth.getUser();
+  if (userErr) throw userErr;
+  const userId = userData.user?.id;
+  if (!userId) throw new Error('not authenticated');
+
+  // 先更新 profile
+  const { error: profErr } = await supabase
+    .from('profiles')
+    .update({ must_change_password: false })
+    .eq('id', userId);
+  if (profErr) throw profErr;
+
+  // 再更新密碼（觸發的 USER_UPDATED 事件去 refetch 時 profile 已是新狀態）
+  const { error: pwErr } = await supabase.auth.updateUser({ password: newPassword });
   if (pwErr) throw pwErr;
-  const userId = pwData.user?.id;
-  if (userId) {
-    const { error: profErr } = await supabase
-      .from('profiles')
-      .update({ must_change_password: false })
-      .eq('id', userId);
-    if (profErr) throw profErr;
-  }
 }
 
 /** 載入當前登入者的完整 profile + roles + permissions */
