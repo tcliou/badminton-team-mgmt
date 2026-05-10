@@ -28,6 +28,11 @@ export function ProtectedRoute({ need, children }: ProtectedRouteProps) {
   const can = useCan(need ?? '__noop__');
   const noPermNeeded = !need;
 
+  // 診斷 log（找到問題後可移除）
+  console.log(
+    `[ProtectedRoute] need=${need ?? '(none)'} loading=${loading} isAuthed=${isAuthed} can=${can} mustChange=${profile?.must_change_password ?? '?'} path=${location.pathname}`,
+  );
+
   if (loading) return <Loading fullscreen />;
 
   if (!isAuthed) {
