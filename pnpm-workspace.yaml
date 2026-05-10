@@ -1,2 +1,10 @@
+# 此專案為單一 package，但仍需 pnpm-workspace.yaml 來放 allowBuilds 設定。
+# packages: 必填，否則 pnpm 10 會報「packages field missing or empty」。
+# 用 ['.'] 明確指定根目錄就是唯一的 package。
+packages:
+  - '.'
+
+# 允許執行 postinstall script 的相依套件白名單。
+# pnpm 10 預設禁用所有 postinstall 以防供應鏈攻擊；esbuild 需要它來放原生 binary。
 allowBuilds:
   esbuild: true
