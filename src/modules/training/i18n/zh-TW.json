@@ -1,0 +1,49 @@
+{
+  "title": "訓練時間",
+  "tabs": {
+    "upcoming": "近期訓練",
+    "past": "歷史紀錄"
+  },
+  "form": {
+    "single": "新增單次訓練",
+    "recurring": "新增週期性訓練",
+    "title": "標題",
+    "topic": "訓練主題",
+    "groupTag": "分組標籤",
+    "location": "地點",
+    "date": "日期",
+    "startTime": "開始時間",
+    "endTime": "結束時間",
+    "weekdays": "重複的星期",
+    "weeks": "重複幾週",
+    "submit": "建立",
+    "successSingle": "已建立 1 筆訓練",
+    "successRecurring": "已建立 {{count}} 筆訓練"
+  },
+  "weekday": {
+    "0": "日",
+    "1": "一",
+    "2": "二",
+    "3": "三",
+    "4": "四",
+    "5": "五",
+    "6": "六"
+  },
+  "list": {
+    "noUpcoming": "近期沒有排定的訓練",
+    "noPast": "沒有歷史訓練紀錄",
+    "openAttendance": "點名",
+    "delete": "刪除",
+    "deleteConfirm": "確定刪除這場訓練？",
+    "deleteBatchConfirm": "刪除整批週期性訓練 ({{count}} 場)？"
+  },
+  "attendance": {
+    "title": "{{title}} - 點名",
+    "present": "出席",
+    "absent": "缺席",
+    "onLeave": "請假",
+    "late": "遲到",
+    "save": "儲存點名",
+    "savedAt": "已儲存於 {{when}}"
+  }
+}

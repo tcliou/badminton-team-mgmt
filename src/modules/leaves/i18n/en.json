@@ -1,0 +1,46 @@
+{
+  "title": "Leaves",
+  "tabs": {
+    "mine": "My leaves",
+    "review": "Pending review"
+  },
+  "form": {
+    "newLeave": "New leave",
+    "startAt": "Starts at",
+    "endAt": "Ends at",
+    "reasonType": "Reason type",
+    "reasonText": "Notes",
+    "reasonPlaceholder": "Optional. e.g. doctor visit, family matter",
+    "affectedEvents": "Affected training / matches (multi-select)",
+    "affectedEventsHint": "Team events in the next 14 days",
+    "submit": "Submit",
+    "success": "Leave submitted. Awaiting coach review."
+  },
+  "reason": {
+    "sick": "Sick",
+    "personal": "Personal",
+    "official": "Official",
+    "other": "Other"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "review": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "noteLabel": "Rejection note (required)",
+    "noPending": "No pending leaves",
+    "reviewedBy": "By: {{name}}",
+    "reviewedAt": "At: {{when}}"
+  },
+  "history": {
+    "noRecord": "No leave records yet",
+    "delete": "Withdraw",
+    "deleteConfirm": "Withdraw this leave? Only pending leaves can be withdrawn."
+  },
+  "validation": {
+    "endBeforeStart": "End time must be after start time"
+  }
+}

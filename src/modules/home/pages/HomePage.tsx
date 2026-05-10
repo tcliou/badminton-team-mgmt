@@ -1,14 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/core/auth';
 import { AnnouncementsPlaceholder } from '../components/AnnouncementsPlaceholder';
-import { CalendarPlaceholder } from '../components/CalendarPlaceholder';
+import { CalendarPanel } from '../components/CalendarPanel';
 
 export default function HomePage() {
   const { t } = useTranslation();
   const { profile } = useAuth();
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-4">
       <header>
         <h1 className="text-xl font-bold md:text-2xl">{t('home:title')}</h1>
         {profile ? (
@@ -17,9 +17,9 @@ export default function HomePage() {
           </p>
         ) : null}
       </header>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-[2fr_3fr]">
         <AnnouncementsPlaceholder />
-        <CalendarPlaceholder />
+        <CalendarPanel />
       </div>
     </div>
   );

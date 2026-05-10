@@ -1,4 +1,68 @@
 {
   "title": "球員管理",
-  "comingSoon": "Phase 2 將實作此頁面：球員列表、個人資料、比賽成績、經歷、繳費 / 請假狀態整合。"
+  "search": "搜尋姓名 / 帳號…",
+  "list": {
+    "empty": "目前沒有球員",
+    "viewProfile": "檢視"
+  },
+  "profile": {
+    "back": "回球員列表",
+    "edit": "編輯個人資料",
+    "save": "儲存",
+    "cancel": "取消",
+    "saved": "已儲存",
+    "labels": {
+      "displayName": "顯示名稱",
+      "email": "Email（用於通知，可空）",
+      "phone": "電話",
+      "birthday": "生日",
+      "dominantHand": "慣用手",
+      "height": "身高 (cm)",
+      "weight": "體重 (kg)",
+      "favoriteRacket": "最愛球拍"
+    },
+    "hand": {
+      "left": "左手",
+      "right": "右手",
+      "both": "雙手"
+    }
+  },
+  "matches": {
+    "title": "比賽成績",
+    "add": "新增成績",
+    "eventName": "賽事名稱",
+    "eventDate": "比賽日期",
+    "category": "項目",
+    "division": "組別",
+    "placement": "名次",
+    "note": "備註",
+    "empty": "尚無比賽紀錄",
+    "delete": "刪除"
+  },
+  "category": {
+    "singles": "單打",
+    "doubles_men": "男雙",
+    "doubles_women": "女雙",
+    "doubles_mixed": "混雙",
+    "team": "團體"
+  },
+  "experiences": {
+    "title": "經歷",
+    "add": "新增經歷",
+    "startYm": "起 (YYYY-MM)",
+    "endYm": "迄 (YYYY-MM)，留空＝至今",
+    "organization": "隊伍 / 學校",
+    "role": "職務 / 角色",
+    "note": "備註",
+    "empty": "尚無經歷",
+    "delete": "刪除"
+  },
+  "leaves": {
+    "title": "近期請假",
+    "open": "查看 / 新增請假"
+  },
+  "payments": {
+    "title": "繳費狀況",
+    "comingSoon": "Phase 3 將顯示繳費清單與狀態。"
+  }
 }

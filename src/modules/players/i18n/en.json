@@ -1,4 +1,68 @@
 {
   "title": "Players",
-  "comingSoon": "Phase 2 will implement this page: roster, profile, match records, experience, leave & payment status."
+  "search": "Search name / username…",
+  "list": {
+    "empty": "No players yet",
+    "viewProfile": "View"
+  },
+  "profile": {
+    "back": "Back to roster",
+    "edit": "Edit profile",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Saved",
+    "labels": {
+      "displayName": "Display name",
+      "email": "Email (for notifications, optional)",
+      "phone": "Phone",
+      "birthday": "Birthday",
+      "dominantHand": "Dominant hand",
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "favoriteRacket": "Favorite racket"
+    },
+    "hand": {
+      "left": "Left",
+      "right": "Right",
+      "both": "Both"
+    }
+  },
+  "matches": {
+    "title": "Match records",
+    "add": "Add",
+    "eventName": "Event",
+    "eventDate": "Date",
+    "category": "Category",
+    "division": "Division",
+    "placement": "Placement",
+    "note": "Note",
+    "empty": "No match records yet",
+    "delete": "Delete"
+  },
+  "category": {
+    "singles": "Singles",
+    "doubles_men": "Men's doubles",
+    "doubles_women": "Women's doubles",
+    "doubles_mixed": "Mixed doubles",
+    "team": "Team"
+  },
+  "experiences": {
+    "title": "Experience",
+    "add": "Add",
+    "startYm": "From (YYYY-MM)",
+    "endYm": "To (YYYY-MM), blank = present",
+    "organization": "Team / School",
+    "role": "Role",
+    "note": "Note",
+    "empty": "No experience yet",
+    "delete": "Delete"
+  },
+  "leaves": {
+    "title": "Recent leaves",
+    "open": "View / file leave"
+  },
+  "payments": {
+    "title": "Payments",
+    "comingSoon": "Phase 3 will show fees and statuses here."
+  }
 }

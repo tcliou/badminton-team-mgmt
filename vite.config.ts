@@ -31,6 +31,13 @@ export default defineConfig(({ mode }) => {
             i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
             'react-query': ['@tanstack/react-query'],
             forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+            calendar: [
+              '@fullcalendar/core',
+              '@fullcalendar/react',
+              '@fullcalendar/daygrid',
+              '@fullcalendar/list',
+              '@fullcalendar/interaction',
+            ],
           },
         },
       },

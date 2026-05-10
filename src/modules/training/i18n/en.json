@@ -1,0 +1,49 @@
+{
+  "title": "Training",
+  "tabs": {
+    "upcoming": "Upcoming",
+    "past": "History"
+  },
+  "form": {
+    "single": "New training",
+    "recurring": "Recurring training",
+    "title": "Title",
+    "topic": "Topic",
+    "groupTag": "Group tag",
+    "location": "Location",
+    "date": "Date",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "weekdays": "Repeat weekdays",
+    "weeks": "Number of weeks",
+    "submit": "Create",
+    "successSingle": "Created 1 training",
+    "successRecurring": "Created {{count}} trainings"
+  },
+  "weekday": {
+    "0": "Sun",
+    "1": "Mon",
+    "2": "Tue",
+    "3": "Wed",
+    "4": "Thu",
+    "5": "Fri",
+    "6": "Sat"
+  },
+  "list": {
+    "noUpcoming": "No upcoming trainings",
+    "noPast": "No past trainings",
+    "openAttendance": "Roll call",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this training?",
+    "deleteBatchConfirm": "Delete the entire recurring batch ({{count}} sessions)?"
+  },
+  "attendance": {
+    "title": "{{title}} - Attendance",
+    "present": "Present",
+    "absent": "Absent",
+    "onLeave": "On leave",
+    "late": "Late",
+    "save": "Save",
+    "savedAt": "Saved at {{when}}"
+  }
+}

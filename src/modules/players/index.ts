@@ -10,7 +10,10 @@ const playersModule: ModuleDescriptor = {
   permissionKey: PERMISSIONS.PagePlayers,
   order: 20,
   showInNav: true,
-  routes: [{ path: PATHS.Players, element: lazy(() => import('./pages/PlayersPage')) }],
+  routes: [
+    { path: PATHS.Players, element: lazy(() => import('./pages/PlayersPage')) },
+    { path: `${PATHS.Players}/:id`, element: lazy(() => import('./pages/PlayerDetailPage')) },
+  ],
 };
 
 export default playersModule;

@@ -23,19 +23,21 @@ export default mergeConfig(
           'src/shared/components/**',
           'src/modules/**/pages/**',
           'src/modules/**/components/**',
+          // 模組 API hooks 直接呼叫 Supabase；Phase 4 才會引入 MSW mock
+          'src/modules/**/api/**',
           'src/core/router/AppRouter.tsx',
           'src/core/i18n/LocaleSwitcher.tsx',
         ],
-        // Phase 1 = 地基為主，僅核心邏輯與工具函式有單元測試。
-        // 之後每個 Phase 結束時請手動 ratchet 上去：
-        //   Phase 2：lines/functions/statements 35、branches 50
+        // 各 Phase ratchet 計畫：
+        //   Phase 1：lines/functions/statements 20、branches 45（地基期）
+        //   Phase 2：lines/functions/statements 35、branches 50  ← 目前
         //   Phase 3：lines/functions/statements 55、branches 60
         //   Phase 4：lines/functions/statements 70、branches 65（NFR 目標）
         thresholds: {
-          lines: 20,
-          functions: 25,
-          branches: 45,
-          statements: 20,
+          lines: 35,
+          functions: 35,
+          branches: 50,
+          statements: 35,
         },
       },
     },

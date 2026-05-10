@@ -1,0 +1,46 @@
+{
+  "title": "請假",
+  "tabs": {
+    "mine": "我的請假",
+    "review": "待審核"
+  },
+  "form": {
+    "newLeave": "新增請假",
+    "startAt": "開始時間",
+    "endAt": "結束時間",
+    "reasonType": "事由類型",
+    "reasonText": "說明",
+    "reasonPlaceholder": "可選填，例如：感冒就醫、家中事務",
+    "affectedEvents": "影響的訓練 / 賽程（可多選）",
+    "affectedEventsHint": "未來 14 天內的球隊行程",
+    "submit": "送出請假",
+    "success": "請假已送出，等待教練審核"
+  },
+  "reason": {
+    "sick": "病假",
+    "personal": "事假",
+    "official": "公假",
+    "other": "其他"
+  },
+  "status": {
+    "pending": "待審核",
+    "approved": "已同意",
+    "rejected": "已退回"
+  },
+  "review": {
+    "approve": "同意",
+    "reject": "退回",
+    "noteLabel": "退回原因（必填）",
+    "noPending": "目前沒有待審核的請假",
+    "reviewedBy": "審核者：{{name}}",
+    "reviewedAt": "審核時間：{{when}}"
+  },
+  "history": {
+    "noRecord": "你還沒有任何請假紀錄",
+    "delete": "撤回",
+    "deleteConfirm": "確定要撤回這筆請假？只有待審核狀態可以撤回。"
+  },
+  "validation": {
+    "endBeforeStart": "結束時間必須晚於開始時間"
+  }
+}

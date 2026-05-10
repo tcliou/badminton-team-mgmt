@@ -9,8 +9,18 @@
     "teamEvents": "球隊行程",
     "personalEvents": "個人行程"
   },
+  "calendarLegend": {
+    "leaves": "已核准請假",
+    "leaveTag": "請假"
+  },
+  "personalEvent": {
+    "add": "新增個人行程",
+    "title": "標題",
+    "startAt": "開始時間",
+    "endAt": "結束時間",
+    "note": "備註"
+  },
   "placeholder": {
-    "announcements": "Phase 3 將串接公告管理功能；目前先顯示骨架。",
-    "calendar": "Phase 2 將整合 FullCalendar 與球隊行程資料。"
+    "announcements": "Phase 3 將串接公告管理功能；目前先顯示骨架。"
   }
 }

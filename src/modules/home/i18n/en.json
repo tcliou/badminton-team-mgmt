@@ -9,8 +9,18 @@
     "teamEvents": "Team events",
     "personalEvents": "Personal events"
   },
+  "calendarLegend": {
+    "leaves": "Approved leaves",
+    "leaveTag": "Leave"
+  },
+  "personalEvent": {
+    "add": "New personal event",
+    "title": "Title",
+    "startAt": "Starts at",
+    "endAt": "Ends at",
+    "note": "Note"
+  },
   "placeholder": {
-    "announcements": "Phase 3 will wire up the announcement module. Showing a skeleton for now.",
-    "calendar": "Phase 2 will integrate FullCalendar with team data."
+    "announcements": "Phase 3 will wire up announcements. Showing a skeleton for now."
   }
 }
