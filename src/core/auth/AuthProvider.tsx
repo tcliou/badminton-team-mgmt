@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (!mounted) return;
           setProfile(profile);
         } catch (err) {
-          // eslint-disable-next-line no-console
           console.error('[auth] fetchMyProfile failed', err);
         }
       }
@@ -42,7 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const profile = await fetchMyProfile();
           setProfile(profile);
         } catch (err) {
-          // eslint-disable-next-line no-console
           console.error('[auth] fetchMyProfile failed', err);
         }
       } else {

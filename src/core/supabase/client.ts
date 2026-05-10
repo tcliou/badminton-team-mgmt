@@ -7,7 +7,6 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 if (!url || !anonKey) {
   // 不在 import 時直接 throw，以免 unit test 缺 env 也跑不起來；
   // 改在實際使用時才報錯。
-  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY 未設定，請複製 .env.example 為 .env 並填寫',
   );
