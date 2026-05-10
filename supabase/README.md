@@ -7,9 +7,11 @@
 ```
 supabase/
 └── migrations/
-    ├── 0001_init_auth_acl.sql        # 認證/權限 schema + RLS
-    ├── 0002_seed_permissions_roles.sql # 預設角色與權限鍵
-    └── 0003_create_admin_user.sql    # 建立第一個 admin profile
+    ├── 0001_init_auth_acl.sql            # Phase 1：認證/權限 schema + RLS
+    ├── 0002_seed_permissions_roles.sql   # Phase 1：預設角色與權限鍵
+    ├── 0003_create_admin_user.sql        # Phase 1：建立第一個 admin profile
+    ├── 0010_phase2_core_tables.sql       # Phase 2：行事曆 / 訓練 / 請假 / 球員附帶資料 + RLS
+    └── 0011_storage_avatars.sql          # Phase 2：avatars Storage bucket + policies
 ```
 
 ## 部署到 Supabase Cloud（推薦給校隊使用）
@@ -26,6 +28,8 @@ supabase/
 3. 進入 Supabase Dashboard → **SQL Editor**，依序執行：
    1. `0001_init_auth_acl.sql`
    2. `0002_seed_permissions_roles.sql`
+   3. （Phase 2 之後）`0010_phase2_core_tables.sql`
+   4. （Phase 2 之後）`0011_storage_avatars.sql`
 4. 建立第一個 admin 帳號：
    - 進入 **Authentication → Users → Add user**
    - Email：`admin@team.local`
