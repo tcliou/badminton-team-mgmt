@@ -20,12 +20,17 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       sourcemap: true,
+      // 個別頁面 bundle 普遍 < 100KB，但 react / supabase / i18n / form 這些
+      // 共用 vendor 累計可能破門檻。把它們各自切出來，讓首屏只載最需要的。
+      chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {
           manualChunks: {
             react: ['react', 'react-dom', 'react-router-dom'],
             supabase: ['@supabase/supabase-js'],
             i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+            'react-query': ['@tanstack/react-query'],
+            forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
           },
         },
       },

@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as Icons from 'lucide-react';
 import { navModules } from '@/core/router/moduleRegistry';
 import { useAuthStore } from '@/core/store/authStore';
 import { hasPermission } from '@/core/acl/permissions';
 import { cn } from '@/shared/utils/cn';
+import { resolveNavIcon } from './navIcons';
 
 interface BottomNavProps {
   className?: string;
@@ -29,9 +29,7 @@ export function BottomNav({ className }: BottomNavProps) {
       aria-label="Bottom navigation"
     >
       {visible.map((m) => {
-        const Icon =
-          (m.navIcon ? (Icons as unknown as Record<string, Icons.LucideIcon>)[m.navIcon] : null) ??
-          Icons.Circle;
+        const Icon = resolveNavIcon(m.navIcon);
         const path = m.routes[0]?.path ?? '/';
         return (
           <NavLink
