@@ -43,6 +43,12 @@ cd badminton-team-mgmt
 pnpm install
 ```
 
+> **重要**：第一次 `pnpm install` 後產生的 `pnpm-lock.yaml`
+> **必須 commit 進 repo**。CI 用 `pnpm install --frozen-lockfile`
+> 確保所有人裝到一模一樣的相依版本，沒有 lockfile 會直接 build 失敗。
+> 若團隊新手沒裝 pnpm，可以 `corepack enable && corepack prepare pnpm@9 --activate`
+> 用 Node 內建 corepack 啟用，不需要額外 npm 全域安裝。
+
 ### 2. 設定環境變數
 
 ```bash
