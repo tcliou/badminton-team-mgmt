@@ -7,6 +7,13 @@ import { fetchMyProfile } from './authApi';
  * AuthProvider：應用程式啟動時恢復 session、訂閱 auth 狀態變化、
  * 同步把 profile + roles + permissions 載入 Zustand store。
  *
+ * 設計重點：**完全依賴 onAuthStateChange**，不另外呼叫 getSession()。
+ * Supabase v2 在訂閱當下會立刻丟一個 INITIAL_SESSION 事件（含目前的 session
+ * 或 null），所以單一入口就能涵蓋初次載入、登入、登出、token refresh。
+ *
+ * 之前同時用 getSession() + onAuthStateChange 的版本在 page refresh 時會
+ * race：兩條 path 都跑 syncProfile，外層 finally 偶爾不 fire，loading 卡 true。
+ *
  * 邊界情況：若 auth.users 有此 user 但 profiles 沒有對應列（例如管理員只在
  * Supabase Dashboard 建了 auth user 卻忘了跑 admin/profile migration），
  * 我們會視為「未完成設定的帳號」，自動 signOut 避免使用者卡在無權限的空殼裡。
@@ -17,50 +24,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    /** 共用的 profile 載入邏輯，含 orphan auth user 自動登出 */
-    const syncProfile = async () => {
-      try {
-        const profile = await fetchMyProfile();
-        if (!mounted) return;
-        if (!profile) {
-          // 有 session 但 profile 不存在 → 帳號未完成設定，登出避免卡住 UI
-          console.warn('[auth] session exists but no profile row; signing out');
-          await supabase.auth.signOut();
-          return;
-        }
-        setProfile(profile);
-      } catch (err) {
-        console.error('[auth] fetchMyProfile failed', err);
-        // 查 profile 失敗也視為不可用狀態，登出避免持續卡載入
-        await supabase.auth.signOut();
-      }
-    };
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return;
+      setSession(session);
 
-    // 1. 啟動時取得目前 session
-    void (async () => {
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!mounted) return;
-        setSession(session);
         if (session) {
-          await syncProfile();
+          const profile = await fetchMyProfile();
+          if (!mounted) return;
+          if (!profile) {
+            // 有 session 但 profile 不存在 → 帳號未完成設定
+            console.warn('[auth] session exists but no profile row; signing out');
+            await supabase.auth.signOut();
+            // signOut 會再觸發一次 onAuthStateChange(session=null)，
+            // 那邊的 finally 會把 loading 設 false
+            return;
+          }
+          setProfile(profile);
+        } else {
+          // 未登入或剛登出
+          reset();
         }
       } catch (err) {
-        console.error('[auth] getSession failed', err);
+        console.error('[auth] auth state sync failed', err);
+        // sync 失敗也視為不可用狀態，讓使用者回到登入頁
+        await supabase.auth.signOut().catch(() => {});
       } finally {
         if (mounted) setLoading(false);
-      }
-    })();
-
-    // 2. 訂閱後續 sign in / sign out / token refresh
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      if (session) {
-        await syncProfile();
-      } else {
-        reset();
       }
     });
 
