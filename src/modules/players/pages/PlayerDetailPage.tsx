@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft } from 'lucide-react';
+import { Camera, ChevronLeft } from 'lucide-react';
 import { usePlayer, usePlayerRecentLeaves } from '../api/playersApi';
 import { Avatar } from '../components/Avatar';
 import { ProfileEditCard } from '../components/ProfileEditCard';
 import { MatchRecords } from '../components/MatchRecords';
 import { Experiences } from '../components/Experiences';
+import { PlayerPaymentsList } from '../components/PlayerPaymentsList';
+import { AvatarUploadDialog } from '../components/AvatarUploadDialog';
 import { Loading } from '@/shared/components/Loading';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { useAuthStore } from '@/core/store/authStore';
@@ -21,6 +24,7 @@ export default function PlayerDetailPage() {
   const myId = useAuthStore((s) => s.profile?.id);
   const canManage = useCan(PERMISSIONS.ActionPlayersManage);
   const recentLeaves = usePlayerRecentLeaves(id, 5);
+  const [avatarOpen, setAvatarOpen] = useState(false);
 
   if (isLoading) return <Loading fullscreen />;
   if (!data) return <EmptyState title={t('errors.notFoundTitle')} />;
@@ -39,12 +43,25 @@ export default function PlayerDetailPage() {
       </Link>
 
       <header className="flex items-center gap-4 rounded-xl border bg-card p-4">
-        <Avatar
-          url={data.avatar_url}
-          name={data.display_name}
-          username={data.username}
-          size="lg"
-        />
+        <div className="relative">
+          <Avatar
+            url={data.avatar_url}
+            name={data.display_name}
+            username={data.username}
+            size="lg"
+          />
+          {canEdit ? (
+            <button
+              type="button"
+              onClick={() => setAvatarOpen(true)}
+              className="absolute -bottom-1 -right-1 inline-flex h-7 w-7 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm hover:text-foreground"
+              aria-label={t('players:avatar.edit')}
+              title={t('players:avatar.edit')}
+            >
+              <Camera className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          ) : null}
+        </div>
         <div className="min-w-0">
           <h1 className="text-xl font-bold">{data.display_name}</h1>
           <p className="text-sm text-muted-foreground">@{data.username}</p>
@@ -56,7 +73,6 @@ export default function PlayerDetailPage() {
       <MatchRecords playerId={data.id} canEdit={canEdit} />
       <Experiences playerId={data.id} canEdit={canEdit} />
 
-      {/* 請假狀況：唯讀 + 跳轉連結 */}
       <section className="rounded-xl border bg-card p-4">
         <header className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-semibold">{t('players:leaves.title')}</h2>
@@ -86,13 +102,23 @@ export default function PlayerDetailPage() {
         )}
       </section>
 
-      {/* 繳費狀況：Phase 3 才實作 */}
       <section className="rounded-xl border bg-card p-4">
-        <header className="mb-3">
+        <header className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-semibold">{t('players:payments.title')}</h2>
+          {isSelf ? (
+            <Link to={PATHS.Payments} className="text-xs text-primary hover:underline">
+              {t('players:payments.openMine')}
+            </Link>
+          ) : null}
         </header>
-        <EmptyState title={t('common.comingSoon')} description={t('players:payments.comingSoon')} />
+        <PlayerPaymentsList playerId={data.id} />
       </section>
+
+      <AvatarUploadDialog
+        open={avatarOpen}
+        onClose={() => setAvatarOpen(false)}
+        profileId={data.id}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { addMonths, format, subMonths } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMonthTransactions, useYearToDateSummary } from '../api/transactionsApi';
 import { formatCurrency } from '@/shared/utils/currency';
+import { summarizeTransactions } from '@/shared/utils/financeSummary';
 
 interface Props {
   month: Date;
@@ -15,15 +16,10 @@ export function MonthlySummary({ month, setMonth }: Props) {
   const monthQ = useMonthTransactions(month);
   const ytd = useYearToDateSummary(month);
 
-  const { income, expense, balance } = useMemo(() => {
-    let i = 0;
-    let e = 0;
-    (monthQ.data ?? []).forEach((r) => {
-      if (r.direction === 'income') i += Number(r.amount);
-      else e += Number(r.amount);
-    });
-    return { income: i, expense: e, balance: i - e };
-  }, [monthQ.data]);
+  const { income, expense, balance } = useMemo(
+    () => summarizeTransactions(monthQ.data ?? []),
+    [monthQ.data],
+  );
 
   return (
     <section className="rounded-xl border bg-card p-4">

@@ -30,14 +30,14 @@ export default mergeConfig(
         ],
         // 各 Phase ratchet 計畫：
         //   Phase 1：lines/functions/statements 20、branches 45（地基期）
-        //   Phase 2：lines/functions/statements 35、branches 50  ← 目前
-        //   Phase 3：lines/functions/statements 55、branches 60
+        //   Phase 2：lines/functions/statements 35、branches 50
+        //   Phase 3：lines/functions/statements 55、branches 60  ← 目前
         //   Phase 4：lines/functions/statements 70、branches 65（NFR 目標）
         thresholds: {
-          lines: 35,
-          functions: 35,
-          branches: 50,
-          statements: 35,
+          lines: 55,
+          functions: 55,
+          branches: 60,
+          statements: 55,
         },
       },
     },

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/core/supabase/client';
 import { useAuthStore } from '@/core/store/authStore';
+import { isItemForPlayer } from '@/shared/utils/paymentTargeting';
 import type {
   PaymentChannel,
   PaymentItemRow,
@@ -11,21 +12,6 @@ const QK = {
   myItems: ['payments', 'myItems'] as const,
   myRecords: ['payments', 'myRecords'] as const,
 };
-
-/** 拿全部 active payment_items，前端再過濾「對我收費」 */
-function isItemForMe(
-  item: PaymentItemRow,
-  myUserId: string,
-  myRoleIds: string[],
-): boolean {
-  const noTarget =
-    (item.target_role_ids?.length ?? 0) === 0 &&
-    (item.target_user_ids?.length ?? 0) === 0;
-  if (noTarget) return true;
-  if (item.target_user_ids?.includes(myUserId)) return true;
-  if (item.target_role_ids?.some((r) => myRoleIds.includes(r))) return true;
-  return false;
-}
 
 /** 拿出登入者目前的 role IDs（從 v_my_profile 反查 user_roles）。
  *  v_my_profile 只給 role_names，這邊另外撈 ids。 */
@@ -76,7 +62,7 @@ export function useMyPayments() {
       });
 
       return ((items ?? []) as PaymentItemRow[])
-        .filter((it) => isItemForMe(it, userId, roleIds))
+        .filter((it) => isItemForPlayer(it, userId, roleIds))
         .map((item) => ({
           item,
           record: recordsByItem.get(item.id),

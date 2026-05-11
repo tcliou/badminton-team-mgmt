@@ -1,0 +1,33 @@
+{
+  "title": "管理後台",
+  "tabs": {
+    "users": "使用者與角色指派",
+    "roles": "角色與權限"
+  },
+  "users": {
+    "search": "搜尋姓名 / 帳號…",
+    "currentRoles": "目前角色：",
+    "noRoles": "（沒有任何角色）",
+    "edit": "編輯角色",
+    "noUsers": "目前沒有使用者",
+    "tipNewUser": "新增使用者請先在 Supabase Dashboard 建 auth user，再到 SQL Editor 跑 supabase/templates/add_user.sql"
+  },
+  "userRolesEditor": {
+    "title": "編輯 {{name}} 的角色",
+    "save": "儲存",
+    "cancel": "取消"
+  },
+  "roles": {
+    "newRole": "新增自訂角色",
+    "namePlaceholder": "角色名稱（例 parent）",
+    "descriptionPlaceholder": "說明（選填）",
+    "create": "建立",
+    "system": "系統角色（不可刪）",
+    "delete": "刪除",
+    "deleteConfirm": "確定刪除「{{name}}」？此角色目前指派給 {{count}} 位使用者，會一併解除。",
+    "permissions": "權限",
+    "page": "頁面權限",
+    "action": "動作權限",
+    "saving": "儲存中…"
+  }
+}

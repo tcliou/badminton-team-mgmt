@@ -63,6 +63,13 @@
   },
   "payments": {
     "title": "繳費狀況",
-    "comingSoon": "Phase 3 將顯示繳費清單與狀態。"
+    "openMine": "去繳費登記頁"
+  },
+  "avatar": {
+    "title": "更換頭像",
+    "choose": "點擊或拖曳圖片到此處",
+    "zoom": "縮放",
+    "upload": "上傳",
+    "edit": "更換頭像"
   }
 }

@@ -1,0 +1,33 @@
+{
+  "title": "Admin",
+  "tabs": {
+    "users": "Users & roles",
+    "roles": "Roles & permissions"
+  },
+  "users": {
+    "search": "Search name / username…",
+    "currentRoles": "Current roles: ",
+    "noRoles": "(no roles)",
+    "edit": "Edit roles",
+    "noUsers": "No users yet",
+    "tipNewUser": "To add a user: create the auth user in Supabase Dashboard first, then run supabase/templates/add_user.sql in SQL Editor."
+  },
+  "userRolesEditor": {
+    "title": "Edit roles for {{name}}",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "roles": {
+    "newRole": "New custom role",
+    "namePlaceholder": "Role name (e.g. parent)",
+    "descriptionPlaceholder": "Description (optional)",
+    "create": "Create",
+    "system": "System role (cannot delete)",
+    "delete": "Delete",
+    "deleteConfirm": "Delete '{{name}}'? It is assigned to {{count}} user(s); they will lose this role.",
+    "permissions": "Permissions",
+    "page": "Page permissions",
+    "action": "Action permissions",
+    "saving": "Saving…"
+  }
+}

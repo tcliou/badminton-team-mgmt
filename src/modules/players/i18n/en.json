@@ -63,6 +63,13 @@
   },
   "payments": {
     "title": "Payments",
-    "comingSoon": "Phase 3 will show fees and statuses here."
+    "openMine": "Go to my payments"
+  },
+  "avatar": {
+    "title": "Change avatar",
+    "choose": "Click or drop an image here",
+    "zoom": "Zoom",
+    "upload": "Upload",
+    "edit": "Change avatar"
   }
 }
