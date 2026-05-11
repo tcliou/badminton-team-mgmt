@@ -25,9 +25,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { setSession, setProfile, setLoading, reset } = useAuthStore.getState();
     let mounted = true;
+    // 診斷 log 預設只在 dev 啟用；正式環境可在 console 跑：
+    //   localStorage.setItem('debug.auth','1') 後重整
+    const isDebug =
+      import.meta.env.DEV ||
+      (typeof window !== 'undefined' && window.localStorage.getItem('debug.auth') === '1');
     const t0 = performance.now();
-    const log = (...args: unknown[]) =>
+    const log = (...args: unknown[]) => {
+      if (!isDebug) return;
       console.log(`[auth +${Math.round(performance.now() - t0)}ms]`, ...args);
+    };
     log('AuthProvider mounted');
 
     /** 把 session 套到 store 並（必要時）拉 profile。一律在自己的 tick 跑。 */
