@@ -1,0 +1,42 @@
+{
+  "title": "繳費登記",
+  "intro": "以下是對您收取的費用，請於繳費後到此回報。",
+  "card": {
+    "due": "繳費期限：{{date}}",
+    "noDue": "無期限",
+    "register": "我已繳費",
+    "edit": "編輯繳費紀錄",
+    "viewProof": "查看證明"
+  },
+  "status": {
+    "unpaid": "未繳",
+    "pending": "待確認",
+    "confirmed": "已收",
+    "rejected": "已退回"
+  },
+  "channel": {
+    "bank": "銀行轉帳",
+    "cash": "現金",
+    "linepay": "Line Pay",
+    "other": "其他"
+  },
+  "form": {
+    "title": "登記繳費",
+    "channel": "繳費管道",
+    "amount": "金額",
+    "paidAt": "繳費時間",
+    "transferLast5": "轉帳末五碼（選填）",
+    "proof": "證明照片（選填）",
+    "uploading": "上傳中…",
+    "submit": "送出",
+    "cancel": "取消",
+    "withdraw": "撤回此次登記",
+    "withdrawConfirm": "確定撤回？此筆繳費紀錄會被刪除。"
+  },
+  "history": {
+    "title": "我的繳費歷史",
+    "empty": "尚無繳費紀錄"
+  },
+  "noItems": "目前沒有對您收費的項目",
+  "rejectReason": "退回原因：{{reason}}"
+}

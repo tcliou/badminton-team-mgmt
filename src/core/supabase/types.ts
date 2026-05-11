@@ -139,6 +139,14 @@ export type Database = {
         Args: Record<string, never>;
         Returns: string[];
       };
+      confirm_payment: {
+        Args: { p_record_id: string; p_note?: string | null };
+        Returns: void;
+      };
+      reject_payment: {
+        Args: { p_record_id: string; p_note: string };
+        Returns: void;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

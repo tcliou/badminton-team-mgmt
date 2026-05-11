@@ -1,0 +1,72 @@
+{
+  "title": "Finance",
+  "tabs": {
+    "items": "Fees",
+    "reconcile": "Reconcile",
+    "ledger": "Ledger"
+  },
+  "items": {
+    "new": "New fee",
+    "edit": "Edit fee",
+    "name": "Fee name",
+    "purpose": "Purpose",
+    "description": "Description (transfer info, invoice notes…)",
+    "amount": "Amount",
+    "dueDate": "Due date",
+    "target": "Charged to",
+    "targetAll": "Whole team (leave both blank = everyone)",
+    "targetByRole": "By role:",
+    "targetByUser": "By specific players:",
+    "status": "Status",
+    "active": "Active",
+    "closed": "Closed",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this fee? Related payment records will also be removed.",
+    "empty": "No fees yet",
+    "due": "Due: {{date}}",
+    "noDue": "No due date"
+  },
+  "reconcile": {
+    "title": "Pending payments",
+    "empty": "No pending payments",
+    "by": "{{name}}",
+    "channel": {
+      "bank": "Bank transfer",
+      "cash": "Cash",
+      "linepay": "Line Pay",
+      "other": "Other"
+    },
+    "transferLast5": "Last 5: {{value}}",
+    "viewProof": "View proof",
+    "confirm": "Confirm",
+    "reject": "Reject",
+    "rejectReasonLabel": "Rejection reason (required)",
+    "noteOptional": "Note (optional)",
+    "submit": "Submit"
+  },
+  "ledger": {
+    "title": "Ledger",
+    "month": "Month: ",
+    "newRow": "Add row",
+    "income": "Income",
+    "expense": "Expense",
+    "balance": "Balance",
+    "yearTotal": "Year-to-date",
+    "fields": {
+      "occurredOn": "Date",
+      "direction": "Type",
+      "category": "Category",
+      "item": "Item",
+      "amount": "Amount",
+      "counterparty": "Counterparty",
+      "note": "Note"
+    },
+    "empty": "No entries this month",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this entry?",
+    "edit": "Edit",
+    "fromPaymentBadge": "Auto from payment"
+  }
+}

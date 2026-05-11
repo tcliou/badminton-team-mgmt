@@ -1,0 +1,42 @@
+{
+  "title": "Payments",
+  "intro": "Fees charged to you. Report after paying.",
+  "card": {
+    "due": "Due: {{date}}",
+    "noDue": "No due date",
+    "register": "I have paid",
+    "edit": "Edit my report",
+    "viewProof": "View proof"
+  },
+  "status": {
+    "unpaid": "Unpaid",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "rejected": "Rejected"
+  },
+  "channel": {
+    "bank": "Bank transfer",
+    "cash": "Cash",
+    "linepay": "Line Pay",
+    "other": "Other"
+  },
+  "form": {
+    "title": "Report payment",
+    "channel": "Channel",
+    "amount": "Amount",
+    "paidAt": "Paid at",
+    "transferLast5": "Last 5 digits (optional)",
+    "proof": "Proof image (optional)",
+    "uploading": "Uploading…",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "withdraw": "Withdraw report",
+    "withdrawConfirm": "Withdraw? This record will be deleted."
+  },
+  "history": {
+    "title": "My payment history",
+    "empty": "No records yet"
+  },
+  "noItems": "No fees are currently charged to you",
+  "rejectReason": "Rejection reason: {{reason}}"
+}

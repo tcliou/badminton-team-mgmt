@@ -1,0 +1,72 @@
+{
+  "title": "財務與出納",
+  "tabs": {
+    "items": "應收費用",
+    "reconcile": "對帳",
+    "ledger": "收支總帳"
+  },
+  "items": {
+    "new": "新增應收費用",
+    "edit": "編輯費用",
+    "name": "費用名稱",
+    "purpose": "用途",
+    "description": "詳細說明（轉帳資訊、發票等）",
+    "amount": "金額",
+    "dueDate": "繳費期限",
+    "target": "收費對象",
+    "targetAll": "全隊（兩個列表都不勾＝全員）",
+    "targetByRole": "依角色：",
+    "targetByUser": "點名球員：",
+    "status": "狀態",
+    "active": "啟用中",
+    "closed": "已結案",
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "deleteConfirm": "確定刪除此費用？相關繳費紀錄也會被一併刪除。",
+    "empty": "尚未建立任何費用",
+    "due": "期限：{{date}}",
+    "noDue": "無期限"
+  },
+  "reconcile": {
+    "title": "待確認的繳費",
+    "empty": "目前沒有待確認的繳費",
+    "by": "{{name}}",
+    "channel": {
+      "bank": "轉帳",
+      "cash": "現金",
+      "linepay": "Line Pay",
+      "other": "其他"
+    },
+    "transferLast5": "末五碼：{{value}}",
+    "viewProof": "查看證明",
+    "confirm": "確認收款",
+    "reject": "退回",
+    "rejectReasonLabel": "退回原因（必填）",
+    "noteOptional": "備註（選填）",
+    "submit": "送出"
+  },
+  "ledger": {
+    "title": "收支總帳",
+    "month": "月份：",
+    "newRow": "新增一筆",
+    "income": "收入",
+    "expense": "支出",
+    "balance": "結餘",
+    "yearTotal": "本年累計",
+    "fields": {
+      "occurredOn": "日期",
+      "direction": "收/支",
+      "category": "類別",
+      "item": "項目",
+      "amount": "金額",
+      "counterparty": "對方",
+      "note": "備註"
+    },
+    "empty": "本月沒有任何收支",
+    "delete": "刪除",
+    "deleteConfirm": "確定刪除這筆？",
+    "edit": "編輯",
+    "fromPaymentBadge": "繳費自動入帳"
+  }
+}
