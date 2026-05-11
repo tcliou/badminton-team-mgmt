@@ -65,3 +65,30 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* 列印用：把所有非 print:block 的東西藏起來，Layout / Nav / 按鈕都不印
+   只剩 print:block 的元素（如 LedgerPrintView）會出現 */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .print\:block,
+  .print\:block * {
+    visibility: visible;
+  }
+  .print\:block {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 1.5rem;
+  }
+  /* A4 紙張預設、留 1 cm 邊距 */
+  @page {
+    size: A4 portrait;
+    margin: 1cm;
+  }
+}

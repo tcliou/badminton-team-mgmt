@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { LogOut, User } from 'lucide-react';
 import { useAuth } from '@/core/auth';
 import { LocaleSwitcher } from '@/core/i18n/LocaleSwitcher';
+import { ThemeToggle } from './ThemeToggle';
 
 export function TopBar() {
   const { t } = useTranslation();
@@ -13,7 +14,8 @@ export function TopBar() {
       <div className="flex items-center gap-2">
         <span className="text-base font-semibold md:text-lg">{appName}</span>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <ThemeToggle />
         <LocaleSwitcher />
         {profile ? (
           <>

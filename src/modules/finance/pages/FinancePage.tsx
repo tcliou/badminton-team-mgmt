@@ -7,6 +7,8 @@ import { ReconcileList } from '../components/ReconcileList';
 import { TransactionList } from '../components/TransactionList';
 import { TransactionForm } from '../components/TransactionForm';
 import { MonthlySummary } from '../components/MonthlySummary';
+import { LedgerExportBar } from '../components/LedgerExportBar';
+import { LedgerPrintView } from '../components/LedgerPrintView';
 import { Button } from '@/shared/components/Button';
 import { cn } from '@/shared/utils/cn';
 import { startOfMonth } from 'date-fns';
@@ -88,7 +90,11 @@ export default function FinancePage() {
       {tab === 'ledger' ? (
         <div className="space-y-3">
           <MonthlySummary month={month} setMonth={setMonth} />
-          <div className="flex justify-end">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <LedgerExportBar
+              month={month}
+              teamName={import.meta.env.VITE_APP_NAME || 'Team'}
+            />
             <Button
               onClick={() => {
                 setEditingTx(null);
@@ -112,6 +118,11 @@ export default function FinancePage() {
             onClose={() => setTxDialogOpen(false)}
             editing={editingTx}
             defaultMonth={month}
+          />
+          {/* 列印視圖：螢幕看不到，print 時取代整頁 */}
+          <LedgerPrintView
+            month={month}
+            teamName={import.meta.env.VITE_APP_NAME || 'Team'}
           />
         </div>
       ) : null}

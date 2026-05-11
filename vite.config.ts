@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => {
               '@fullcalendar/interaction',
             ],
             markdown: ['react-markdown', 'remark-gfm'],
+            xlsx: ['xlsx'],
           },
         },
       },

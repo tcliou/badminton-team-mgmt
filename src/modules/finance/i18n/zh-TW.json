@@ -68,5 +68,9 @@
     "deleteConfirm": "確定刪除這筆？",
     "edit": "編輯",
     "fromPaymentBadge": "繳費自動入帳"
+  },
+  "export": {
+    "xlsx": "匯出 Excel",
+    "print": "列印 / PDF"
   }
 }

@@ -68,5 +68,9 @@
     "deleteConfirm": "Delete this entry?",
     "edit": "Edit",
     "fromPaymentBadge": "Auto from payment"
+  },
+  "export": {
+    "xlsx": "Export Excel",
+    "print": "Print / PDF"
   }
 }
