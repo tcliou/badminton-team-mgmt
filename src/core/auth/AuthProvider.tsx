@@ -75,8 +75,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 注意：Supabase 在訂閱當下會 fire 一個事件（INITIAL_SESSION 或 SIGNED_IN，
     // 視 client 內部狀態而定），所以光靠這個 listener 就足以處理初始狀態，
     // 不需要另外呼叫 getSession()——那會跟 lock 搶資源、容易死結。
+    //
+    // 去重：v2 對「已登入使用者重整頁面」會連續 fire SIGNED_IN + INITIAL_SESSION
+    // 兩個帶相同 session 的事件。用 access_token 比對，相同 token 視為同一邏輯
+    // 事件、跳過，避免每次 reload 多打一次 v_my_profile 查詢。
+    let lastAccessToken: string | undefined;
     const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
       log('onAuthStateChange event=', event);
+      const token = session?.access_token;
+      if (event !== 'SIGNED_OUT' && token === lastAccessToken && token !== undefined) {
+        log(`onAuthStateChange skipped (duplicate token for ${event})`);
+        return;
+      }
+      lastAccessToken = token;
       // 全部用 setTimeout 推到下一個 tick，讓 Supabase 釋放 auth lock
       window.setTimeout(() => {
         void handleSession(session, event);
