@@ -11,7 +11,16 @@
   },
   "calendarLegend": {
     "leaves": "Approved leaves",
-    "leaveTag": "Leave"
+    "leaveTag": "Leave",
+    "eventType": {
+      "training": "Training",
+      "match": "Match",
+      "meeting": "Meeting",
+      "other": "Other"
+    }
+  },
+  "eventDetails": {
+    "leaveList": "Players on leave ({{count}})"
   },
   "personalEvent": {
     "add": "New personal event",

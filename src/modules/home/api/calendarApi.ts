@@ -114,18 +114,24 @@ export function useDeletePersonalEvent() {
 
 /* ---------- 已 approved 的請假（顯示在球隊行事曆） ---------- */
 
+export type ApprovedLeaveWithPlayer = LeaveRequestRow & {
+  player: { display_name: string; username: string } | null;
+};
+
 export function useApprovedLeavesInRange(rangeFrom: Date, rangeTo: Date) {
   return useQuery({
     queryKey: ['calendar', 'leaves', rangeFrom.toISOString(), rangeTo.toISOString()],
-    queryFn: async (): Promise<LeaveRequestRow[]> => {
+    queryFn: async (): Promise<ApprovedLeaveWithPlayer[]> => {
       const { data, error } = await supabase
         .from('leave_requests')
-        .select('*')
+        .select(
+          '*, player:profiles!leave_requests_player_id_fkey(display_name,username)',
+        )
         .eq('status', 'approved')
         .lte('start_at', rangeTo.toISOString())
         .gte('end_at', rangeFrom.toISOString());
       if (error) throw error;
-      return (data ?? []) as LeaveRequestRow[];
+      return (data ?? []) as unknown as ApprovedLeaveWithPlayer[];
     },
   });
 }

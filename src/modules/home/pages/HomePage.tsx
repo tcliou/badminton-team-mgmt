@@ -17,7 +17,8 @@ export default function HomePage() {
           </p>
         ) : null}
       </header>
-      <div className="grid gap-4 lg:grid-cols-[2fr_3fr]">
+      {/* 垂直排版：公告在上、行事曆在下，這樣行事曆可以拿全寬顯示更多資訊 */}
+      <div className="space-y-4">
         <AnnouncementsPlaceholder />
         <CalendarPanel />
       </div>

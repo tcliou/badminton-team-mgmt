@@ -11,10 +11,12 @@ import {
   useApprovedLeavesInRange,
   usePersonalEvents,
   useTeamEvents,
+  type ApprovedLeaveWithPlayer,
 } from '../api/calendarApi';
 import { PersonalEventDialog } from './PersonalEventDialog';
+import { EventDetailsOverlay, type DetailsTarget } from './EventDetailsOverlay';
 import { Button } from '@/shared/components/Button';
-import type { PersonalEventRow } from '@/core/supabase/types';
+import type { CalendarEventRow, PersonalEventRow } from '@/core/supabase/types';
 
 const TEAM_COLOR = '#3b82f6';
 const PERSONAL_COLOR = '#10b981';
@@ -40,9 +42,14 @@ export function CalendarPanel() {
   const [showPersonal, setShowPersonal] = useState(true);
   const [showLeaves, setShowLeaves] = useState(true);
 
+  // 編輯個人事件用的 dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<PersonalEventRow | null>(null);
   const [defaultStart, setDefaultStart] = useState<Date | undefined>();
+
+  // 點事件展開的詳情 overlay
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsTarget, setDetailsTarget] = useState<DetailsTarget | null>(null);
 
   const events = useMemo<EventInput[]>(() => {
     const out: EventInput[] = [];
@@ -55,7 +62,7 @@ export function CalendarPanel() {
           end: ev.ends_at,
           backgroundColor: ev.color ?? TEAM_COLOR,
           borderColor: ev.color ?? TEAM_COLOR,
-          extendedProps: { kind: 'team' },
+          extendedProps: { kind: 'team', raw: ev },
         });
       });
     }
@@ -89,20 +96,42 @@ export function CalendarPanel() {
     return out;
   }, [team.data, personal.data, leaves.data, showTeam, showPersonal, showLeaves, t]);
 
-  const handleEventClick = (arg: EventClickArg) => {
-    if (arg.event.extendedProps.kind === 'personal') {
-      const raw = arg.event.extendedProps.raw as PersonalEventRow | undefined;
-      if (raw) {
-        setEditing(raw);
-        setDefaultStart(undefined);
-        setDialogOpen(true);
-      }
-    }
+  /** 找出哪些已核准請假的 affected_event_ids 包含這個 calendar_event id */
+  const findAffectedLeaves = (calendarEventId: string): ApprovedLeaveWithPlayer[] => {
+    if (!leaves.data) return [];
+    return leaves.data.filter((lv) =>
+      (lv.affected_event_ids ?? []).includes(calendarEventId),
+    );
   };
 
-  const openCreate = (start?: Date) => {
+  const handleEventClick = (arg: EventClickArg) => {
+    const kind = arg.event.extendedProps.kind as 'team' | 'personal' | 'leave';
+    if (kind === 'team') {
+      const row = arg.event.extendedProps.raw as CalendarEventRow;
+      setDetailsTarget({
+        kind: 'team',
+        row,
+        affectedLeaves: findAffectedLeaves(row.id),
+      });
+      setDetailsOpen(true);
+    } else if (kind === 'personal') {
+      const row = arg.event.extendedProps.raw as PersonalEventRow;
+      setDetailsTarget({ kind: 'personal', row });
+      setDetailsOpen(true);
+    }
+    // 'leave' 是背景事件，FullCalendar 預設不會觸發 click
+  };
+
+  const openCreatePersonal = (start?: Date) => {
     setEditing(null);
     setDefaultStart(start);
+    setDialogOpen(true);
+  };
+
+  const openEditPersonal = (row: PersonalEventRow) => {
+    setDetailsOpen(false);
+    setEditing(row);
+    setDefaultStart(undefined);
     setDialogOpen(true);
   };
 
@@ -113,7 +142,7 @@ export function CalendarPanel() {
           <CalendarDays className="h-5 w-5 text-primary" aria-hidden />
           {t('home:sections.calendar')}
         </h2>
-        <Button size="sm" onClick={() => openCreate()} className="gap-1">
+        <Button size="sm" onClick={() => openCreatePersonal()} className="gap-1">
           <Plus className="h-4 w-4" aria-hidden />
           {t('home:personalEvent.add')}
         </Button>
@@ -154,8 +183,15 @@ export function CalendarPanel() {
         firstDay={1}
         events={events}
         eventClick={handleEventClick}
-        dateClick={(arg) => openCreate(arg.date)}
+        dateClick={(arg) => openCreatePersonal(arg.date)}
         eventDisplay="block"
+      />
+
+      <EventDetailsOverlay
+        open={detailsOpen}
+        target={detailsTarget}
+        onClose={() => setDetailsOpen(false)}
+        onEditPersonal={openEditPersonal}
       />
 
       <PersonalEventDialog

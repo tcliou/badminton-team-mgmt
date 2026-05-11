@@ -11,7 +11,16 @@
   },
   "calendarLegend": {
     "leaves": "已核准請假",
-    "leaveTag": "請假"
+    "leaveTag": "請假",
+    "eventType": {
+      "training": "訓練",
+      "match": "比賽",
+      "meeting": "會議",
+      "other": "其他"
+    }
+  },
+  "eventDetails": {
+    "leaveList": "請假名單（{{count}} 人）"
   },
   "personalEvent": {
     "add": "新增個人行程",
