@@ -20,14 +20,18 @@ export function RolePermissionsEditor({ roleId, readOnly }: Props) {
   const enabled = useRolePermissionKeys(roleId);
   const toggle = useToggleRolePermission();
 
+  // 先 destructure 出穩定的 reference，避免 useMemo 內部出現 perms.data
+  // 連帶讓 typeof 表達式不被 react-hooks/exhaustive-deps 誤判為 runtime 引用
+  const permsData = perms.data;
   const groups = useMemo(() => {
-    const map = { page: [] as typeof perms.data, action: [] as typeof perms.data };
-    (perms.data ?? []).forEach((p) => {
-      if (p.category === 'page') map.page!.push(p);
-      else map.action!.push(p);
+    type Item = NonNullable<typeof permsData>[number];
+    const map = { page: [] as Item[], action: [] as Item[] };
+    (permsData ?? []).forEach((p) => {
+      if (p.category === 'page') map.page.push(p);
+      else map.action.push(p);
     });
     return map;
-  }, [perms.data]);
+  }, [permsData]);
 
   const enabledSet = useMemo(() => new Set(enabled.data ?? []), [enabled.data]);
 

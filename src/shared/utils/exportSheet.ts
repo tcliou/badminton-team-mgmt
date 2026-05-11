@@ -28,8 +28,8 @@ export function exportSheet(
     ws['!cols'] = s.headers.map((_, colIdx) => {
       const maxLen = aoa.reduce((acc, row) => {
         const cell = row[colIdx];
-        const s = cell == null ? '' : String(cell);
-        return Math.max(acc, displayWidth(s));
+        const txt = cell == null ? '' : String(cell);
+        return Math.max(acc, displayWidth(txt));
       }, 0);
       return { wch: Math.min(Math.max(maxLen + 2, 8), 40) };
     });
@@ -39,11 +39,38 @@ export function exportSheet(
   XLSX.writeFile(wb, fileName);
 }
 
-/** 中文字算 2 寬，其他 1 寬，估出大致欄寬 */
+/**
+ * 寬字元的 Unicode 範圍。用數值表達避免源碼出現實體寬字元
+ * （例如 U+3000 全形空白會被 ESLint no-irregular-whitespace 擋下）。
+ *   0x3000-0x303F  CJK Symbols & Punctuation（含全形空白）
+ *   0x3040-0x309F  Hiragana
+ *   0x30A0-0x30FF  Katakana
+ *   0x4E00-0x9FFF  CJK Unified Ideographs
+ *   0xAC00-0xD7AF  Hangul Syllables
+ *   0xFF00-0xFFEF  Halfwidth and Fullwidth Forms
+ */
+const WIDE_RANGES: ReadonlyArray<readonly [number, number]> = [
+  [0x3000, 0x303f],
+  [0x3040, 0x309f],
+  [0x30a0, 0x30ff],
+  [0x4e00, 0x9fff],
+  [0xac00, 0xd7af],
+  [0xff00, 0xffef],
+];
+
+function isWideCodePoint(cp: number): boolean {
+  for (const [lo, hi] of WIDE_RANGES) {
+    if (cp >= lo && cp <= hi) return true;
+  }
+  return false;
+}
+
+/** 估算字串「視覺寬度」用於計算 Excel 欄寬：寬字元 2 格、其他 1 格 */
 function displayWidth(s: string): number {
   let w = 0;
   for (const ch of s) {
-    w += /[一-鿿　-〿＀-￯]/.test(ch) ? 2 : 1;
+    const cp = ch.codePointAt(0) ?? 0;
+    w += isWideCodePoint(cp) ? 2 : 1;
   }
   return w;
 }
