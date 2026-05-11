@@ -1,0 +1,41 @@
+{
+  "title": "公告管理",
+  "tabs": {
+    "all": "全部",
+    "draft": "草稿",
+    "scheduled": "排程中",
+    "published": "已發布"
+  },
+  "form": {
+    "new": "新增公告",
+    "edit": "編輯公告",
+    "titleField": "標題",
+    "body": "內文（支援 Markdown）",
+    "preview": "預覽",
+    "writeMode": "編輯",
+    "previewMode": "預覽",
+    "isPinned": "置頂",
+    "publishMode": "發布方式",
+    "publishNow": "立即發布",
+    "publishScheduled": "排程發布",
+    "publishDraft": "存為草稿",
+    "publishAt": "發布時間",
+    "visibleTo": "可見對象（不選＝全員）",
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "deleteConfirm": "確定刪除這篇公告？此動作無法復原。"
+  },
+  "list": {
+    "empty": "目前沒有公告",
+    "pinned": "置頂",
+    "draft": "草稿",
+    "scheduled": "排程於 {{when}}"
+  },
+  "homeSection": {
+    "pinned": "置頂公告",
+    "general": "一般公告",
+    "noPinned": "目前沒有置頂公告",
+    "noGeneral": "目前沒有公告"
+  }
+}

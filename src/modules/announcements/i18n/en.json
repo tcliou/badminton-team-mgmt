@@ -1,0 +1,41 @@
+{
+  "title": "Announcements",
+  "tabs": {
+    "all": "All",
+    "draft": "Drafts",
+    "scheduled": "Scheduled",
+    "published": "Published"
+  },
+  "form": {
+    "new": "New announcement",
+    "edit": "Edit announcement",
+    "titleField": "Title",
+    "body": "Body (Markdown supported)",
+    "preview": "Preview",
+    "writeMode": "Write",
+    "previewMode": "Preview",
+    "isPinned": "Pin to top",
+    "publishMode": "Publish mode",
+    "publishNow": "Publish now",
+    "publishScheduled": "Schedule",
+    "publishDraft": "Save as draft",
+    "publishAt": "Publish at",
+    "visibleTo": "Visible to (none = everyone)",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this announcement? This cannot be undone."
+  },
+  "list": {
+    "empty": "No announcements yet",
+    "pinned": "Pinned",
+    "draft": "Draft",
+    "scheduled": "Scheduled for {{when}}"
+  },
+  "homeSection": {
+    "pinned": "Pinned",
+    "general": "General",
+    "noPinned": "No pinned announcements",
+    "noGeneral": "No announcements yet"
+  }
+}

@@ -94,6 +94,32 @@ export type Database = {
         Update: Partial<PlayerExperienceRow>;
         Relationships: [];
       };
+      announcements: {
+        Row: AnnouncementRow;
+        Insert: Pick<AnnouncementRow, 'title'> & Partial<AnnouncementRow>;
+        Update: Partial<AnnouncementRow>;
+        Relationships: [];
+      };
+      payment_items: {
+        Row: PaymentItemRow;
+        Insert: Pick<PaymentItemRow, 'name' | 'amount'> & Partial<PaymentItemRow>;
+        Update: Partial<PaymentItemRow>;
+        Relationships: [];
+      };
+      payment_records: {
+        Row: PaymentRecordRow;
+        Insert: Pick<PaymentRecordRow, 'item_id' | 'player_id' | 'channel' | 'amount'> &
+          Partial<PaymentRecordRow>;
+        Update: Partial<PaymentRecordRow>;
+        Relationships: [];
+      };
+      finance_transactions: {
+        Row: FinanceTransactionRow;
+        Insert: Pick<FinanceTransactionRow, 'direction' | 'occurred_on' | 'item' | 'amount'> &
+          Partial<FinanceTransactionRow>;
+        Update: Partial<FinanceTransactionRow>;
+        Relationships: [];
+      };
     };
     Views: {
       v_my_profile: {
@@ -233,6 +259,79 @@ export type PlayerExperienceRow = {
   end_ym: string | null;
   organization: string;
   role: string | null;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+};
+
+export type AnnouncementStatus = 'draft' | 'scheduled' | 'published';
+
+export type AnnouncementRow = {
+  id: string;
+  team_id: string;
+  title: string;
+  body_md: string;
+  is_pinned: boolean;
+  status: AnnouncementStatus;
+  publish_at: string | null;
+  visible_to_role_ids: string[];
+  author_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaymentItemStatus = 'active' | 'closed';
+
+export type PaymentItemRow = {
+  id: string;
+  team_id: string;
+  name: string;
+  purpose: string | null;
+  description: string | null;
+  amount: number;
+  due_date: string | null;
+  target_role_ids: string[];
+  target_user_ids: string[];
+  status: PaymentItemStatus;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+};
+
+export type PaymentChannel = 'bank' | 'cash' | 'linepay' | 'other';
+export type PaymentRecordStatus = 'pending' | 'confirmed' | 'rejected';
+
+export type PaymentRecordRow = {
+  id: string;
+  item_id: string;
+  player_id: string;
+  channel: PaymentChannel;
+  amount: number;
+  paid_at: string;
+  transfer_last5: string | null;
+  proof_url: string | null;
+  status: PaymentRecordStatus;
+  confirmed_by: string | null;
+  confirmed_at: string | null;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FinanceDirection = 'income' | 'expense';
+
+export type FinanceTransactionRow = {
+  id: string;
+  team_id: string;
+  direction: FinanceDirection;
+  occurred_on: string;
+  category: string | null;
+  item: string;
+  amount: number;
+  counterparty: string | null;
+  receipt_url: string | null;
+  linked_payment_record_id: string | null;
   note: string | null;
   created_at: string;
   updated_at: string;

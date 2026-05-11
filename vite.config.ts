@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => {
               '@fullcalendar/list',
               '@fullcalendar/interaction',
             ],
+            markdown: ['react-markdown', 'remark-gfm'],
           },
         },
       },
