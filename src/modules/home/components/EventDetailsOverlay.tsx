@@ -31,12 +31,13 @@ export function EventDetailsOverlay({ open, target, onClose, onEditPersonal }: P
   const { t } = useTranslation();
   if (!open || !target) return null;
 
-  const isTeam = target.kind === 'team';
-  const row = target.row;
-  const start = isTeam ? row.starts_at : row.starts_at;
-  const end = isTeam ? row.ends_at : row.ends_at;
+  // 從 discriminated union 解出統一欄位 + team 特有欄位
+  // 不能寫成 `const row = target.row` 再判斷 isTeam，TS 沒法用變數做 narrowing
+  const { row } = target;
+  const start = row.starts_at;
+  const end = row.ends_at;
   const description = row.description;
-  const teamRow = isTeam ? row : null;
+  const teamRow = target.kind === 'team' ? target.row : null;
 
   return (
     <div
