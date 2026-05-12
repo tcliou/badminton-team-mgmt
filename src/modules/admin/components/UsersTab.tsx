@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Pencil, UserPlus } from 'lucide-react';
-import { useUsersWithRoles, useUpdateUserStatus, type UserWithRoles } from '../api/adminApi';
+import { Search, Pencil, UserPlus, Trash2 } from 'lucide-react';
+import { useUsersWithRoles, useUpdateUserStatus, useDeleteUser, type UserWithRoles } from '../api/adminApi';
+import { useAuthStore } from '@/core/store/authStore';
 import { useAllRoles } from '@/modules/announcements/api/rolesApi';
 import { UserRolesEditor } from './UserRolesEditor';
 import { CreateUserDialog } from './CreateUserDialog';
@@ -15,6 +16,8 @@ export function UsersTab() {
   const users = useUsersWithRoles();
   const roles = useAllRoles();
   const updateStatus = useUpdateUserStatus();
+  const deleteUser = useDeleteUser();
+  const currentUserId = useAuthStore((s) => s.profile?.id);
   const [q, setQ] = useState('');
   const [editing, setEditing] = useState<UserWithRoles | null>(null);
   const [creating, setCreating] = useState(false);
@@ -27,6 +30,17 @@ export function UsersTab() {
         : t('admin:users.activateConfirm', { name: u.display_name });
     if (!window.confirm(msg)) return;
     await updateStatus.mutateAsync({ userId: u.id, status: next });
+  };
+
+  const handleDelete = async (u: UserWithRoles) => {
+    // 兩步驟確認：先一般 confirm，再輸入帳號確認
+    if (!window.confirm(t('admin:users.deleteConfirm', { name: u.display_name }))) return;
+    const input = window.prompt(t('admin:users.deleteConfirmUsername', { username: u.username }));
+    if (input?.trim() !== u.username) {
+      if (input !== null) window.alert(t('admin:users.deleteAborted'));
+      return;
+    }
+    await deleteUser.mutateAsync(u.id);
   };
 
   const roleNameById = useMemo(() => {
@@ -109,7 +123,7 @@ export function UsersTab() {
                   size="sm"
                   variant={u.status === 'suspended' ? 'outline' : 'ghost'}
                   onClick={() => void handleToggleStatus(u)}
-                  disabled={updateStatus.isPending}
+                  disabled={updateStatus.isPending || deleteUser.isPending}
                   className={u.status === 'active' ? 'gap-1 text-destructive hover:text-destructive' : 'gap-1 text-green-600 hover:text-green-600'}
                 >
                   {u.status === 'suspended'
@@ -125,6 +139,20 @@ export function UsersTab() {
                   <Pencil className="h-3.5 w-3.5" aria-hidden />
                   {t('admin:users.edit')}
                 </Button>
+                {/* 自己的帳號不顯示刪除 */}
+                {u.id !== currentUserId && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => void handleDelete(u)}
+                    disabled={deleteUser.isPending}
+                    className="gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    title={t('admin:users.delete')}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                    {t('admin:users.delete')}
+                  </Button>
+                )}
               </div>
             </li>
           ))}

@@ -15,7 +15,11 @@
     "suspend": "Suspend",
     "activate": "Activate",
     "suspendConfirm": "Suspend \"{{name}}\"? They will no longer be able to log in.",
-    "activateConfirm": "Activate \"{{name}}\"?"
+    "activateConfirm": "Activate \"{{name}}\"?",
+    "delete": "Delete",
+    "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone. All leave requests, attendance records, and payment records for this account will be permanently deleted.",
+    "deleteConfirmUsername": "Type the username \"{{username}}\" to confirm deletion:",
+    "deleteAborted": "Username did not match. Deletion cancelled."
   },
   "userRolesEditor": {
     "title": "Edit roles for {{name}}",

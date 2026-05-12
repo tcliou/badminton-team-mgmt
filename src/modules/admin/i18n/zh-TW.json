@@ -15,7 +15,11 @@
     "suspend": "停用",
     "activate": "啟用",
     "suspendConfirm": "確定停用「{{name}}」？停用後該帳號將無法登入。",
-    "activateConfirm": "確定啟用「{{name}}」？"
+    "activateConfirm": "確定啟用「{{name}}」？",
+    "delete": "刪除",
+    "deleteConfirm": "刪除「{{name}}」？此操作不可復原，該帳號的請假、訓練出席、繳費記錄將一併刪除。",
+    "deleteConfirmUsername": "請輸入帳號「{{username}}」來確認刪除：",
+    "deleteAborted": "帳號輸入錯誤，已取消刪除。"
   },
   "userRolesEditor": {
     "title": "編輯 {{name}} 的角色",

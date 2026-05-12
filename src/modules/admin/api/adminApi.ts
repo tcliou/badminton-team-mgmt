@@ -214,3 +214,25 @@ export function useRoleAssignmentCounts() {
     },
   });
 }
+
+/**
+ * 永久刪除使用者帳號。
+ * 透過 Edge Function 呼叫 auth.admin.deleteUser()，
+ * 會 CASCADE 刪除 profiles、user_roles、leave_requests、
+ * training_attendance、payment_records 等所有關聯資料。
+ * 此操作不可復原。
+ */
+export function useDeleteUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase.functions.invoke('delete-user', {
+        body: { userId },
+      });
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: QK.usersWithRoles });
+    },
+  });
+}
