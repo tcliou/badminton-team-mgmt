@@ -15,6 +15,7 @@ try {
  */
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',  // 建立 E2E 測試帳號（player1）
   /* 每個 test 的最長執行時間 */
   timeout: 30_000,
   /* 全域斷言 timeout */
