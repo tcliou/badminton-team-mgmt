@@ -72,5 +72,15 @@
   "export": {
     "xlsx": "Export Excel",
     "print": "Print / PDF"
+  },
+  "print": {
+    "title": "Income & Expense Ledger",
+    "month": "Month: ",
+    "printedAt": "Printed at: ",
+    "monthTotal": "Monthly Total",
+    "yearSummary": "Year-to-date",
+    "signPrepared": "Prepared by",
+    "signReviewed": "Reviewed by",
+    "signApproved": "Approved by"
   }
 }

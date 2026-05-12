@@ -72,5 +72,15 @@
   "export": {
     "xlsx": "匯出 Excel",
     "print": "列印 / PDF"
+  },
+  "print": {
+    "title": "收支總帳",
+    "month": "月份：",
+    "printedAt": "列印時間：",
+    "monthTotal": "本月合計",
+    "yearSummary": "年度累計",
+    "signPrepared": "製表",
+    "signReviewed": "覆核",
+    "signApproved": "主管"
   }
 }
