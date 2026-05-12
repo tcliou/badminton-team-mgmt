@@ -7,7 +7,8 @@ describe('cn', () => {
   });
 
   it('忽略 falsy 值', () => {
-    expect(cn('foo', false && 'bar', null, undefined, '')).toBe('foo');
+    const show = false;
+    expect(cn('foo', show && 'bar', null, undefined, '')).toBe('foo');
   });
 
   it('條件式 class 物件', () => {
