@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   expandRecurrence,
+  formatDateTime,
+  fromDateTimeInputValue,
   overlaps,
   toDateInputValue,
   toDateTimeInputValue,
@@ -78,6 +80,34 @@ describe('dates', () => {
       });
       expect(result[0]?.start.getHours()).toBe(9);
       expect(result[0]?.end.getMinutes()).toBe(30);
+    });
+  });
+
+  describe('fromDateTimeInputValue', () => {
+    it('把 datetime-local 字串轉成 ISO 格式', () => {
+      const result = fromDateTimeInputValue('2026-05-10T13:00');
+      expect(result).toMatch(/^2026-05-10T/);
+      expect(result).toMatch(/\.000Z$/);
+    });
+  });
+
+  describe('formatDateTime', () => {
+    it('預設格式為 yyyy/MM/dd HH:mm', () => {
+      const result = formatDateTime('2026-05-10T08:30:00');
+      expect(result).toMatch(/2026\/05\/10 \d{2}:30/);
+    });
+
+    it('可自訂格式', () => {
+      const result = formatDateTime('2026-05-10T08:30:00', 'HH:mm');
+      expect(result).toMatch(/^\d{2}:30$/);
+    });
+
+    it('null 回傳空字串', () => {
+      expect(formatDateTime(null)).toBe('');
+    });
+
+    it('undefined 回傳空字串', () => {
+      expect(formatDateTime(undefined)).toBe('');
     });
   });
 });
