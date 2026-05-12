@@ -48,7 +48,7 @@ export async function loginAs(page: Page, role: keyof typeof ACCOUNTS) {
   // 等待跳轉到首頁（或帳號強制改密碼頁）
   // must_change_password=false 的帳號會直接到 /，
   // 若帳號設定正確（0004 migration）這個等待應立即成功
-  await page.waitForURL(`${BASE}/`, { timeout: 15_000 });
+  await page.waitForURL((url) => url.pathname === '/', { timeout: 15_000 });
 
   // 等待 profile 非同步載入完成：TopBar 會顯示 @username
   // 這確保 ProtectedRoute 的 loading 狀態已解除，任何後續 goto 都安全

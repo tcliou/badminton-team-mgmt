@@ -26,8 +26,8 @@ test.describe('Flow 5: Admin 角色與權限管理', () => {
     // 在 <li> 中找 admin 角色（避免匹配 TopBar 的 @admin 造成 strict mode violation）
     const adminRoleRow = page.locator('li').filter({ hasText: /^admin/ });
     await expect(adminRoleRow.first()).toBeVisible();
-    // 系統角色有「系統」badge（同樣限定在 li 內）
-    await expect(adminRoleRow.first().getByText('系統')).toBeVisible();
+    // 系統角色有「系統角色（不可刪）」badge（同樣限定在 li 內）
+    await expect(adminRoleRow.first().getByText('系統角色（不可刪）')).toBeVisible();
   });
 
   test('系統角色 admin 不顯示刪除按鈕', async ({ page }) => {
