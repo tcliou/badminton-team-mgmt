@@ -62,9 +62,29 @@ jobs:
         with:
           path: dist
 
+  # ── Edge Functions 部署（與 build 並行，不互相依賴）────────────────────
+  deploy-functions:
+    name: Deploy Edge Functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy create-user function
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy create-user \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+
+  # ── 等前兩個 job 都成功才 deploy Pages ─────────────────────────────────
   deploy:
     name: Deploy
-    needs: build
+    needs: [build, deploy-functions]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
