@@ -58,3 +58,15 @@ export async function logout(page: Page) {
   await page.getByRole('button', { name: '登出' }).click();
   await page.waitForURL(`${BASE}/login`);
 }
+
+/**
+ * 接受下一個 window.confirm 或 window.alert 對話框。
+ * 需在觸發 confirm 的動作「之前」呼叫，因為 dialog 事件只會觸發一次。
+ *
+ * @example
+ * acceptNextDialog(page);
+ * await page.getByRole('button', { name: '停用' }).click();
+ */
+export function acceptNextDialog(page: Page) {
+  page.once('dialog', (dialog) => void dialog.accept());
+}
