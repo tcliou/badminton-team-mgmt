@@ -10,7 +10,12 @@
     "noRoles": "(no roles)",
     "edit": "Edit roles",
     "noUsers": "No users yet",
-    "tipNewUser": "To add a user: create the auth user in Supabase Dashboard first, then run supabase/templates/add_user.sql in SQL Editor."
+    "tipNewUser": "To add a user: create the auth user in Supabase Dashboard first, then run supabase/templates/add_user.sql in SQL Editor.",
+    "suspended": "Suspended",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "suspendConfirm": "Suspend \"{{name}}\"? They will no longer be able to log in.",
+    "activateConfirm": "Activate \"{{name}}\"?"
   },
   "userRolesEditor": {
     "title": "Edit roles for {{name}}",

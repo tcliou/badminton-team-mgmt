@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Pencil, UserPlus } from 'lucide-react';
-import { useUsersWithRoles, type UserWithRoles } from '../api/adminApi';
+import { useUsersWithRoles, useUpdateUserStatus, type UserWithRoles } from '../api/adminApi';
 import { useAllRoles } from '@/modules/announcements/api/rolesApi';
 import { UserRolesEditor } from './UserRolesEditor';
 import { CreateUserDialog } from './CreateUserDialog';
@@ -14,9 +14,20 @@ export function UsersTab() {
   const { t } = useTranslation();
   const users = useUsersWithRoles();
   const roles = useAllRoles();
+  const updateStatus = useUpdateUserStatus();
   const [q, setQ] = useState('');
   const [editing, setEditing] = useState<UserWithRoles | null>(null);
   const [creating, setCreating] = useState(false);
+
+  const handleToggleStatus = async (u: UserWithRoles) => {
+    const next = u.status === 'active' ? 'suspended' : 'active';
+    const msg =
+      next === 'suspended'
+        ? t('admin:users.suspendConfirm', { name: u.display_name })
+        : t('admin:users.activateConfirm', { name: u.display_name });
+    if (!window.confirm(msg)) return;
+    await updateStatus.mutateAsync({ userId: u.id, status: next });
+  };
 
   const roleNameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -70,12 +81,19 @@ export function UsersTab() {
           {filtered.map((u) => (
             <li
               key={u.id}
-              className="flex flex-wrap items-start justify-between gap-2 rounded-lg border bg-card p-3"
+              className={`flex flex-wrap items-start justify-between gap-2 rounded-lg border bg-card p-3 transition-opacity ${
+                u.status === 'suspended' ? 'opacity-60' : ''
+              }`}
             >
               <div className="min-w-0 flex-1 space-y-1">
-                <p className="text-sm">
+                <p className="flex flex-wrap items-center gap-2 text-sm">
                   <span className="font-medium">{u.display_name}</span>
-                  <span className="ml-2 text-xs text-muted-foreground">@{u.username}</span>
+                  <span className="text-xs text-muted-foreground">@{u.username}</span>
+                  {u.status === 'suspended' && (
+                    <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive">
+                      {t('admin:users.suspended')}
+                    </span>
+                  )}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {t('admin:users.currentRoles')}
@@ -86,15 +104,28 @@ export function UsersTab() {
                         .join('、')}
                 </p>
               </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setEditing(u)}
-                className="gap-1"
-              >
-                <Pencil className="h-3.5 w-3.5" aria-hidden />
-                {t('admin:users.edit')}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant={u.status === 'suspended' ? 'outline' : 'ghost'}
+                  onClick={() => void handleToggleStatus(u)}
+                  disabled={updateStatus.isPending}
+                  className={u.status === 'active' ? 'gap-1 text-destructive hover:text-destructive' : 'gap-1 text-green-600 hover:text-green-600'}
+                >
+                  {u.status === 'suspended'
+                    ? t('admin:users.activate')
+                    : t('admin:users.suspend')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setEditing(u)}
+                  className="gap-1"
+                >
+                  <Pencil className="h-3.5 w-3.5" aria-hidden />
+                  {t('admin:users.edit')}
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

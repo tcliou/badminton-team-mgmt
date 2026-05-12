@@ -176,6 +176,23 @@ export function useDeleteRole() {
   });
 }
 
+/** 停用 / 啟用使用者帳號（切換 profiles.status） */
+export function useUpdateUserStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { userId: string; status: 'active' | 'suspended' }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ status: input.status })
+        .eq('id', input.userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: QK.usersWithRoles });
+    },
+  });
+}
+
 /** 統計每個 role 目前指派給多少 user（給刪除確認用） */
 export function useRoleAssignmentCounts() {
   return useQuery({
