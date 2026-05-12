@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Browser } from '@playwright/test';
 import { loginAs, acceptNextDialog } from './helpers';
 
 // ── Flow 5: Admin 角色與權限管理 ─────────────────────────────────────────────
@@ -67,7 +67,7 @@ test.describe.serial('Flow 6: 使用者建立與停用/啟用', () => {
   const testDisplayName = 'E2E 測試帳號';
 
   /** 透過 UI 建立測試使用者（若已存在則略過） */
-  async function ensureTestUserExists(browser: import('@playwright/test').Browser) {
+  async function ensureTestUserExists(browser: Browser) {
     const page = await browser.newPage();
     try {
       await loginAs(page, 'admin');
@@ -94,7 +94,7 @@ test.describe.serial('Flow 6: 使用者建立與停用/啟用', () => {
   }
 
   /** 透過 UI 刪除測試使用者（若存在） */
-  async function deleteTestUserIfExists(browser: import('@playwright/test').Browser) {
+  async function deleteTestUserIfExists(browser: Browser) {
     const page = await browser.newPage();
     try {
       await loginAs(page, 'admin');
