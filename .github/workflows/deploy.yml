@@ -74,11 +74,13 @@ jobs:
         with:
           version: latest
 
-      - name: Deploy create-user function
+      - name: Deploy Edge Functions
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           supabase functions deploy create-user \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy update-user-status \
             --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
 
   # ── 等前兩個 job 都成功才 deploy Pages ─────────────────────────────────

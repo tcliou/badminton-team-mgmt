@@ -176,16 +176,19 @@ export function useDeleteRole() {
   });
 }
 
-/** 停用 / 啟用使用者帳號（切換 profiles.status） */
+/** 停用 / 啟用使用者帳號
+ *  透過 Edge Function 同時封鎖 Supabase Auth（ban_duration）與更新 profiles.status，
+ *  確保停用帳號在 Auth 層真正無法登入，而非只是前端 guard。
+ */
 export function useUpdateUserStatus() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: { userId: string; status: 'active' | 'suspended' }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ status: input.status })
-        .eq('id', input.userId);
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke('update-user-status', {
+        body: input,
+      });
+      if (error) throw new Error(error.message);
+      return data;
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: QK.usersWithRoles });
