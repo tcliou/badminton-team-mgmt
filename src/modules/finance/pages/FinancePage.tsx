@@ -11,7 +11,7 @@ import { LedgerExportBar } from '../components/LedgerExportBar';
 import { LedgerPrintView } from '../components/LedgerPrintView';
 import { Button } from '@/shared/components/Button';
 import { cn } from '@/shared/utils/cn';
-import { startOfMonth } from 'date-fns';
+import { startOfMonth, endOfMonth } from 'date-fns';
 import type { FinanceTransactionRow, PaymentItemRow } from '@/core/supabase/types';
 
 type Tab = 'items' | 'reconcile' | 'ledger';
@@ -25,10 +25,11 @@ export default function FinancePage() {
   const [editingItem, setEditingItem] = useState<PaymentItemRow | null>(null);
 
   // -- ledger tab state --
-  const initialMonth = useMemo(() => startOfMonth(new Date()), []);
-  const [month, setMonth] = useState<Date>(initialMonth);
+  const initialDateRange = useMemo(() => ({ start: startOfMonth(new Date()), end: endOfMonth(new Date()) }), []);
+  const [dateRange, setDateRange] = useState(initialDateRange);
   const [txDialogOpen, setTxDialogOpen] = useState(false);
   const [editingTx, setEditingTx] = useState<FinanceTransactionRow | null>(null);
+  const [defaultTxDirection, setDefaultTxDirection] = useState<'income' | 'expense'>('income');
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">
@@ -89,25 +90,39 @@ export default function FinancePage() {
       {/* ── 收支總帳 ── */}
       {tab === 'ledger' ? (
         <div className="space-y-3">
-          <MonthlySummary month={month} setMonth={setMonth} />
+          <MonthlySummary dateRange={dateRange} setDateRange={setDateRange} />
           <div className="flex flex-wrap items-center justify-between gap-2">
             <LedgerExportBar
-              month={month}
+              dateRange={dateRange}
               teamName={import.meta.env.VITE_APP_NAME || 'Team'}
             />
-            <Button
-              onClick={() => {
-                setEditingTx(null);
-                setTxDialogOpen(true);
-              }}
-              className="gap-1"
-            >
-              <Plus className="h-4 w-4" aria-hidden />
-              {t('finance:ledger.newRow')}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  setEditingTx(null);
+                  setDefaultTxDirection('income');
+                  setTxDialogOpen(true);
+                }}
+                className="gap-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="h-4 w-4" aria-hidden />
+                新增收入
+              </Button>
+              <Button
+                onClick={() => {
+                  setEditingTx(null);
+                  setDefaultTxDirection('expense');
+                  setTxDialogOpen(true);
+                }}
+                className="gap-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                <Plus className="h-4 w-4" aria-hidden />
+                新增支出
+              </Button>
+            </div>
           </div>
           <TransactionList
-            month={month}
+            dateRange={dateRange}
             onEdit={(tx) => {
               setEditingTx(tx);
               setTxDialogOpen(true);
@@ -117,11 +132,12 @@ export default function FinancePage() {
             open={txDialogOpen}
             onClose={() => setTxDialogOpen(false)}
             editing={editingTx}
-            defaultMonth={month}
+            defaultMonth={dateRange.start}
+            defaultDirection={defaultTxDirection}
           />
           {/* 列印視圖：螢幕看不到，print 時取代整頁 */}
           <LedgerPrintView
-            month={month}
+            dateRange={dateRange}
             teamName={import.meta.env.VITE_APP_NAME || 'Team'}
           />
         </div>

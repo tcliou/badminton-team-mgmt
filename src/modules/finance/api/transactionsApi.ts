@@ -9,7 +9,9 @@ import type {
 
 const QK = {
   month: (yyyymm: string) => ['finance', 'transactions', 'month', yyyymm] as const,
+  range: (from: string, to: string) => ['finance', 'transactions', 'range', from, to] as const,
   ytd: (year: number) => ['finance', 'transactions', 'ytd', year] as const,
+  activeProfiles: ['finance', 'activeProfiles'] as const,
 };
 
 const ymKey = (d: Date) => format(d, 'yyyy-MM');
@@ -26,6 +28,25 @@ export function useMonthTransactions(month: Date) {
         .select('*')
         .gte('occurred_on', from)
         .lte('occurred_on', to)
+        .order('occurred_on', { ascending: false })
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as FinanceTransactionRow[];
+    },
+  });
+}
+
+export function useRangeTransactions(start: Date, end: Date) {
+  const fromStr = format(start, 'yyyy-MM-dd');
+  const toStr = format(end, 'yyyy-MM-dd');
+  return useQuery({
+    queryKey: QK.range(fromStr, toStr),
+    queryFn: async (): Promise<FinanceTransactionRow[]> => {
+      const { data, error } = await supabase
+        .from('finance_transactions')
+        .select('*')
+        .gte('occurred_on', fromStr)
+        .lte('occurred_on', toStr)
         .order('occurred_on', { ascending: false })
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -58,6 +79,22 @@ export function useYearToDateSummary(month: Date) {
   });
 }
 
+export function useActiveProfiles() {
+  return useQuery({
+    queryKey: QK.activeProfiles,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, display_name, username')
+        .eq('status', 'active')
+        .order('display_name');
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
+  });
+}
+
 export interface TransactionInput {
   direction: FinanceDirection;
   occurred_on: string;
@@ -65,6 +102,7 @@ export interface TransactionInput {
   item: string;
   amount: number;
   counterparty?: string | null;
+  advanced_by_user_id?: string | null;
   note?: string | null;
 }
 

@@ -2,12 +2,12 @@ import { useTranslation } from 'react-i18next';
 import { Download, Printer } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/shared/components/Button';
-import { useMonthTransactions, useYearToDateSummary } from '../api/transactionsApi';
+import { useRangeTransactions, useYearToDateSummary } from '../api/transactionsApi';
 import { exportSheet, printCurrentPage } from '@/shared/utils/exportSheet';
 import { summarizeTransactions } from '@/shared/utils/financeSummary';
 
 interface Props {
-  month: Date;
+  dateRange: { start: Date; end: Date };
   teamName: string;
 }
 
@@ -16,15 +16,15 @@ interface Props {
  * Excel 走 SheetJS 寫 .xlsx，瀏覽器直接下載。
  * 列印走 window.print()，搭配 LedgerPrintView 的 print:block 樣式。
  */
-export function LedgerExportBar({ month, teamName }: Props) {
+export function LedgerExportBar({ dateRange, teamName }: Props) {
   const { t } = useTranslation();
-  const monthQ = useMonthTransactions(month);
-  const ytd = useYearToDateSummary(month);
+  const rangeQ = useRangeTransactions(dateRange.start, dateRange.end);
+  const ytd = useYearToDateSummary(dateRange.start);
 
   const handleExportXlsx = () => {
-    const txs = monthQ.data ?? [];
+    const txs = rangeQ.data ?? [];
     const summary = summarizeTransactions(txs);
-    const monthLabel = format(month, 'yyyy-MM');
+    const rangeLabel = `${format(dateRange.start, 'yyyyMMdd')}-${format(dateRange.end, 'yyyyMMdd')}`;
 
     const headers = [
       t('finance:ledger.fields.occurredOn'),
@@ -46,9 +46,17 @@ export function LedgerExportBar({ month, teamName }: Props) {
       tx.note ?? '',
     ]);
 
-    // 第二張 sheet 放本月與年度摘要
+    // 第一張 sheet 放分類摘要
+    const categoryData = txs
+      .filter((tx) => tx.direction === 'expense')
+      .reduce((acc, tx) => {
+        const cat = tx.category || '未分類';
+        acc[cat] = (acc[cat] || 0) + Number(tx.amount);
+        return acc;
+      }, {} as Record<string, number>);
+
     const summaryRows: Array<Array<string | number>> = [
-      [t('finance:ledger.month'), monthLabel],
+      ['報表區間', `${format(dateRange.start, 'yyyy/MM/dd')} ~ ${format(dateRange.end, 'yyyy/MM/dd')}`],
       [t('finance:ledger.income'), summary.income],
       [t('finance:ledger.expense'), summary.expense],
       [t('finance:ledger.balance'), summary.balance],
@@ -68,12 +76,20 @@ export function LedgerExportBar({ month, teamName }: Props) {
       ]);
     }
 
+    summaryRows.push(['', '']);
+    summaryRows.push(['支出類別', '金額']);
+    Object.entries(categoryData)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([cat, val]) => {
+        summaryRows.push([cat, val]);
+      });
+
     exportSheet(
       [
-        { name: `${teamName}-${monthLabel}`, headers, rows },
-        { name: `${monthLabel} 摘要`, headers: ['項目', '金額'], rows: summaryRows },
+        { name: `總結與分類分析`, headers: ['項目', '數值'], rows: summaryRows },
+        { name: `收支明細`, headers, rows },
       ],
-      `${teamName}-ledger-${monthLabel}.xlsx`,
+      `${teamName}-ledger-${rangeLabel}.xlsx`,
     );
   };
 
@@ -83,7 +99,7 @@ export function LedgerExportBar({ month, teamName }: Props) {
         size="sm"
         variant="outline"
         onClick={handleExportXlsx}
-        disabled={monthQ.isLoading}
+        disabled={rangeQ.isLoading}
         className="gap-1"
       >
         <Download className="h-4 w-4" aria-hidden />
@@ -93,7 +109,7 @@ export function LedgerExportBar({ month, teamName }: Props) {
         size="sm"
         variant="outline"
         onClick={() => printCurrentPage()}
-        disabled={monthQ.isLoading}
+        disabled={rangeQ.isLoading}
         className="gap-1"
       >
         <Printer className="h-4 w-4" aria-hidden />

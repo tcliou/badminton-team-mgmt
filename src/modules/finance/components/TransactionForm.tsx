@@ -10,6 +10,7 @@ import {
   useCreateTransaction,
   useDeleteTransaction,
   useUpdateTransaction,
+  useActiveProfiles,
 } from '../api/transactionsApi';
 import type { FinanceTransactionRow } from '@/core/supabase/types';
 
@@ -20,6 +21,7 @@ const schema = z.object({
   item: z.string().min(1),
   amount: z.coerce.number().positive(),
   counterparty: z.string().optional(),
+  advanced_by_user_id: z.string().optional(),
   note: z.string().optional(),
 });
 type FormData = z.infer<typeof schema>;
@@ -31,9 +33,11 @@ interface Props {
   editing?: FinanceTransactionRow | null;
   /** 預設月份（新增時用該月當天） */
   defaultMonth: Date;
+  /** 預設的收支方向 */
+  defaultDirection?: 'income' | 'expense';
 }
 
-export function TransactionForm({ open, onClose, editing, defaultMonth }: Props) {
+export function TransactionForm({ open, onClose, editing, defaultMonth, defaultDirection = 'income' }: Props) {
   const { t } = useTranslation();
   const create = useCreateTransaction();
   const update = useUpdateTransaction();
@@ -42,9 +46,13 @@ export function TransactionForm({ open, onClose, editing, defaultMonth }: Props)
   const {
     register,
     handleSubmit,
+    watch,
     formState: { isSubmitting },
     reset,
   } = useForm<FormData>({ resolver: zodResolver(schema) });
+
+  const { data: profiles } = useActiveProfiles();
+  const direction = watch('direction');
 
   useEffect(() => {
     if (!open) return;
@@ -57,15 +65,17 @@ export function TransactionForm({ open, onClose, editing, defaultMonth }: Props)
             item: editing.item,
             amount: Number(editing.amount),
             counterparty: editing.counterparty ?? '',
+            advanced_by_user_id: editing.advanced_by_user_id ?? '',
             note: editing.note ?? '',
           }
         : {
-            direction: 'income',
+            direction: defaultDirection,
             occurred_on: defaultMonth.toISOString().slice(0, 10),
             category: '',
             item: '',
             amount: 0,
             counterparty: '',
+            advanced_by_user_id: '',
             note: '',
           },
     );
@@ -81,6 +91,7 @@ export function TransactionForm({ open, onClose, editing, defaultMonth }: Props)
       item: d.item,
       amount: d.amount,
       counterparty: d.counterparty || null,
+      advanced_by_user_id: d.direction === 'expense' && d.advanced_by_user_id ? d.advanced_by_user_id : null,
       note: d.note || null,
     };
     if (editing) await update.mutateAsync({ id: editing.id, ...payload });
@@ -139,6 +150,21 @@ export function TransactionForm({ open, onClose, editing, defaultMonth }: Props)
         <Field label={t('finance:ledger.fields.counterparty')}>
           <Input {...register('counterparty')} />
         </Field>
+        {direction === 'expense' && (
+          <Field label={t('finance:ledger.fields.advancedBy', '代墊人')}>
+            <select
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              {...register('advanced_by_user_id')}
+            >
+              <option value="">無 / 球隊公積金</option>
+              {(profiles ?? []).map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.display_name} (@{p.username})
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
         <Field label={t('finance:ledger.fields.note')}>
           <textarea
             rows={2}

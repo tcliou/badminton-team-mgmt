@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Pencil } from 'lucide-react';
-import { useMonthTransactions } from '../api/transactionsApi';
+import { useRangeTransactions, useActiveProfiles } from '../api/transactionsApi';
 import { Loading } from '@/shared/components/Loading';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Button } from '@/shared/components/Button';
@@ -9,13 +9,14 @@ import { cn } from '@/shared/utils/cn';
 import type { FinanceTransactionRow } from '@/core/supabase/types';
 
 interface Props {
-  month: Date;
+  dateRange: { start: Date; end: Date };
   onEdit: (row: FinanceTransactionRow) => void;
 }
 
-export function TransactionList({ month, onEdit }: Props) {
+export function TransactionList({ dateRange, onEdit }: Props) {
   const { t } = useTranslation();
-  const { data, isLoading } = useMonthTransactions(month);
+  const { data, isLoading } = useRangeTransactions(dateRange.start, dateRange.end);
+  const { data: profiles } = useActiveProfiles();
 
   if (isLoading) return <Loading />;
   if (!data || data.length === 0) return <EmptyState title={t('finance:ledger.empty')} />;
@@ -30,7 +31,7 @@ export function TransactionList({ month, onEdit }: Props) {
             <th className="px-3 py-2">{t('finance:ledger.fields.category')}</th>
             <th className="px-3 py-2">{t('finance:ledger.fields.item')}</th>
             <th className="px-3 py-2 text-right">{t('finance:ledger.fields.amount')}</th>
-            <th className="px-3 py-2">{t('finance:ledger.fields.counterparty')}</th>
+            <th className="px-3 py-2">{t('finance:ledger.fields.counterparty')} / 代墊人</th>
             <th className="px-3 py-2 w-px"></th>
           </tr>
         </thead>
@@ -72,7 +73,15 @@ export function TransactionList({ month, onEdit }: Props) {
               >
                 {formatCurrency(tx.amount)}
               </td>
-              <td className="px-3 py-2 text-muted-foreground">{tx.counterparty ?? '—'}</td>
+              <td className="px-3 py-2 text-muted-foreground">
+                {tx.counterparty ? <div>{tx.counterparty}</div> : null}
+                {tx.advanced_by_user_id ? (
+                  <div className="text-xs text-blue-600">
+                    代墊：{profiles?.find((p) => p.id === tx.advanced_by_user_id)?.display_name || tx.advanced_by_user_id.slice(0, 8)}
+                  </div>
+                ) : null}
+                {!tx.counterparty && !tx.advanced_by_user_id ? '—' : null}
+              </td>
               <td className="px-3 py-2">
                 <Button
                   size="sm"
