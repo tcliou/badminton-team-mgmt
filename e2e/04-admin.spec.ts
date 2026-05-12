@@ -9,8 +9,8 @@ test.describe('Flow 5: Admin 角色與權限管理', () => {
     await page.waitForSelector('h1', { timeout: 15_000 });
     // 預設 tab 是「使用者」，切換到「角色與權限」tab
     await page.getByRole('button', { name: '角色與權限' }).click();
-    // 等待角色列表出現（系統角色 admin 必定存在）
-    await page.waitForSelector('text=admin', { timeout: 8_000 });
+    // 等待角色列表的 <li> 出現（精確等 li 元素，避免匹配 TopBar 的 @admin）
+    await page.waitForSelector('ul li:has-text("admin")', { timeout: 8_000 });
   });
 
   test('Admin 頁面可正常顯示', async ({ page }) => {
@@ -23,10 +23,11 @@ test.describe('Flow 5: Admin 角色與權限管理', () => {
   });
 
   test('角色列表顯示系統角色（admin）', async ({ page }) => {
-    // admin 是系統預設角色，必定存在
-    await expect(page.getByText('admin')).toBeVisible();
-    // 系統角色有「系統」badge
-    await expect(page.getByText('系統')).toBeVisible();
+    // 在 <li> 中找 admin 角色（避免匹配 TopBar 的 @admin 造成 strict mode violation）
+    const adminRoleRow = page.locator('li').filter({ hasText: /^admin/ });
+    await expect(adminRoleRow.first()).toBeVisible();
+    // 系統角色有「系統」badge（同樣限定在 li 內）
+    await expect(adminRoleRow.first().getByText('系統')).toBeVisible();
   });
 
   test('系統角色 admin 不顯示刪除按鈕', async ({ page }) => {
@@ -40,23 +41,13 @@ test.describe('Flow 5: Admin 角色與權限管理', () => {
     const permBtn = page.getByRole('button', { name: '權限' }).first();
     await permBtn.click();
 
-    // 應該出現 checkbox 列表（各頁面權限）
-    await expect(page.locator('input[type="checkbox"]').first()).toBeVisible();
+    // 等待 accordion 展開動畫 + 資料渲染
+    await expect(page.locator('input[type="checkbox"]').first()).toBeVisible({ timeout: 8_000 });
   });
 
   test('球員角色無法訪問 Admin 頁面', async ({ page }) => {
     // 清除 admin session，以 player 身份重新登入
-    await page.goto('http://localhost:5173/login');
-    await page.evaluate(() => {
-      const locale = localStorage.getItem('app.locale') ?? 'zh-TW';
-      localStorage.clear();
-      localStorage.setItem('app.locale', locale);
-    });
-    await page.goto('http://localhost:5173/login');
-    await page.locator('#username').fill(process.env.E2E_PLAYER_USERNAME ?? 'player1');
-    await page.locator('#password').fill(process.env.E2E_PLAYER_PASSWORD ?? 'changeme');
-    await page.locator('button[type="submit"]').click();
-    await page.waitForURL('http://localhost:5173/');
+    await loginAs(page, 'player');
 
     // 嘗試直接訪問 admin 頁面
     await page.goto('http://localhost:5173/admin');
