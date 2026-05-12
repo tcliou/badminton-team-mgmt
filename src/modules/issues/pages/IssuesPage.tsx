@@ -62,7 +62,7 @@ export default function IssuesPage() {
               <div className="flex justify-between items-start">
                 <h3 className="font-semibold text-lg line-clamp-2">{issue.title}</h3>
                 <div className="flex gap-1 shrink-0">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(issue as any)}>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(issue as unknown as IssueRow)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-rose-500 hover:text-rose-600" onClick={() => handleDelete(issue.id)}>
@@ -90,7 +90,7 @@ export default function IssuesPage() {
                 </span>
               </div>
               <div className="text-xs text-muted-foreground flex justify-between mt-1">
-                <span>{t('issues:fields.assignedTo')}: {(issue as any).assignee?.display_name || '—'}</span>
+                <span>{t('issues:fields.assignedTo')}: {(issue as unknown as { assignee?: { display_name?: string | null } }).assignee?.display_name || '—'}</span>
                 <span>{new Date(issue.created_at).toLocaleDateString()}</span>
               </div>
             </div>

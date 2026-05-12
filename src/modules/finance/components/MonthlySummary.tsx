@@ -109,13 +109,16 @@ export function MonthlySummary({ dateRange, setDateRange }: Props) {
                 fill="#8884d8"
                 dataKey="value"
                 nameKey="name"
-                label={({ name, percent }: any) => `${name || ''} ${((percent || 0) * 100).toFixed(0)}%`}
+                label={(props: unknown) => {
+                  const { name, percent } = props as { name: string; percent?: number };
+                  return `${name || ''} ${((percent || 0) * 100).toFixed(0)}%`;
+                }}
               >
                 {categoryData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: any) => [formatCurrency(Number(value)), '金額'] as any} />
+              <Tooltip formatter={(value: unknown) => [formatCurrency(Number(value)), '金額'] as [string, string]} />
             </PieChart>
           </ResponsiveContainer>
         </div>

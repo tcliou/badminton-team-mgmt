@@ -79,7 +79,7 @@ export function TransactionForm({ open, onClose, editing, defaultMonth, defaultD
             note: '',
           },
     );
-  }, [open, editing, defaultMonth, reset]);
+  }, [open, editing, defaultMonth, defaultDirection, reset]);
 
   if (!open) return null;
 
