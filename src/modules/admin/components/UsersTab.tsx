@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Pencil, Info } from 'lucide-react';
+import { Search, Pencil, UserPlus } from 'lucide-react';
 import { useUsersWithRoles, type UserWithRoles } from '../api/adminApi';
 import { useAllRoles } from '@/modules/announcements/api/rolesApi';
 import { UserRolesEditor } from './UserRolesEditor';
+import { CreateUserDialog } from './CreateUserDialog';
 import { Loading } from '@/shared/components/Loading';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Input } from '@/shared/components/Input';
@@ -15,6 +16,7 @@ export function UsersTab() {
   const roles = useAllRoles();
   const [q, setQ] = useState('');
   const [editing, setEditing] = useState<UserWithRoles | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const roleNameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -35,24 +37,28 @@ export function UsersTab() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-blue-200 bg-blue-50/50 p-3 text-xs text-blue-900">
-        <p className="flex items-start gap-2">
-          <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" aria-hidden />
-          {t('admin:users.tipNewUser')}
-        </p>
-      </div>
-
-      <div className="relative w-full sm:max-w-xs">
-        <Search
-          className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden
-        />
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t('admin:users.search')}
-          className="pl-8"
-        />
+      {/* 標題列 + 新增按鈕 */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="relative w-full sm:max-w-xs">
+          <Search
+            className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t('admin:users.search')}
+            className="pl-8"
+          />
+        </div>
+        <Button
+          size="sm"
+          className="shrink-0 gap-1.5"
+          onClick={() => setCreating(true)}
+        >
+          <UserPlus className="h-4 w-4" aria-hidden />
+          {t('admin:createUser.newUser')}
+        </Button>
       </div>
 
       {users.isLoading ? (
@@ -98,6 +104,11 @@ export function UsersTab() {
         open={Boolean(editing)}
         user={editing}
         onClose={() => setEditing(null)}
+      />
+
+      <CreateUserDialog
+        open={creating}
+        onClose={() => setCreating(false)}
       />
     </div>
   );

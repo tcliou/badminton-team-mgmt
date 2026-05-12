@@ -6,3 +6,6 @@
 .env.keys
 .env.local
 .env.*.local
+
+# Edge Function 本機密鑰（不 commit）
+functions/.env

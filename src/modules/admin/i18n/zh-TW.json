@@ -29,5 +29,27 @@
     "page": "頁面權限",
     "action": "動作權限",
     "saving": "儲存中…"
+  },
+  "createUser": {
+    "newUser": "新增使用者",
+    "title": "新增使用者帳號",
+    "username": "帳號（username）",
+    "usernamePlaceholder": "英數小寫，例 alice123",
+    "displayName": "顯示名稱",
+    "displayNamePlaceholder": "例 王小美",
+    "initialRole": "初始角色",
+    "rolePlaceholder": "選擇角色…",
+    "create": "建立帳號",
+    "successTitle": "帳號建立成功",
+    "successDesc": "已為「{{name}}」建立帳號，請將以下一次性密碼轉交給本人。",
+    "tempPassword": "一次性密碼（首次登入後須強制修改）",
+    "tempPasswordWarning": "此密碼只顯示一次，關閉後無法再查看。",
+    "copy": "複製密碼",
+    "errors": {
+      "required": "此欄位為必填",
+      "minLength": "帳號至少需 2 個字元",
+      "maxLength": "帳號最多 30 個字元",
+      "invalidChars": "帳號只能包含英文小寫、數字與底線"
+    }
   }
 }

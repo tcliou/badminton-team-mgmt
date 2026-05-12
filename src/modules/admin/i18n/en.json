@@ -29,5 +29,27 @@
     "page": "Page permissions",
     "action": "Action permissions",
     "saving": "Saving…"
+  },
+  "createUser": {
+    "newUser": "New User",
+    "title": "Create New User",
+    "username": "Username",
+    "usernamePlaceholder": "Lowercase letters/digits, e.g. alice123",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "e.g. Alice Wang",
+    "initialRole": "Initial Role",
+    "rolePlaceholder": "Select a role…",
+    "create": "Create Account",
+    "successTitle": "Account Created",
+    "successDesc": "Account for \"{{name}}\" has been created. Please hand the one-time password to them.",
+    "tempPassword": "One-time Password (must be changed on first login)",
+    "tempPasswordWarning": "This password is shown only once. It cannot be retrieved after closing this dialog.",
+    "copy": "Copy Password",
+    "errors": {
+      "required": "This field is required",
+      "minLength": "Username must be at least 2 characters",
+      "maxLength": "Username must be at most 30 characters",
+      "invalidChars": "Username may only contain lowercase letters, digits, and underscores"
+    }
   }
 }
