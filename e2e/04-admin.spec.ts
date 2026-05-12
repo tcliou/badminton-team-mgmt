@@ -66,38 +66,102 @@ test.describe('Flow 5: Admin 角色與權限管理', () => {
 });
 
 // ── Flow 6: 使用者建立與停用 ─────────────────────────────────────────────────
+// serial：確保 create → suspend → activate 依序執行
+// beforeAll 負責建立測試使用者，afterAll 負責清理，
+// 因此單獨在 Playwright UI 點執行任一 test 也能正常運作。
 // 注意：此 describe 依賴 Edge Functions 正在執行（本機需 supabase functions serve）
-test.describe('Flow 6: 使用者建立與停用/啟用', () => {
-  // 用時間戳確保每次測試的 username 唯一，避免重複建立衝突
-  const testUsername = `e2etest${Date.now()}`;
+test.describe.serial('Flow 6: 使用者建立與停用/啟用', () => {
+  // 固定 username，不依賴 Date.now()，確保單獨執行時也能找到同一個使用者
+  const testUsername = 'e2etestuser';
   const testDisplayName = 'E2E 測試帳號';
+
+  /** 透過 UI 建立測試使用者（若已存在則略過） */
+  async function ensureTestUserExists(browser: import('@playwright/test').Browser) {
+    const page = await browser.newPage();
+    try {
+      await loginAs(page, 'admin');
+      await page.goto('http://localhost:5173/admin');
+      await page.waitForSelector('h1', { timeout: 15_000 });
+      await page.waitForSelector('button[aria-pressed]', { timeout: 8_000 });
+      await page.waitForSelector('button:has-text("新增使用者")', { timeout: 8_000 });
+
+      // 若已存在就略過（前次測試可能沒清乾淨）
+      const existing = page.locator('li').filter({ hasText: testDisplayName });
+      if (await existing.count() > 0) return;
+
+      await page.getByRole('button', { name: '新增使用者' }).click();
+      await page.waitForSelector('#cu-username', { timeout: 8_000 });
+      await page.locator('#cu-username').fill(testUsername);
+      await page.locator('#cu-display').fill(testDisplayName);
+      await page.locator('#cu-role').selectOption('44444444-4444-4444-4444-444444444444');
+      await page.getByRole('button', { name: '建立帳號' }).click();
+      await page.waitForSelector('text=帳號建立成功', { timeout: 15_000 });
+      await page.getByRole('button', { name: '確認' }).click();
+    } finally {
+      await page.close();
+    }
+  }
+
+  /** 透過 UI 刪除測試使用者（若存在） */
+  async function deleteTestUserIfExists(browser: import('@playwright/test').Browser) {
+    const page = await browser.newPage();
+    try {
+      await loginAs(page, 'admin');
+      await page.goto('http://localhost:5173/admin');
+      await page.waitForSelector('h1', { timeout: 15_000 });
+      await page.waitForSelector('button[aria-pressed]', { timeout: 8_000 });
+      await page.waitForSelector('button:has-text("新增使用者")', { timeout: 8_000 });
+
+      const userRow = page.locator('li').filter({ hasText: testDisplayName });
+      if (await userRow.count() === 0) return;
+
+      let dialogCount = 0;
+      page.on('dialog', async (dialog) => {
+        dialogCount++;
+        await (dialogCount === 1 ? dialog.accept() : dialog.accept(testUsername));
+      });
+
+      await userRow.getByRole('button', { name: '刪除' }).click();
+      await page.waitForSelector(`li:has-text("${testDisplayName}")`, {
+        state: 'detached',
+        timeout: 15_000,
+      });
+    } finally {
+      await page.close();
+    }
+  }
+
+  // 每組測試開始前：確保使用者存在（含 active 狀態，處理前次測試殘留的 suspended 狀態）
+  test.beforeAll(async ({ browser }) => {
+    await deleteTestUserIfExists(browser); // 清除前次殘留
+    await ensureTestUserExists(browser);   // 重新建立，確保 active 狀態
+  });
+
+  // 所有測試結束後：清理
+  test.afterAll(async ({ browser }) => {
+    await deleteTestUserIfExists(browser);
+  });
 
   test.beforeEach(async ({ page }) => {
     await loginAs(page, 'admin');
     await page.goto('http://localhost:5173/admin');
     await page.waitForSelector('h1', { timeout: 15_000 });
-    // 等待 tab 列渲染完成
     await page.waitForSelector('button[aria-pressed]', { timeout: 8_000 });
-    // 預設已在「使用者與角色指派」tab（tab 預設值是 'users'）
-    // 確認「新增使用者」按鈕出現即代表 UsersTab 已載入
     await page.waitForSelector('button:has-text("新增使用者")', { timeout: 8_000 });
   });
 
   test('新增使用者：填寫表單並看到一次性密碼', async ({ page }) => {
+    // 用不同的 username 測試對話框流程（主測試帳號已由 beforeAll 建立）
+    const tempUsername = `e2etmp${Date.now()}`;
+
     // 開啟對話框
     await page.getByRole('button', { name: '新增使用者' }).click();
-
-    // 等待對話框出現
     await page.waitForSelector('#cu-username', { timeout: 8_000 });
 
     // 填寫表單
-    await page.locator('#cu-username').fill(testUsername);
-    await page.locator('#cu-display').fill(testDisplayName);
-
-    // 選擇角色：用 player 系統角色的固定 UUID（定義於 migration 0002，不會變動）
+    await page.locator('#cu-username').fill(tempUsername);
+    await page.locator('#cu-display').fill('E2E 臨時帳號');
     await page.locator('#cu-role').selectOption('44444444-4444-4444-4444-444444444444');
-
-    // 送出
     await page.getByRole('button', { name: '建立帳號' }).click();
 
     // 等待成功畫面：顯示一次性密碼
@@ -115,21 +179,26 @@ test.describe('Flow 6: 使用者建立與停用/啟用', () => {
     // 關閉對話框
     await page.getByRole('button', { name: '確認' }).click();
 
-    // 確認使用者出現在列表中
-    await expect(page.getByText(testDisplayName)).toBeVisible({ timeout: 8_000 });
-    await expect(page.getByText(`@${testUsername}`)).toBeVisible();
+    // 確認臨時使用者出現在列表中
+    await expect(page.getByText('E2E 臨時帳號')).toBeVisible({ timeout: 8_000 });
+    await expect(page.getByText(`@${tempUsername}`)).toBeVisible();
+
+    // 清理臨時帳號（兩步驟刪除）
+    const tmpRow = page.locator('li').filter({ hasText: 'E2E 臨時帳號' });
+    let dialogCount = 0;
+    page.on('dialog', async (dialog) => {
+      dialogCount++;
+      await (dialogCount === 1 ? dialog.accept() : dialog.accept(tempUsername));
+    });
+    await tmpRow.getByRole('button', { name: '刪除' }).click();
+    await expect(tmpRow).not.toBeVisible({ timeout: 15_000 });
   });
 
-  test('停用使用者：列表顯示「已停用」badge', async ({ page }) => {
-    // 確認目標使用者在列表中（若 Flow 6-1 未跑，此測試可能找不到）
-    const userRow = page.locator('li').filter({ hasText: testDisplayName });
 
-    // 若找不到測試使用者（尚未建立），先建立
-    const count = await userRow.count();
-    if (count === 0) {
-      test.skip(true, `測試使用者 ${testUsername} 尚未建立，請先執行「新增使用者」測試`);
-      return;
-    }
+  test('停用使用者：列表顯示「已停用」badge', async ({ page }) => {
+    // 等待上一個 test 建立的使用者出現在列表（query 非同步，需顯式等待）
+    const userRow = page.locator('li').filter({ hasText: testDisplayName });
+    await expect(userRow).toBeVisible({ timeout: 15_000 });
 
     // 點擊「停用」前先設定 dialog 處理（須在觸發前註冊）
     acceptNextDialog(page);
@@ -143,28 +212,19 @@ test.describe('Flow 6: 使用者建立與停用/啟用', () => {
   });
 
   test('啟用使用者：移除「已停用」badge', async ({ page }) => {
+    // 等待使用者出現（serial 保證此時已停用）
     const userRow = page.locator('li').filter({ hasText: testDisplayName });
+    await expect(userRow).toBeVisible({ timeout: 15_000 });
 
-    const count = await userRow.count();
-    if (count === 0) {
-      test.skip(true, `測試使用者 ${testUsername} 尚未建立，請先執行前置測試`);
-      return;
-    }
+    // 等待「已停用」badge（由前一個 test 設定）
+    await expect(userRow.getByText('已停用')).toBeVisible({ timeout: 10_000 });
 
-    // 若目前是「停用」狀態，先啟用；若已是 active，直接驗證
-    const isSuspended = await userRow.locator('.text-destructive', { hasText: '已停用' }).isVisible();
+    acceptNextDialog(page);
+    await userRow.getByRole('button', { name: '啟用' }).click();
 
-    if (isSuspended) {
-      acceptNextDialog(page);
-      await userRow.getByRole('button', { name: '啟用' }).click();
-      // badge 應消失
-      await expect(userRow.getByText('已停用')).not.toBeVisible({ timeout: 15_000 });
-      // opacity 恢復
-      await expect(userRow).not.toHaveClass(/opacity-60/);
-    } else {
-      // 已是 active，只驗證停用按鈕存在（代表狀態正確）
-      await expect(userRow.getByRole('button', { name: '停用' })).toBeVisible();
-    }
+    // badge 應消失，opacity 恢復
+    await expect(userRow.getByText('已停用')).not.toBeVisible({ timeout: 15_000 });
+    await expect(userRow).not.toHaveClass(/opacity-60/);
   });
 
   test('新增自訂角色，並在角色列表出現', async ({ page }) => {
@@ -189,3 +249,4 @@ test.describe('Flow 6: 使用者建立與停用/啟用', () => {
     await expect(roleRow).not.toBeVisible({ timeout: 8_000 });
   });
 });
+
