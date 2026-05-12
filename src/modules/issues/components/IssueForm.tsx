@@ -14,6 +14,9 @@ const schema = z.object({
   status: z.enum(['open', 'in_progress', 'resolved', 'closed']),
   priority: z.enum(['low', 'medium', 'high']),
   assigned_to: z.string().optional().nullable(),
+  issue_type: z.enum(['epic', 'task', 'bug']),
+  parent_id: z.string().optional().nullable(),
+  tags: z.string().optional(), // We'll process this into an array on submit
 });
 
 type FormData = z.infer<typeof schema>;
@@ -22,9 +25,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   editing: IssueRow | null;
+  allIssues?: IssueRow[]; // Used for parent selection
 }
 
-export function IssueForm({ open, onClose, editing }: Props) {
+export function IssueForm({ open, onClose, editing, allIssues = [] }: Props) {
   const { t } = useTranslation(['issues', 'common']);
   const createMut = useCreateIssue();
   const updateMut = useUpdateIssue();
@@ -43,6 +47,9 @@ export function IssueForm({ open, onClose, editing }: Props) {
       status: 'open',
       priority: 'medium',
       assigned_to: '',
+      issue_type: 'task',
+      parent_id: '',
+      tags: '',
     },
   });
 
@@ -55,6 +62,9 @@ export function IssueForm({ open, onClose, editing }: Props) {
           status: editing.status,
           priority: editing.priority,
           assigned_to: editing.assigned_to || '',
+          issue_type: editing.issue_type,
+          parent_id: editing.parent_id || '',
+          tags: editing.tags?.join(', ') || '',
         });
       } else {
         reset({
@@ -63,6 +73,9 @@ export function IssueForm({ open, onClose, editing }: Props) {
           status: 'open',
           priority: 'medium',
           assigned_to: '',
+          issue_type: 'task',
+          parent_id: '',
+          tags: '',
         });
       }
     }
@@ -73,6 +86,8 @@ export function IssueForm({ open, onClose, editing }: Props) {
       const payload = {
         ...data,
         assigned_to: data.assigned_to || null,
+        parent_id: data.parent_id || null,
+        tags: data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
       };
 
       if (editing) {
@@ -140,6 +155,35 @@ export function IssueForm({ open, onClose, editing }: Props) {
               <option value="high">{t('issues:priority.high')}</option>
             </select>
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium">{t('issues:fields.type', '類型')}</label>
+            <select {...register('issue_type')} className="w-full rounded-md border p-2 text-sm">
+              <option value="task">{t('issues:type.task', 'Task')}</option>
+              <option value="epic">{t('issues:type.epic', 'Epic')}</option>
+              <option value="bug">{t('issues:type.bug', 'Bug')}</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">{t('issues:fields.parent', '所屬 Epic')}</label>
+            <select {...register('parent_id')} className="w-full rounded-md border p-2 text-sm">
+              <option value="">--</option>
+              {allIssues.filter(i => i.issue_type === 'epic' && i.id !== editing?.id).map((i) => (
+                <option key={i.id} value={i.id}>{i.title}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t('issues:fields.tags', '標籤 (逗號分隔)')}</label>
+          <input
+            {...register('tags')}
+            placeholder="e.g. frontend, high-priority"
+            className="w-full rounded-md border p-2 text-sm"
+          />
         </div>
 
         <div>

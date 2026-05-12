@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, LayoutGrid, List as ListIcon, Link as LinkIcon } from 'lucide-react';
 import { useIssues, useDeleteIssue } from '../api/issuesApi';
 import { IssueForm } from '../components/IssueForm';
 import { Loading } from '@/shared/components/Loading';
@@ -16,6 +16,7 @@ export default function IssuesPage() {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IssueRow | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const handleEdit = (issue: IssueRow) => {
     setEditing(issue);
@@ -36,8 +37,22 @@ export default function IssuesPage() {
   return (
     <div className="space-y-4">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold tracking-tight">{t('issues:title')}</h1>
+          <div className="flex border rounded-md overflow-hidden bg-background">
+            <button
+              className={cn("px-3 py-1.5 text-sm", viewMode === 'grid' ? "bg-muted" : "hover:bg-muted/50")}
+              onClick={() => setViewMode('grid')}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              className={cn("px-3 py-1.5 text-sm", viewMode === 'list' ? "bg-muted" : "hover:bg-muted/50")}
+              onClick={() => setViewMode('list')}
+            >
+              <ListIcon className="h-4 w-4" />
+            </button>
+          </div>
         </div>
         <Button
           onClick={() => {
@@ -56,12 +71,72 @@ export default function IssuesPage() {
       ) : !data || data.length === 0 ? (
         <EmptyState title={t('issues:empty')} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={cn("grid gap-4", viewMode === 'grid' ? "sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1")}>
           {data.map((issue) => (
-            <div key={issue.id} className="rounded-xl border bg-card p-4 shadow-sm flex flex-col gap-3">
-              <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-lg line-clamp-2">{issue.title}</h3>
-                <div className="flex gap-1 shrink-0">
+            <div key={issue.id} className={cn("rounded-xl border bg-card p-4 shadow-sm flex", viewMode === 'grid' ? "flex-col gap-3" : "flex-row items-center gap-4")}>
+              <div className={cn("flex-1 flex", viewMode === 'grid' ? "flex-col gap-2" : "flex-row items-center gap-4")}>
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    {issue.issue_type === 'epic' && <span className="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded-full font-medium">Epic</span>}
+                    {issue.issue_type === 'bug' && <span className="bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full font-medium">Bug</span>}
+                    {issue.issue_type === 'task' && <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-medium">Task</span>}
+                    <h3 className="font-semibold text-lg line-clamp-2">{issue.title}</h3>
+                  </div>
+                  {viewMode === 'grid' && (
+                    <div className="flex gap-1 shrink-0 ml-2">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(issue as unknown as IssueRow)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-rose-500 hover:text-rose-600" onClick={() => handleDelete(issue.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {(issue as unknown as { parent?: { title?: string } }).parent && (
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <LinkIcon className="h-3 w-3" />
+                    {(issue as unknown as { parent?: { title?: string } }).parent?.title}
+                  </div>
+                )}
+
+                {viewMode === 'grid' && (
+                  <p className="text-sm text-muted-foreground line-clamp-3">
+                    {issue.description || '—'}
+                  </p>
+                )}
+
+                <div className={cn("flex flex-wrap gap-2 text-xs", viewMode === 'grid' ? "mt-auto pt-3 border-t" : "")}>
+                  <span className={cn("px-2 py-1 rounded-md", 
+                    issue.status === 'open' ? "bg-blue-100 text-blue-800" :
+                    issue.status === 'in_progress' ? "bg-amber-100 text-amber-800" :
+                    "bg-green-100 text-green-800"
+                  )}>
+                    {t(`issues:status.${issue.status}`)}
+                  </span>
+                  <span className={cn("px-2 py-1 rounded-md",
+                    issue.priority === 'high' ? "bg-rose-100 text-rose-800" :
+                    issue.priority === 'medium' ? "bg-orange-100 text-orange-800" :
+                    "bg-slate-100 text-slate-800"
+                  )}>
+                    {t(`issues:priority.${issue.priority}`)}
+                  </span>
+                  {issue.tags && issue.tags.map(tag => (
+                    <span key={tag} className="px-2 py-1 bg-secondary text-secondary-foreground rounded-md">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className={cn("text-xs text-muted-foreground flex", viewMode === 'grid' ? "justify-between mt-1" : "flex-col items-end gap-1 ml-4 min-w-[120px]")}>
+                <span>{t('issues:fields.assignedTo')}: {(issue as unknown as { assignee?: { display_name?: string | null } }).assignee?.display_name || '—'}</span>
+                <span>{new Date(issue.created_at).toLocaleDateString()}</span>
+              </div>
+
+              {viewMode === 'list' && (
+                <div className="flex gap-1 shrink-0 ml-4 border-l pl-4">
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(issue as unknown as IssueRow)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -69,30 +144,7 @@ export default function IssuesPage() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {issue.description || '—'}
-              </p>
-              <div className="mt-auto pt-3 border-t flex flex-wrap gap-2 text-xs">
-                <span className={cn("px-2 py-1 rounded-md", 
-                  issue.status === 'open' ? "bg-blue-100 text-blue-800" :
-                  issue.status === 'in_progress' ? "bg-amber-100 text-amber-800" :
-                  "bg-green-100 text-green-800"
-                )}>
-                  {t(`issues:status.${issue.status}`)}
-                </span>
-                <span className={cn("px-2 py-1 rounded-md",
-                  issue.priority === 'high' ? "bg-rose-100 text-rose-800" :
-                  issue.priority === 'medium' ? "bg-orange-100 text-orange-800" :
-                  "bg-slate-100 text-slate-800"
-                )}>
-                  {t(`issues:priority.${issue.priority}`)}
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground flex justify-between mt-1">
-                <span>{t('issues:fields.assignedTo')}: {(issue as unknown as { assignee?: { display_name?: string | null } }).assignee?.display_name || '—'}</span>
-                <span>{new Date(issue.created_at).toLocaleDateString()}</span>
-              </div>
+              )}
             </div>
           ))}
         </div>
@@ -102,6 +154,7 @@ export default function IssuesPage() {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         editing={editing}
+        allIssues={data as unknown as IssueRow[]}
       />
     </div>
   );

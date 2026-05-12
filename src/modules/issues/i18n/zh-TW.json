@@ -14,11 +14,19 @@
     "medium": "中",
     "high": "高"
   },
+  "type": {
+    "task": "一般任務",
+    "epic": "史詩 (Epic)",
+    "bug": "錯誤 (Bug)"
+  },
   "fields": {
     "title": "標題",
     "description": "描述",
     "status": "狀態",
     "priority": "優先級",
+    "type": "類型",
+    "parent": "所屬 Epic",
+    "tags": "標籤 (以逗號分隔)",
     "assignedTo": "負責人",
     "createdAt": "建立時間"
   },

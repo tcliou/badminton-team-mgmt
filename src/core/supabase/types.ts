@@ -149,6 +149,27 @@ export type Database = {
           }
         ];
       };
+      issue_links: {
+        Row: IssueLinkRow;
+        Insert: Pick<IssueLinkRow, 'source_id' | 'target_id'> & Partial<IssueLinkRow>;
+        Update: Partial<IssueLinkRow>;
+        Relationships: [
+          {
+            foreignKeyName: "issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
     };
     Views: {
       v_my_profile: {
@@ -379,15 +400,28 @@ export type FinanceTransactionRow = {
 export type IssueStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 export type IssuePriority = 'low' | 'medium' | 'high';
 
+export type IssueType = 'epic' | 'task' | 'bug';
+
 export type IssueRow = {
   id: string;
   team_id: string;
+  issue_type: IssueType;
   title: string;
   description: string | null;
   status: IssueStatus;
   priority: IssuePriority;
   assigned_to: string | null;
   created_by: string | null;
+  parent_id: string | null;
+  tags: string[];
   created_at: string;
   updated_at: string;
+};
+
+export type IssueLinkRow = {
+  id: string;
+  source_id: string;
+  target_id: string;
+  link_type: string;
+  created_at: string;
 };

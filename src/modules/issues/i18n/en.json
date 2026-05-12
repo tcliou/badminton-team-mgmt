@@ -14,12 +14,20 @@
     "medium": "Medium",
     "high": "High"
   },
+  "type": {
+    "task": "Task",
+    "epic": "Epic",
+    "bug": "Bug"
+  },
   "fields": {
     "title": "Title",
     "description": "Description",
     "status": "Status",
     "priority": "Priority",
-    "assignedTo": "Assignee",
+    "type": "Type",
+    "parent": "Parent Epic",
+    "tags": "Tags (comma separated)",
+    "assignedTo": "Assigned To",
     "createdAt": "Created At"
   },
   "empty": "No issues found",
