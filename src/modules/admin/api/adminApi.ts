@@ -157,7 +157,10 @@ export function useCreateRole() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['admin'] });
+      void qc.invalidateQueries({ queryKey: ['roles'] }); // 同步刷新角色列表
+    },
   });
 }
 
