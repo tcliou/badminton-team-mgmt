@@ -1,0 +1,27 @@
+{
+  "title": "待辦清單",
+  "add": "新增待辦事項",
+  "edit": "編輯",
+  "delete": "刪除",
+  "status": {
+    "open": "待處理",
+    "in_progress": "處理中",
+    "resolved": "已解決",
+    "closed": "已關閉"
+  },
+  "priority": {
+    "low": "低",
+    "medium": "中",
+    "high": "高"
+  },
+  "fields": {
+    "title": "標題",
+    "description": "描述",
+    "status": "狀態",
+    "priority": "優先級",
+    "assignedTo": "負責人",
+    "createdAt": "建立時間"
+  },
+  "empty": "目前沒有待辦事項",
+  "confirmDelete": "確定要刪除這個待辦事項嗎？"
+}

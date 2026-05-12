@@ -128,6 +128,27 @@ export type Database = {
           }
         ];
       };
+      issues: {
+        Row: IssueRow;
+        Insert: Pick<IssueRow, 'title'> & Partial<IssueRow>;
+        Update: Partial<IssueRow>;
+        Relationships: [
+          {
+            foreignKeyName: "issues_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
     };
     Views: {
       v_my_profile: {
@@ -353,4 +374,20 @@ export type FinanceTransactionRow = {
   created_at: string;
   updated_at: string;
   created_by: string | null;
+};
+
+export type IssueStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type IssuePriority = 'low' | 'medium' | 'high';
+
+export type IssueRow = {
+  id: string;
+  team_id: string;
+  title: string;
+  description: string | null;
+  status: IssueStatus;
+  priority: IssuePriority;
+  assigned_to: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
 };

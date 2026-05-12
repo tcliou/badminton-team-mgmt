@@ -13,6 +13,7 @@ export const PERMISSIONS = {
   PageFinance:        'page:finance:view',
   PageTraining:       'page:training:view',
   PageAdmin:          'page:admin:view',
+  PageIssues:         'page:issues:view',
   // 動作
   ActionUsersManage:        'action:users:manage',
   ActionRolesManage:        'action:roles:manage',
@@ -23,6 +24,7 @@ export const PERMISSIONS = {
   ActionFinanceManage:      'action:finance:manage',
   ActionFinanceConfirm:     'action:finance:confirm',
   ActionPlayersManage:      'action:players:manage',
+  ActionIssuesManage:       'action:issues:manage',
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

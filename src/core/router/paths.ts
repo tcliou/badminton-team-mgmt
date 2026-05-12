@@ -10,6 +10,7 @@ export const PATHS = {
   Announcements: '/announcements',
   Finance: '/finance',
   Admin: '/admin',
+  Issues: '/issues',
   Forbidden: '/403',
   NotFound: '/404',
 } as const;
