@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useActiveProfiles } from '@/modules/finance/api/transactionsApi'; // Reuse hook
 import { useCreateIssue, useUpdateIssue } from '../api/issuesApi';
-import type { IssueRow, IssueStatus, IssuePriority } from '@/core/supabase/types';
+import type { IssueRow } from '@/core/supabase/types';
 import { Button } from '@/shared/components/Button';
 
 const schema = z.object({

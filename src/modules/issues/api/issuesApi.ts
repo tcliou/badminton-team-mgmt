@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/core/supabase/client';
-import type { IssueRow, IssueStatus, IssuePriority } from '@/core/supabase/types';
+import type { IssueStatus, IssuePriority } from '@/core/supabase/types';
 
 export const ISSUES_QUERY_KEY = ['issues'];
 
