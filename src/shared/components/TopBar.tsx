@@ -3,6 +3,8 @@ import { LogOut, User } from 'lucide-react';
 import { useAuth } from '@/core/auth';
 import { LocaleSwitcher } from '@/core/i18n/LocaleSwitcher';
 import { ThemeToggle } from './ThemeToggle';
+import { NotificationBell } from './NotificationBell';
+
 
 export function TopBar() {
   const { t } = useTranslation();
@@ -17,6 +19,7 @@ export function TopBar() {
       <div className="flex items-center gap-2 sm:gap-3">
         <ThemeToggle />
         <LocaleSwitcher />
+        {profile ? <NotificationBell /> : null}
         {profile ? (
           <>
             <div className="hidden items-center gap-2 rounded-md border bg-background px-2 py-1 text-sm sm:flex">
