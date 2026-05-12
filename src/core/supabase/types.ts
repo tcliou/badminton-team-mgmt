@@ -118,7 +118,15 @@ export type Database = {
         Insert: Pick<FinanceTransactionRow, 'direction' | 'occurred_on' | 'item' | 'amount'> &
           Partial<FinanceTransactionRow>;
         Update: Partial<FinanceTransactionRow>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "finance_transactions_advanced_by_user_id_fkey"
+            columns: ["advanced_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
       };
     };
     Views: {
@@ -340,6 +348,7 @@ export type FinanceTransactionRow = {
   counterparty: string | null;
   receipt_url: string | null;
   linked_payment_record_id: string | null;
+  advanced_by_user_id: string | null;
   note: string | null;
   created_at: string;
   updated_at: string;
