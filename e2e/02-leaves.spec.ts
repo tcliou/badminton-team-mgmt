@@ -16,7 +16,7 @@ test.describe('Flow 2: 球員提交請假', () => {
     // 必要欄位
     await expect(page.getByLabel('開始時間')).toBeVisible();
     await expect(page.getByLabel('結束時間')).toBeVisible();
-    await expect(page.getByLabel('請假類型')).toBeVisible();
+    await expect(page.getByLabel('事由類型')).toBeVisible();
   });
 
   test('送出請假後在清單中出現', async ({ page }) => {
@@ -32,8 +32,8 @@ test.describe('Flow 2: 球員提交請假', () => {
 
     await page.getByLabel('開始時間').fill(fmt(tomorrow));
     await page.getByLabel('結束時間').fill(fmt(dayAfter));
-    await page.getByLabel('請假類型').selectOption('personal');
-    await page.getByLabel('備註（選填）').fill('E2E test leave');
+    await page.getByLabel('事由類型').selectOption('事假');
+    await page.getByLabel('說明').fill('E2E test leave');
 
     await page.getByRole('button', { name: '送出請假' }).click();
 
@@ -58,8 +58,8 @@ test.describe('Flow 3: 教練審核請假', () => {
     // 等待 list 渲染（可能空也可能有資料）
     await page.waitForTimeout(1000);
 
-    const confirmBtns = page.getByRole('button', { name: '核准' });
-    const rejectBtns = page.getByRole('button', { name: '駁回' });
+    const confirmBtns = page.getByRole('button', { name: '同意' });
+    const rejectBtns = page.getByRole('button', { name: '退回' });
     const empty = page.getByText('目前沒有待審核');
 
     // 有資料時顯示按鈕，無資料時顯示空態
