@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Pencil, Trash2, LayoutGrid, List as ListIcon, Link as LinkIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, LayoutGrid, List as ListIcon, Link as LinkIcon, Filter, ArrowDownWideNarrow, Group } from 'lucide-react';
 import { useIssues, useDeleteIssue } from '../api/issuesApi';
 import { IssueForm } from '../components/IssueForm';
 import { Loading } from '@/shared/components/Loading';
@@ -17,6 +17,14 @@ export default function IssuesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IssueRow | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterEpic, setFilterEpic] = useState('all');
+  const [groupBy, setGroupBy] = useState<'none' | 'status' | 'epic'>('none');
+  const [sortBy, setSortBy] = useState<'created_at' | 'priority' | 'status'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const epics = data?.filter(i => i.issue_type === 'epic') || [];
 
   const handleEdit = (issue: IssueRow) => {
     setEditing(issue);
@@ -71,8 +79,72 @@ export default function IssuesPage() {
       ) : !data || data.length === 0 ? (
         <EmptyState title={t('issues:empty')} />
       ) : (
-        <div className={cn("grid gap-4", viewMode === 'grid' ? "sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1")}>
-          {data.map((issue) => (
+        <>
+          <div className="flex flex-wrap gap-4 p-4 border rounded-xl bg-card">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <select className="border rounded px-2 py-1 text-sm bg-background" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+                <option value="all">All Status</option>
+                <option value="open">{t('issues:status.open')}</option>
+                <option value="in_progress">{t('issues:status.in_progress')}</option>
+                <option value="resolved">{t('issues:status.resolved')}</option>
+                <option value="closed">{t('issues:status.closed')}</option>
+              </select>
+              <select className="border rounded px-2 py-1 text-sm bg-background" value={filterEpic} onChange={e => setFilterEpic(e.target.value)}>
+                <option value="all">All Epics</option>
+                <option value="none">No Epic</option>
+                {epics.map(epic => (
+                  <option key={epic.id} value={epic.id}>{epic.title}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Group className="w-4 h-4 text-muted-foreground" />
+              <select className="border rounded px-2 py-1 text-sm bg-background" value={groupBy} onChange={e => setGroupBy(e.target.value as 'none' | 'status' | 'epic')}>
+                <option value="none">No Grouping</option>
+                <option value="status">Group by Status</option>
+                <option value="epic">Group by Epic</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <ArrowDownWideNarrow className="w-4 h-4 text-muted-foreground" />
+              <select className="border rounded px-2 py-1 text-sm bg-background" value={sortBy} onChange={e => setSortBy(e.target.value as 'created_at' | 'priority' | 'status')}>
+                <option value="created_at">Sort by Created Date</option>
+                <option value="priority">Sort by Priority</option>
+                <option value="status">Sort by Status</option>
+              </select>
+              <select className="border rounded px-2 py-1 text-sm bg-background" value={sortOrder} onChange={e => setSortOrder(e.target.value as 'asc' | 'desc')}>
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+            </div>
+          </div>
+
+          {(() => {
+            let processed = [...data];
+            if (filterStatus !== 'all') processed = processed.filter(i => i.status === filterStatus);
+            if (filterEpic !== 'all') {
+              processed = processed.filter(i => filterEpic === 'none' ? !i.parent_id : i.parent_id === filterEpic);
+            }
+
+            processed.sort((a, b) => {
+              let cmp = 0;
+              if (sortBy === 'created_at') cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+              else if (sortBy === 'priority') {
+                const p = { high: 3, medium: 2, low: 1 };
+                cmp = (p[a.priority] || 0) - (p[b.priority] || 0);
+              } else if (sortBy === 'status') {
+                const s = { open: 1, in_progress: 2, resolved: 3, closed: 4 };
+                cmp = (s[a.status] || 0) - (s[b.status] || 0);
+              }
+              return sortOrder === 'desc' ? -cmp : cmp;
+            });
+
+            const renderIssues = (issues: IssueRow[]) => (
+              <div className={cn("grid gap-4", viewMode === 'grid' ? "sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1")}>
+                {issues.map((issue) => (
             <div key={issue.id} className={cn("rounded-xl border bg-card p-4 shadow-sm flex", viewMode === 'grid' ? "flex-col gap-3" : "flex-row items-center gap-4")}>
               <div className={cn("flex-1 flex", viewMode === 'grid' ? "flex-col gap-2" : "flex-row items-center gap-4")}>
                 <div className="flex justify-between items-start">
@@ -148,7 +220,36 @@ export default function IssuesPage() {
             </div>
           ))}
         </div>
-      )}
+      );
+
+      if (groupBy === 'none') {
+        return renderIssues(processed);
+      }
+
+      const groups = new Map<string, IssueRow[]>();
+      processed.forEach(issue => {
+        let key = '';
+        if (groupBy === 'status') key = issue.status;
+        if (groupBy === 'epic') key = (issue as unknown as { parent?: { title?: string } }).parent?.title || 'No Epic';
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(issue);
+      });
+
+      return (
+        <div className="space-y-8">
+          {Array.from(groups.entries()).map(([key, issues]) => (
+            <div key={key} className="space-y-4">
+              <h2 className="text-xl font-bold border-b pb-2">
+                {groupBy === 'status' ? t(`issues:status.${key}`) : key} <span className="text-muted-foreground text-sm font-normal">({issues.length})</span>
+              </h2>
+              {renderIssues(issues)}
+            </div>
+          ))}
+        </div>
+      );
+    })()}
+  </>
+)}
 
       <IssueForm
         open={formOpen}
