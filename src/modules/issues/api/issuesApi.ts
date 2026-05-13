@@ -14,7 +14,7 @@ export function useIssues() {
           *,
           assignee:profiles!issues_assigned_to_fkey(id, display_name, avatar_url),
           creator:profiles!issues_created_by_fkey(id, display_name, avatar_url),
-          parent:issues!issues_parent_id_fkey(id, title)
+          parent:parent_id(id, title)
         `)
         .order('created_at', { ascending: false });
 
