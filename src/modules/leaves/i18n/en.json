@@ -6,6 +6,8 @@
   },
   "form": {
     "newLeave": "New leave",
+    "applyFor": "Apply for (child)",
+    "applyForHint": "Parents can file leave on behalf of linked children",
     "startAt": "Starts at",
     "endAt": "Ends at",
     "reasonType": "Reason type",

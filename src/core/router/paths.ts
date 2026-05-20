@@ -4,6 +4,7 @@ export const PATHS = {
   ChangePassword: '/change-password',
   Home: '/',
   Players: '/players',
+  Parents: '/parents',
   Leaves: '/leaves',
   Payments: '/payments',
   Training: '/training',

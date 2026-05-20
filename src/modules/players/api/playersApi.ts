@@ -15,8 +15,14 @@ export function useActivePlayers() {
     queryFn: async (): Promise<ProfileRow[]> => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          user_roles!inner(
+            roles!inner(name)
+          )
+        `)
         .eq('status', 'active')
+        .eq('user_roles.roles.name', 'player')
         .order('display_name', { ascending: true });
       if (error) throw error;
       return (data ?? []) as ProfileRow[];

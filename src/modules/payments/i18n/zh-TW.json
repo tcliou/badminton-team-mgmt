@@ -38,5 +38,10 @@
     "empty": "尚無繳費紀錄"
   },
   "noItems": "目前沒有對您收費的項目",
-  "rejectReason": "退回原因：{{reason}}"
+  "rejectReason": "退回原因：{{reason}}",
+  "parent": {
+    "childrenSection": "小孩的繳費項目",
+    "selectChild": "為小孩繳費",
+    "noChildren": "您尚未綁定任何小孩"
+  }
 }

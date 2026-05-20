@@ -96,6 +96,39 @@ export function useCreateLeave() {
   });
 }
 
+/**
+ * 家長代替小孩開單
+ * 與 useCreateLeave 的差別：player_id 使用傳入的 childId，而非 auth.uid()。
+ * 後端 RLS (0027_parent_rls) 允許 is_parent_of(player_id) 插入。
+ */
+export function useCreateLeaveForPlayer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: CreateLeaveInput & { player_id: string }) => {
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .insert({
+          player_id: input.player_id,
+          start_at: input.start_at,
+          end_at: input.end_at,
+          reason_type: input.reason_type,
+          reason_text: input.reason_text ?? null,
+          affected_event_ids: input.affected_event_ids ?? [],
+          status: 'pending',
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data as LeaveRequestRow;
+    },
+    onSuccess: (row) => {
+      void qc.invalidateQueries({ queryKey: QK.leaves.pending });
+      eventBus.emit('leaves:created', { leaveId: row.id });
+    },
+  });
+}
+
+
 /** 球員撤回（pending 才允許） */
 export function useDeleteLeave() {
   const qc = useQueryClient();

@@ -170,6 +170,27 @@ export type Database = {
           }
         ];
       };
+      player_parents: {
+        Row: PlayerParentRow;
+        Insert: Pick<PlayerParentRow, 'parent_id' | 'player_id'> & Partial<PlayerParentRow>;
+        Update: Partial<PlayerParentRow>;
+        Relationships: [
+          {
+            foreignKeyName: "player_parents_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_parents_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
     };
     Views: {
       v_my_profile: {
@@ -423,5 +444,13 @@ export type IssueLinkRow = {
   source_id: string;
   target_id: string;
   link_type: string;
+  created_at: string;
+};
+
+export type PlayerParentRow = {
+  id: string;
+  parent_id: string;
+  player_id: string;
+  relationship: string | null;
   created_at: string;
 };

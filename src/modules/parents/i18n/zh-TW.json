@@ -1,0 +1,16 @@
+{
+  "title": "家長管理",
+  "search": "搜尋姓名 / 帳號…",
+  "list": {
+    "empty": "目前沒有家長",
+    "viewProfile": "檢視"
+  },
+  "linkedPlayers": {
+    "title": "綁定的球員",
+    "empty": "尚未綁定任何球員",
+    "relationship": "關係",
+    "add": "新增綁定",
+    "remove": "解除綁定",
+    "confirmRemove": "確認解除綁定？"
+  }
+}

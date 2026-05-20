@@ -1,0 +1,16 @@
+{
+  "title": "Parents",
+  "search": "Search name / username…",
+  "list": {
+    "empty": "No parents yet",
+    "viewProfile": "View"
+  },
+  "linkedPlayers": {
+    "title": "Linked players",
+    "empty": "No linked players yet",
+    "relationship": "Relationship",
+    "add": "Link player",
+    "remove": "Unlink",
+    "confirmRemove": "Confirm unlink?"
+  }
+}

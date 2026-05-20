@@ -135,6 +135,64 @@ export function useWithdrawMyPayment() {
   });
 }
 
+/**
+ * 家長視角：取得所有綁定小孩的繳費項目清單。
+ * childIds: 從 useLinkedPlayers 拿到的 player_id 陣列。
+ */
+export type ChildPayments = {
+  childId: string;
+  childName: string;
+  childUsername: string;
+  items: MyPaymentItem[];
+};
+
+export function useChildrenPayments(
+  children: Array<{ playerId: string; displayName: string; username: string; roleIds: string[] }>,
+) {
+  return useQuery({
+    queryKey: ['payments', 'children', children.map((c) => c.playerId)],
+    enabled: children.length > 0,
+    queryFn: async (): Promise<ChildPayments[]> => {
+      const childIds = children.map((c) => c.playerId);
+
+      const [{ data: items, error: e1 }, { data: records, error: e2 }] = await Promise.all([
+        supabase
+          .from('payment_items')
+          .select('*')
+          .eq('status', 'active')
+          .order('due_date', { ascending: true, nullsFirst: false }),
+        supabase
+          .from('payment_records')
+          .select('*')
+          .in('player_id', childIds)
+          .order('created_at', { ascending: false }),
+      ]);
+      if (e1) throw e1;
+      if (e2) throw e2;
+
+      // 建立 record index: item_id + player_id → most recent record
+      const recordIndex = new Map<string, PaymentRecordRow>();
+      ((records ?? []) as PaymentRecordRow[]).forEach((r) => {
+        const key = `${r.item_id}::${r.player_id}`;
+        if (!recordIndex.has(key)) recordIndex.set(key, r);
+      });
+
+      return children.map((child) => ({
+        childId: child.playerId,
+        childName: child.displayName,
+        childUsername: child.username,
+        items: ((items ?? []) as PaymentItemRow[])
+          .filter((it) => isItemForPlayer(it, child.playerId, child.roleIds))
+          .map((item) => ({
+            item,
+            record: recordIndex.get(`${item.id}::${child.playerId}`),
+          })),
+      }));
+    },
+  });
+}
+
+
 /** 上傳繳費證明到 Storage，回傳路徑（存進 payment_records.proof_url） */
 export function useUploadProof() {
   const userId = useAuthStore((s) => s.profile?.id);

@@ -6,6 +6,8 @@
   },
   "form": {
     "newLeave": "新增請假",
+    "applyFor": "請假對象（小孩）",
+    "applyForHint": "家長可代替綁定的小孩申請請假",
     "startAt": "開始時間",
     "endAt": "結束時間",
     "reasonType": "事由類型",

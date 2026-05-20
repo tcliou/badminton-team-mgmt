@@ -38,5 +38,10 @@
     "empty": "No records yet"
   },
   "noItems": "No fees are currently charged to you",
-  "rejectReason": "Rejection reason: {{reason}}"
+  "rejectReason": "Rejection reason: {{reason}}",
+  "parent": {
+    "childrenSection": "Children's payment items",
+    "selectChild": "Pay for child",
+    "noChildren": "You have no linked children yet"
+  }
 }
