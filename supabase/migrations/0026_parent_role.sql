@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS public.player_parents (
 
 ALTER TABLE public.player_parents ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can view player_parents" ON public.player_parents;
 CREATE POLICY "Anyone can view player_parents" ON public.player_parents FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admins can manage player_parents" ON public.player_parents;
 CREATE POLICY "Admins can manage player_parents" ON public.player_parents FOR ALL USING (
   EXISTS (
     SELECT 1 FROM public.user_roles ur

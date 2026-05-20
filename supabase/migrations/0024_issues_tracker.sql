@@ -15,9 +15,13 @@ CREATE TABLE IF NOT EXISTS public.issues (
 -- RLS policies
 ALTER TABLE public.issues ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can view issues" ON public.issues;
 CREATE POLICY "Anyone can view issues" ON public.issues FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Anyone can create issues" ON public.issues;
 CREATE POLICY "Anyone can create issues" ON public.issues FOR INSERT WITH CHECK (auth.uid() = created_by);
+DROP POLICY IF EXISTS "Anyone can update issues" ON public.issues;
 CREATE POLICY "Anyone can update issues" ON public.issues FOR UPDATE USING (true);
+DROP POLICY IF EXISTS "Anyone can delete issues" ON public.issues;
 CREATE POLICY "Anyone can delete issues" ON public.issues FOR DELETE USING (true);
 
 -- Trigger for updated_at

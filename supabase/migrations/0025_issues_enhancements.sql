@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS public.issue_links (
 -- RLS for issue_links
 ALTER TABLE public.issue_links ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can view issue_links" ON public.issue_links;
 CREATE POLICY "Anyone can view issue_links" ON public.issue_links FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Anyone can insert issue_links" ON public.issue_links;
 CREATE POLICY "Anyone can insert issue_links" ON public.issue_links FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Anyone can delete issue_links" ON public.issue_links;
 CREATE POLICY "Anyone can delete issue_links" ON public.issue_links FOR DELETE USING (true);
