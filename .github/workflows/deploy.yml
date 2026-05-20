@@ -101,8 +101,8 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          supabase db push \
-            --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase db push --linked
 
   # ── 等三個 job 都成功才 deploy Pages ────────────────────────────────────
   deploy:
