@@ -23,8 +23,7 @@ function useProfileRoleIds(playerIds: string[]) {
       if (error) throw error;
       const map: Record<string, string[]> = {};
       (data ?? []).forEach((r) => {
-        if (!map[r.user_id]) map[r.user_id] = [];
-        map[r.user_id].push(r.role_id);
+        (map[r.user_id] ??= []).push(r.role_id);
       });
       return map;
     },
