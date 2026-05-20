@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Camera, ChevronLeft, Link2, Trash2, UserPlus } from 'lucide-react';
 import { usePlayer } from '@/modules/players/api/playersApi';
-import { useActiveParents, useLinkedPlayers, useLinkPlayer, useUnlinkPlayer } from '../api/parentsApi';
+import { useLinkedPlayers, useLinkPlayer, useUnlinkPlayer } from '../api/parentsApi';
 import { Avatar } from '@/modules/players/components/Avatar';
 import { ProfileEditCard } from '@/modules/players/components/ProfileEditCard';
 import { AvatarUploadDialog } from '@/modules/players/components/AvatarUploadDialog';
