@@ -78,6 +78,8 @@ export interface RegisterPaymentInput {
   paid_at: string;
   transfer_last5?: string | null;
   proof_url?: string | null;
+  /** 家長代替小孩繳費時傳入小孩的 player_id，否則預設使用登入者自己的 id */
+  forPlayerId?: string;
 }
 
 export function useRegisterPayment() {
@@ -86,11 +88,12 @@ export function useRegisterPayment() {
   return useMutation({
     mutationFn: async (input: RegisterPaymentInput) => {
       if (!userId) throw new Error('not authenticated');
+      const targetPlayerId = input.forPlayerId ?? userId;
       const { data, error } = await supabase
         .from('payment_records')
         .insert({
           item_id: input.item_id,
-          player_id: userId,
+          player_id: targetPlayerId,
           channel: input.channel,
           amount: input.amount,
           paid_at: input.paid_at,
@@ -110,7 +113,7 @@ export function useRegisterPayment() {
 export function useUpdateMyPayment() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...patch }: { id: string } & Partial<RegisterPaymentInput>) => {
+    mutationFn: async ({ id, forPlayerId: _fp, ...patch }: { id: string } & Partial<RegisterPaymentInput>) => {
       const { data, error } = await supabase
         .from('payment_records')
         .update(patch)

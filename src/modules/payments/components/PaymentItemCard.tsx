@@ -10,9 +10,13 @@ import { cn } from '@/shared/utils/cn';
 
 interface Props {
   entry: MyPaymentItem;
+  /** 家長代替小孩繳費時傳入小孩的 player_id */
+  forPlayerId?: string;
+  /** 顯示用的小孩名字 */
+  forPlayerName?: string;
 }
 
-export function PaymentItemCard({ entry }: Props) {
+export function PaymentItemCard({ entry, forPlayerId, forPlayerName }: Props) {
   const { t } = useTranslation();
   const { item, record } = entry;
   const [open, setOpen] = useState(false);
@@ -95,6 +99,8 @@ export function PaymentItemCard({ entry }: Props) {
         onClose={() => setOpen(false)}
         item={item}
         editing={editingTarget}
+        forPlayerId={forPlayerId}
+        forPlayerName={forPlayerName}
       />
     </article>
   );

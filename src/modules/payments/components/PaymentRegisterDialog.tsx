@@ -38,9 +38,13 @@ interface Props {
   item: PaymentItemRow;
   /** 既有的 pending/rejected 紀錄，傳入代表編輯模式 */
   editing?: PaymentRecordRow | null;
+  /** 家長代替小孩繳費時，傳入小孩的 player_id */
+  forPlayerId?: string;
+  /** 顯示用的小孩名字（配合 forPlayerId 提示用戶目前操作對象） */
+  forPlayerName?: string;
 }
 
-export function PaymentRegisterDialog({ open, onClose, item, editing }: Props) {
+export function PaymentRegisterDialog({ open, onClose, item, editing, forPlayerId, forPlayerName }: Props) {
   const { t } = useTranslation();
   const register_ = useRegisterPayment();
   const update = useUpdateMyPayment();
@@ -88,7 +92,7 @@ export function PaymentRegisterDialog({ open, onClose, item, editing }: Props) {
     if (editing) {
       await update.mutateAsync({ id: editing.id, ...payload });
     } else {
-      await register_.mutateAsync({ item_id: item.id, ...payload });
+      await register_.mutateAsync({ item_id: item.id, forPlayerId, ...payload });
     }
     onClose();
   };
@@ -115,6 +119,11 @@ export function PaymentRegisterDialog({ open, onClose, item, editing }: Props) {
         <header>
           <h3 className="text-base font-semibold">{t('payments:form.title')}</h3>
           <p className="text-xs text-muted-foreground">{item.name}</p>
+          {forPlayerName ? (
+            <p className="mt-0.5 text-xs font-medium text-primary">
+              {t('payments:parent.selectChild')}：{forPlayerName}
+            </p>
+          ) : null}
         </header>
 
         <div className="grid gap-3 sm:grid-cols-2">

@@ -93,9 +93,8 @@ export default function PaymentsPage() {
                     <PaymentItemCard
                       key={`${child.childId}::${entry.item.id}`}
                       entry={entry}
-                      // PaymentItemCard 內部的 useRegisterPayment 目前使用 auth.uid()；
-                      // Phase 3 完整版可傳 forPlayerId prop 讓它代替小孩送出。
-                      // 目前顯示狀態正確，繳費操作仍需使用球員本人帳號操作。
+                      forPlayerId={child.childId}
+                      forPlayerName={child.childName}
                     />
                   ))
                 )}
