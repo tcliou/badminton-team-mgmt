@@ -5,11 +5,21 @@ INSERT INTO public.roles (id, name, description, is_system)
 VALUES ('55555555-5555-5555-5555-555555555555', 'parent', '家長，可以幫小孩請假、繳費與查看訓練', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Give parent basic permissions (dashboard, etc.)
+-- Give parent basic permissions
+-- 正確的 key 參照 0002_seed_permissions_roles.sql：
+--   page:home:view, page:leaves:view, page:payments:view,
+--   page:finance:view, page:announcements:view, page:training:view
 INSERT INTO public.role_permissions (role_id, permission_key)
 SELECT '55555555-5555-5555-5555-555555555555', key
 FROM public.permissions
-WHERE key IN ('page:dashboard:view', 'page:leaves:view', 'page:finance:view', 'page:announcements:view', 'page:trainings:view')
+WHERE key IN (
+  'page:home:view',
+  'page:leaves:view',
+  'page:payments:view',
+  'page:finance:view',
+  'page:announcements:view',
+  'page:training:view'
+)
 ON CONFLICT DO NOTHING;
 
 -- 2. Create player_parents table
