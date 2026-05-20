@@ -85,10 +85,29 @@ jobs:
           supabase functions deploy delete-user \
             --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
 
-  # ── 等前兩個 job 都成功才 deploy Pages ─────────────────────────────────
+  # ── DB Migration（只套用尚未執行的 migration，不會刪資料）──────────────
+  db-migrate:
+    name: Apply DB Migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Push migrations to production
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db push \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+
+  # ── 等三個 job 都成功才 deploy Pages ────────────────────────────────────
   deploy:
     name: Deploy
-    needs: [build, deploy-functions]
+    needs: [build, deploy-functions, db-migrate]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
