@@ -69,8 +69,8 @@
 ### 1. Clone 與安裝
 
 ```bash
-git clone https://github.com/tcliou/badminton-gemini.git
-cd badminton-gemini
+git clone https://github.com/tcliou/badminton-team-mgmt.git
+cd badminton-team-mgmt
 pnpm install
 ```
 
@@ -284,4 +284,4 @@ pnpm e2e              # Playwright E2E（需本機 Supabase 運行）
 
 ## 貢獻與回報
 
-Bug 回報與功能建議請開 [GitHub Issue](https://github.com/tcliou/badminton-gemini/issues)。
+Bug 回報與功能建議請開 [GitHub Issue](https://github.com/tcliou/badminton-team-mgmt/issues)。
