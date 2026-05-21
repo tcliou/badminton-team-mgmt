@@ -29,13 +29,13 @@ export function usePendingPayments() {
   });
 }
 
-/** 對 payment-proofs bucket 的私有檔案產生 60 秒 signed URL */
+/** 對 payment-proofs bucket 的私有檔案產生 15 分鐘 signed URL */
 export function useProofSignedUrl() {
   return useMutation({
     mutationFn: async (path: string): Promise<string> => {
       const { data, error } = await supabase.storage
         .from('payment-proofs')
-        .createSignedUrl(path, 60);
+        .createSignedUrl(path, 900);  // 15 分鐘（設計文件要求）
       if (error) throw error;
       return data.signedUrl;
     },

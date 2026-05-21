@@ -219,7 +219,7 @@ export function useMyProofSignedUrl() {
     mutationFn: async (path: string): Promise<string> => {
       const { data, error } = await supabase.storage
         .from('payment-proofs')
-        .createSignedUrl(path, 60);
+        .createSignedUrl(path, 900);  // 15 分鐘（設計文件要求）
       if (error) throw error;
       return data.signedUrl;
     },
