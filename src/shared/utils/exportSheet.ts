@@ -1,42 +1,61 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 /**
  * 把 rows + headers 寫成 .xlsx 檔下載。
  * Excel / Google Sheets / Numbers 都能直接打開。
  *
- * 為什麼用 SheetJS：
- *   - 純前端產出（不需 server）
- *   - 一個函式同時支援 .xlsx / .csv（看副檔名）
- *   - bundle ~150KB（只有匯出時才會 lazy 載入，平時不影響）
+ * 為什麼改用 ExcelJS（取代 SheetJS/xlsx）：
+ *   - SheetJS v0.18.x 有 HIGH CVE（Prototype Pollution、ReDoS）
+ *   - SheetJS v0.19+ 已改為商業授權，無法使用
+ *   - ExcelJS 是 MIT 授權，無已知 HIGH/CRITICAL CVE
  *
  * @param sheets - 多 sheet 結構：每個 entry 一張 worksheet
- * @param fileName - 含副檔名（.xlsx 或 .csv）
+ * @param fileName - 含副檔名（.xlsx）
  */
-export function exportSheet(
+export async function exportSheet(
   sheets: Array<{
     name: string;
     headers: string[];
     rows: Array<Array<string | number | null>>;
   }>,
   fileName: string,
-): void {
-  const wb = XLSX.utils.book_new();
+): Promise<void> {
+  const wb = new ExcelJS.Workbook();
+
   for (const s of sheets) {
-    const aoa = [s.headers, ...s.rows];
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    // 自動欄寬：每欄取該欄資料的最長字數 + 2
-    ws['!cols'] = s.headers.map((_, colIdx) => {
-      const maxLen = aoa.reduce((acc, row) => {
+    const ws = wb.addWorksheet(sanitizeSheetName(s.name));
+
+    // header 列
+    ws.addRow(s.headers);
+
+    // 資料列
+    for (const row of s.rows) {
+      ws.addRow(row.map((cell) => (cell == null ? '' : cell)));
+    }
+
+    // 自動欄寬：取每欄的最長視覺寬度 + 2，上限 40
+    const allRows = [s.headers, ...s.rows];
+    ws.columns = s.headers.map((_, colIdx) => {
+      const maxLen = allRows.reduce((acc, row) => {
         const cell = row[colIdx];
         const txt = cell == null ? '' : String(cell);
         return Math.max(acc, displayWidth(txt));
       }, 0);
-      return { wch: Math.min(Math.max(maxLen + 2, 8), 40) };
+      return { width: Math.min(Math.max(maxLen + 2, 8), 40) };
     });
-    XLSX.utils.book_append_sheet(wb, ws, sanitizeSheetName(s.name));
   }
-  // SheetJS 會根據副檔名自動決定格式
-  XLSX.writeFile(wb, fileName);
+
+  // 產出 ArrayBuffer → Blob → 觸發下載
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 /**
