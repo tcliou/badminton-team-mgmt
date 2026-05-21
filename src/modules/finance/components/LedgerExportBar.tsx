@@ -13,7 +13,7 @@ interface Props {
 
 /**
  * 匯出工具列：Excel 與列印 / PDF。
- * Excel 走 ExcelJS 寫 .xlsx，瀏覽器直接下載。
+ * Excel 走 SheetJS 寫 .xlsx，瀏覽器直接下載。
  * 列印走 window.print()，搭配 LedgerPrintView 的 print:block 樣式。
  */
 export function LedgerExportBar({ dateRange, teamName }: Props) {
@@ -21,7 +21,7 @@ export function LedgerExportBar({ dateRange, teamName }: Props) {
   const rangeQ = useRangeTransactions(dateRange.start, dateRange.end);
   const ytd = useYearToDateSummary(dateRange.start);
 
-  const handleExportXlsx = async () => {
+  const handleExportXlsx = () => {
     const txs = rangeQ.data ?? [];
     const summary = summarizeTransactions(txs);
     const rangeLabel = `${format(dateRange.start, 'yyyyMMdd')}-${format(dateRange.end, 'yyyyMMdd')}`;
@@ -84,7 +84,7 @@ export function LedgerExportBar({ dateRange, teamName }: Props) {
         summaryRows.push([cat, val]);
       });
 
-    await exportSheet(
+    exportSheet(
       [
         { name: `總結與分類分析`, headers: ['項目', '數値'], rows: summaryRows },
         { name: `收支明細`, headers, rows },

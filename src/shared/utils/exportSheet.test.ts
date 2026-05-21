@@ -1,37 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as XLSX from 'xlsx';
 import { exportSheet, printCurrentPage } from './exportSheet';
 
-// Mock ExcelJS 避免實際寫 binary
-// ExcelJS 是 CJS default export：import ExcelJS from 'exceljs' → ExcelJS.Workbook
-const mockAddRow = vi.fn();
-const mockAddWorksheet = vi.fn(() => ({
-  addRow: mockAddRow,
-  columns: [],
-}));
-const mockWriteBuffer = vi.fn(() => Promise.resolve(new ArrayBuffer(0)));
-
-vi.mock('exceljs', () => ({
-  default: {
-    Workbook: vi.fn().mockImplementation(() => ({
-      addWorksheet: mockAddWorksheet,
-      xlsx: { writeBuffer: mockWriteBuffer },
-    })),
-  },
-}));
-
-// Mock browser APIs（jsdom 沒有 URL.createObjectURL）
-vi.stubGlobal('URL', {
-  createObjectURL: vi.fn(() => 'blob:mock'),
-  revokeObjectURL: vi.fn(),
-});
-
-// Mock document.createElement('a').click
-const mockClick = vi.fn();
-vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
-  if (tag === 'a') {
-    return { href: '', download: '', click: mockClick } as unknown as HTMLAnchorElement;
-  }
-  return document.createElement(tag);
+// Mock SheetJS 避免實際寫 binary
+vi.mock('xlsx', () => {
+  const ws = {};
+  const wb = { SheetNames: [], Sheets: {} };
+  return {
+    utils: {
+      book_new: vi.fn(() => wb),
+      aoa_to_sheet: vi.fn(() => ws),
+      book_append_sheet: vi.fn(),
+    },
+    writeFile: vi.fn(),
+  };
 });
 
 describe('exportSheet', () => {
@@ -39,35 +21,42 @@ describe('exportSheet', () => {
     vi.clearAllMocks();
   });
 
-  it('呼叫 Workbook.xlsx.writeBuffer 並觸發下載', async () => {
-    await exportSheet(
+  it('呼叫 XLSX.writeFile 並帶入 fileName', () => {
+    exportSheet(
       [{ name: 'Sheet1', headers: ['日期', '金額'], rows: [['2026-01', 1000]] }],
       'test.xlsx',
     );
-    expect(mockWriteBuffer).toHaveBeenCalled();
-    expect(mockClick).toHaveBeenCalled();
+    expect(XLSX.writeFile).toHaveBeenCalledWith(expect.anything(), 'test.xlsx');
   });
 
-  it('多個 sheet 各自呼叫 addWorksheet', async () => {
-    await exportSheet(
+  it('多個 sheet 各自呼叫 book_append_sheet', () => {
+    exportSheet(
       [
         { name: 'A', headers: ['col'], rows: [] },
         { name: 'B', headers: ['col'], rows: [] },
       ],
       'multi.xlsx',
     );
-    expect(mockAddWorksheet).toHaveBeenCalledTimes(2);
+    expect(XLSX.utils.book_append_sheet).toHaveBeenCalledTimes(2);
   });
 
-  it('sheet name 含非法字元時被替換為底線', async () => {
-    await exportSheet([{ name: 'test/name', headers: [], rows: [] }], 'out.xlsx');
-    expect(mockAddWorksheet).toHaveBeenCalledWith('test_name');
+  it('sheet name 含非法字元時被替換為底線', () => {
+    exportSheet([{ name: 'test/name', headers: [], rows: [] }], 'out.xlsx');
+    expect(XLSX.utils.book_append_sheet).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      'test_name',
+    );
   });
 
-  it('sheet name 超過 31 字時截斷', async () => {
+  it('sheet name 超過 31 字時截斷', () => {
     const longName = 'a'.repeat(40);
-    await exportSheet([{ name: longName, headers: [], rows: [] }], 'out.xlsx');
-    expect(mockAddWorksheet).toHaveBeenCalledWith('a'.repeat(31));
+    exportSheet([{ name: longName, headers: [], rows: [] }], 'out.xlsx');
+    expect(XLSX.utils.book_append_sheet).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      'a'.repeat(31),
+    );
   });
 });
 

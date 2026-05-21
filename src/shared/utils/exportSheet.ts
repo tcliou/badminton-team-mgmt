@@ -1,61 +1,47 @@
-import ExcelJS from 'exceljs';
+import * as XLSX from 'xlsx';
 
 /**
  * 把 rows + headers 寫成 .xlsx 檔下載。
  * Excel / Google Sheets / Numbers 都能直接打開。
  *
- * 為什麼改用 ExcelJS（取代 SheetJS/xlsx）：
- *   - SheetJS v0.18.x 有 HIGH CVE（Prototype Pollution、ReDoS）
- *   - SheetJS v0.19+ 已改為商業授權，無法使用
- *   - ExcelJS 是 MIT 授權，無已知 HIGH/CRITICAL CVE
+ * 為什麼用 SheetJS（xlsx）：
+ *   - 純前端產出（不需 server），相容所有現代瀏覽器
+ *   - 一個函式同時支援 .xlsx / .csv（看副檔名）
+ *   - ExcelJS 雖然 MIT 授權，但依賴 Node.js fs/stream，無法在 browser bundle
+ *
+ * 已知 CVE 與風險評估（見 .trivyignore）：
+ *   - GHSA-4r6h-8v6p-xvw6（Prototype Pollution）：僅在「解析 Excel」時觸發
+ *   - GHSA-5pgg-2g8v-p4x9（ReDoS）：僅在「解析 Excel」時觸發
+ *   本程式碼「只寫不讀」，永遠不接受外部 Excel 輸入，攻擊向量不存在。
  *
  * @param sheets - 多 sheet 結構：每個 entry 一張 worksheet
- * @param fileName - 含副檔名（.xlsx）
+ * @param fileName - 含副檔名（.xlsx 或 .csv）
  */
-export async function exportSheet(
+export function exportSheet(
   sheets: Array<{
     name: string;
     headers: string[];
     rows: Array<Array<string | number | null>>;
   }>,
   fileName: string,
-): Promise<void> {
-  const wb = new ExcelJS.Workbook();
-
+): void {
+  const wb = XLSX.utils.book_new();
   for (const s of sheets) {
-    const ws = wb.addWorksheet(sanitizeSheetName(s.name));
-
-    // header 列
-    ws.addRow(s.headers);
-
-    // 資料列
-    for (const row of s.rows) {
-      ws.addRow(row.map((cell) => (cell == null ? '' : cell)));
-    }
-
-    // 自動欄寬：取每欄的最長視覺寬度 + 2，上限 40
-    const allRows = [s.headers, ...s.rows];
-    ws.columns = s.headers.map((_, colIdx) => {
-      const maxLen = allRows.reduce((acc, row) => {
+    const aoa = [s.headers, ...s.rows];
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    // 自動欄寬：每欄取該欄資料的最長字數 + 2
+    ws['!cols'] = s.headers.map((_, colIdx) => {
+      const maxLen = aoa.reduce((acc, row) => {
         const cell = row[colIdx];
         const txt = cell == null ? '' : String(cell);
         return Math.max(acc, displayWidth(txt));
       }, 0);
-      return { width: Math.min(Math.max(maxLen + 2, 8), 40) };
+      return { wch: Math.min(Math.max(maxLen + 2, 8), 40) };
     });
+    XLSX.utils.book_append_sheet(wb, ws, sanitizeSheetName(s.name));
   }
-
-  // 產出 ArrayBuffer → Blob → 觸發下載
-  const buffer = await wb.xlsx.writeBuffer();
-  const blob = new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.click();
-  URL.revokeObjectURL(url);
+  // SheetJS 會根據副檔名自動決定格式
+  XLSX.writeFile(wb, fileName);
 }
 
 /**

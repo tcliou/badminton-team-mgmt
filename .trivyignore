@@ -1,0 +1,34 @@
+# .trivyignore
+# Trivy CVE 豁免清單
+#
+# 格式：每行一個 CVE / GHSA ID，空白行與 # 開頭的行為注解。
+# 文件：https://aquasecurity.github.io/trivy/latest/docs/configuration/filtering/#trivyignore
+
+# ──────────────────────────────────────────────────────────────────
+# 套件：xlsx (SheetJS Community Edition v0.18.5)
+# ──────────────────────────────────────────────────────────────────
+
+# GHSA-4r6h-8v6p-xvw6 — Prototype Pollution in SheetJS (CWE-1321)
+# https://github.com/advisories/GHSA-4r6h-8v6p-xvw6
+#
+# 豁免理由：
+#   此漏洞僅在「解析（read/parse）」不受信任的 Excel 檔案時才能觸發。
+#   本系統使用 SheetJS 的唯一用途是「寫出（write）」Excel 報表供下載
+#   （見 src/shared/utils/exportSheet.ts），永遠不接受外部 Excel 輸入，
+#   因此攻擊向量完全不存在。
+#
+# 替代方案評估：
+#   - exceljs（MIT）：依賴 Node.js fs/stream，無法被 Vite browser bundle
+#   - xlsx v0.19+：已改為商業授權，不可使用
+#   - write-excel-file：功能過於簡單，不支援多 sheet / 自動欄寬
+#
+# 複查時機：若未來需要「匯入 Excel 解析資料」，須立即評估替代方案。
+GHSA-4r6h-8v6p-xvw6
+
+# GHSA-5pgg-2g8v-p4x9 — SheetJS Regular Expression Denial of Service (CWE-1333)
+# https://github.com/advisories/GHSA-5pgg-2g8v-p4x9
+#
+# 豁免理由（同上）：
+#   ReDoS 漏洞位於 SheetJS 的字串解析器（parse input），
+#   本系統不解析任何外部輸入，攻擊向量不存在。
+GHSA-5pgg-2g8v-p4x9
