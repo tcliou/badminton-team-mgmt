@@ -4,6 +4,7 @@ import { addDays, subMonths } from 'date-fns';
 import { TrainingList } from '../components/TrainingList';
 import { SingleTrainingForm } from '../components/SingleTrainingForm';
 import { RecurringTrainingForm } from '../components/RecurringTrainingForm';
+import { SelfCheckInCard } from '../components/SelfCheckInCard';
 import { useCan } from '@/core/acl/useCan';
 import { PERMISSIONS } from '@/core/acl/permissions';
 import { cn } from '@/shared/utils/cn';
@@ -31,6 +32,9 @@ export default function TrainingPage() {
       <header>
         <h1 className="text-xl font-bold md:text-2xl">{t('training:title')}</h1>
       </header>
+
+      {/* 球員自助打卡區（今日訓練） */}
+      {!canManage ? <SelfCheckInCard /> : null}
 
       {canManage ? (
         <div className="grid gap-3 lg:grid-cols-2">

@@ -88,6 +88,9 @@ export default function LoginPage() {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? t('common.loading') : t('auth.signIn')}
           </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            {t('auth.forgotPassword')}
+          </p>
         </form>
       </div>
       <p className="mt-4 text-xs text-muted-foreground">

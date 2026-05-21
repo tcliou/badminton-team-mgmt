@@ -19,7 +19,10 @@
     "delete": "Delete",
     "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone. All leave requests, attendance records, and payment records for this account will be permanently deleted.",
     "deleteConfirmUsername": "Type the username \"{{username}}\" to confirm deletion:",
-    "deleteAborted": "Username did not match. Deletion cancelled."
+    "deleteAborted": "Username did not match. Deletion cancelled.",
+    "resetPassword": "Reset password",
+    "resetPasswordConfirm": "Reset the password for \"{{name}}\"? A new one-time password will be generated.",
+    "resetPasswordResult": "New one-time password for \"{{name}}\": {{password}}. Please share it immediately. They will be required to change it on next login."
   },
   "userRolesEditor": {
     "title": "Edit roles for {{name}}",

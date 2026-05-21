@@ -45,5 +45,10 @@
     "late": "遲到",
     "save": "儲存點名",
     "savedAt": "已儲存於 {{when}}"
+  },
+  "selfCheckIn": {
+    "title": "今日打卡",
+    "unnamed": "訓練",
+    "hint": "打卡後仍可修改狀態。教練點名結果以教練為準。"
   }
 }

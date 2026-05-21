@@ -48,7 +48,8 @@
     "passwordMismatch": "Passwords do not match",
     "passwordTooShort": "Password must be at least 8 characters",
     "changePasswordSuccess": "Password updated",
-    "changePassword": "Change password"
+    "changePassword": "Change password",
+    "forgotPassword": "Forgot your password? Contact an admin to reset it."
   },
   "errors": {
     "forbiddenTitle": "Forbidden",

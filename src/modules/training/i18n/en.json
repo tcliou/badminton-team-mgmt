@@ -45,5 +45,10 @@
     "late": "Late",
     "save": "Save",
     "savedAt": "Saved at {{when}}"
+  },
+  "selfCheckIn": {
+    "title": "Today's Check-in",
+    "unnamed": "Training",
+    "hint": "You can update your status after checking in. Coach's roll call takes priority."
   }
 }

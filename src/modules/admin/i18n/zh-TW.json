@@ -19,7 +19,10 @@
     "delete": "刪除",
     "deleteConfirm": "刪除「{{name}}」？此操作不可復原，該帳號的請假、訓練出席、繳費記錄將一併刪除。",
     "deleteConfirmUsername": "請輸入帳號「{{username}}」來確認刪除：",
-    "deleteAborted": "帳號輸入錯誤，已取消刪除。"
+    "deleteAborted": "帳號輸入錯誤，已取消刪除。",
+    "resetPassword": "重設密碼",
+    "resetPasswordConfirm": "確定重設「{{name}}」的密碼？系統將產生新的一次性密碼。",
+    "resetPasswordResult": "「{{name}}」的新一次性密碼：{{password}}，請立即轉交給使用者。首次登入後需強制修改。"
   },
   "userRolesEditor": {
     "title": "編輯 {{name}} 的角色",

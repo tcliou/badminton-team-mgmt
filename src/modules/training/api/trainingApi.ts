@@ -261,3 +261,80 @@ export function useUpsertAttendance() {
 export function useUpcomingTrainings(days = 14) {
   return useTrainings(new Date(), addDays(new Date(), days));
 }
+
+/** 球員：取得今日訓練（開始於今天 00:00 ~ 23:59）含自己的出席紀錄 */
+export function useMyAttendanceToday() {
+  const userId = useAuthStore((s) => s.profile?.id);
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  return useQuery({
+    queryKey: ['training', 'today-checkin', userId, todayStart.toDateString()],
+    enabled: Boolean(userId),
+    queryFn: async () => {
+      // 今日訓練
+      const { data: sessions, error: sErr } = await supabase
+        .from('training_sessions')
+        .select('*, event:calendar_events!training_sessions_calendar_event_id_fkey(*)')
+        .gte('event.starts_at', todayStart.toISOString())
+        .lte('event.starts_at', todayEnd.toISOString())
+        .order('event(starts_at)', { ascending: true });
+      if (sErr) throw sErr;
+
+      const todayTrainings = (sessions ?? []) as unknown as TrainingWithEvent[];
+      if (todayTrainings.length === 0) return [];
+
+      // 自己今日的出席紀錄
+      const ids = todayTrainings.map((t) => t.id);
+      const { data: records, error: rErr } = await supabase
+        .from('attendance_records')
+        .select('*')
+        .eq('player_id', userId!)
+        .in('training_id', ids);
+      if (rErr) throw rErr;
+
+      const recordMap = new Map<string, AttendanceRow>(
+        (records ?? []).map((r) => [r.training_id, r as AttendanceRow]),
+      );
+
+      return todayTrainings.map((t) => ({
+        training: t,
+        myRecord: recordMap.get(t.id) ?? null,
+      }));
+    },
+  });
+}
+
+/** 球員：自助打卡（只能標 present / late） */
+export function useSelfCheckIn() {
+  const userId = useAuthStore((s) => s.profile?.id);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      trainingId,
+      status,
+    }: {
+      trainingId: string;
+      status: 'present' | 'late';
+    }) => {
+      if (!userId) throw new Error('not authenticated');
+      const { error } = await supabase.from('attendance_records').upsert(
+        {
+          training_id: trainingId,
+          player_id: userId,
+          status,
+          recorded_by: userId,
+          recorded_at: new Date().toISOString(),
+        },
+        { onConflict: 'training_id,player_id' },
+      );
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['training', 'today-checkin'] });
+      void qc.invalidateQueries({ queryKey: QK.training.list('', '') });
+    },
+  });
+}

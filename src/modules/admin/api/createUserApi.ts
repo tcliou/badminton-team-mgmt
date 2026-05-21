@@ -31,8 +31,26 @@ export function useCreateUser() {
       return data;
     },
     onSuccess: () => {
-      // 刷新使用者列表
       void qc.invalidateQueries({ queryKey: ['admin', 'usersWithRoles'] });
+    },
+  });
+}
+
+/**
+ * 呼叫 Edge Function `reset-user-password`，
+ * 產生新的臨時密碼並強制使用者下次登入時更改。
+ * 只能由具有 action:users:manage 權限的 admin 呼叫。
+ */
+export function useResetUserPassword() {
+  return useMutation({
+    mutationFn: async (userId: string): Promise<{ tempPassword: string }> => {
+      const { data, error } = await supabase.functions.invoke<{ tempPassword: string }>(
+        'reset-user-password',
+        { body: { userId } },
+      );
+      if (error) throw new Error(error.message);
+      if (!data) throw new Error('No data returned from reset-user-password function');
+      return data;
     },
   });
 }
