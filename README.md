@@ -276,7 +276,7 @@ pnpm e2e              # Playwright E2E（需本機 Supabase 運行）
 本專案採用 **MIT License with Attribution**。  
 您可以自由使用、修改、再發布，但**必須**在衍生作品的文件或 About 頁面中，以可見方式標註原始專案與作者：
 
-> "Based on Badminton Team Manager by Tzu-Chiang Liou — https://github.com/tcliou/badminton-gemini"
+> "Based on Badminton Team Manager by Tzu-Chiang Liou — https://github.com/tcliou/badminton-team-mgmt"
 
 詳見 [LICENSE](LICENSE)。
 
