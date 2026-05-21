@@ -91,6 +91,7 @@ jobs:
           severity: HIGH,CRITICAL      # 只回報 HIGH 以上
           exit-code: 1                 # 發現漏洞就讓 CI 失敗（阻擋 merge）
           ignore-unfixed: true         # 跳過尚無官方修補的漏洞（避免誤報）
+          trivyignores: .trivyignore   # 豁免清單（xlsx write-only CVEs）
           format: sarif
           output: trivy-results.sarif
 
