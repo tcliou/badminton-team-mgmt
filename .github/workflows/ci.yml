@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -25,7 +25,7 @@ jobs:
           version: 9
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
@@ -44,7 +44,7 @@ jobs:
 
       - name: Upload coverage
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
@@ -61,8 +61,43 @@ jobs:
         run: pnpm build
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
           retention-days: 3
+
+  # ── Trivy 漏洞掃描（與 quality job 並行，不阻塞測試）──────────────────
+  security-scan:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      security-events: write   # 上傳 SARIF 到 GitHub Security tab
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 掃 npm 依賴（pnpm-lock.yaml）
+      - name: Run Trivy — npm dependencies
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          vuln-type: library           # 只看程式庫漏洞
+          severity: HIGH,CRITICAL      # 只回報 HIGH 以上
+          exit-code: 1                 # 發現漏洞就讓 CI 失敗（阻擋 merge）
+          ignore-unfixed: true         # 跳過尚無官方修補的漏洞（避免誤報）
+          format: sarif
+          output: trivy-results.sarif
+
+      # 即使上一步失敗，仍上傳結果給 Security tab 檢視
+      - name: Upload Trivy SARIF results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy

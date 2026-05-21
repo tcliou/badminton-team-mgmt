@@ -1,0 +1,52 @@
+# .github/dependabot.yml
+# Dependabot 自動掃描 npm 套件漏洞，並開 PR 更新有 CVE 的依賴。
+# 文件：https://docs.github.com/en/code-security/dependabot
+
+version: 2
+updates:
+  # npm (前端 + pnpm)
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Taipei
+    # 最多同時開 10 個 PR，避免淹沒
+    open-pull-requests-limit: 10
+    # 只在有安全性修補時才更新（不含版本升級）
+    groups:
+      # 把同一家的套件更新合併成一個 PR
+      react:
+        patterns:
+          - "react*"
+          - "@tanstack/*"
+      supabase:
+        patterns:
+          - "@supabase/*"
+      build-tools:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "eslint*"
+          - "@typescript-eslint/*"
+    # PR 標籤（方便 filter）
+    labels:
+      - "dependencies"
+      - "security"
+    # 指定 reviewer（可選）
+    # reviewers:
+    #   - "tcliou"
+
+  # GitHub Actions 本身的 action 版本
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Taipei
+    open-pull-requests-limit: 5
+    labels:
+      - "github-actions"
+      - "dependencies"

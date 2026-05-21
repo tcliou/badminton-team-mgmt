@@ -1,0 +1,60 @@
+name: CodeQL Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # 每週六 UTC 02:00 定期掃描（即使沒有 push）
+  schedule:
+    - cron: '0 2 * * 6'
+
+# 只需要讀取和上傳 SARIF 的最小權限
+permissions:
+  contents: read
+  security-events: write   # 上傳掃描結果到 GitHub Security tab
+  actions: read            # 讀取 workflow 狀態
+
+jobs:
+  analyze:
+    name: CodeQL Analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+        # 未來若加入 Go / Python 後端也一起掃：
+        # language: [javascript-typescript, python]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 初始化 CodeQL，載入 security-extended query（比預設更嚴格）
+      # security-extended 涵蓋：
+      #   - CWE-79 (XSS)
+      #   - CWE-89 (SQL injection)
+      #   - CWE-022 (Path traversal)
+      #   - CWE-094 (Code injection)
+      #   - CWE-312 (Cleartext storage of sensitive info)
+      #   - 等共 60+ 規則
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+
+      # TypeScript/JavaScript 不需要 build，但 autobuild 確保 TS 型別正確展開
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      # 執行分析並上傳至 GitHub Security tab
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          # 若發現 HIGH/CRITICAL 漏洞，讓 workflow 失敗以阻擋 merge
+          # （預設行為；如果想先 audit-only 模式可移除此行）
+          upload: always
