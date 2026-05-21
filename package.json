@@ -1,7 +1,14 @@
 {
   "name": "badminton-team-mgmt",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "模組化、雙語、權限完善的羽球校隊管理系統 — React + Vite + Supabase",
+  "license": "MIT",
+  "author": "Tzu-Chiang Liou <tcliou> (https://github.com/tcliou)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tcliou/badminton-gemini"
+  },
+  "private": false,
   "type": "module",
   "scripts": {
     "dev": "vite",

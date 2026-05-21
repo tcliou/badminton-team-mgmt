@@ -1,9 +1,10 @@
 # 羽球校隊管理系統 — 需求與設計文件
 
-> 版本：v0.1（待審）
+> 版本：v1.0（已上線）
 > 撰寫日期：2026-05-10
-> 撰寫人：系統架構師（Claude）
-> 預定審核：產品負責人 / TC
+> 最後更新：2026-05-21
+> 撰寫人：Tzu-Chiang Liou（tcliou）
+> 狀態：Phase 1–3 完成交付；Phase 4 進行中
 
 ---
 
@@ -70,14 +71,14 @@
 
 ### 3.1 P0：認證與授權系統
 
-| ID | 需求 | 驗收條件 |
-| --- | --- | --- |
-| FR-A-01 | 球員以 **username + 密碼** 登入（非 email） | Given 一個家庭兩位球員共用 email，When 各自註冊 username 後，Then 兩人能獨立登入且資料不互通 |
-| FR-A-02 | 管理員可建立/停用帳號 | Given Admin 進入帳號管理，When 點「新增」並填 username/姓名/角色，Then 系統建立帳號並產生臨時密碼 |
-| FR-A-03 | 帳號可掛多個角色 | 一位使用者可同時是 Coach + Finance |
-| FR-A-04 | 頁面級 ACL | Admin 可勾選「此角色可看 / 可編輯 哪些頁面」，未授權者看不到該選單項 |
-| FR-A-05 | 密碼重設 | 提供「忘記密碼」流程；若 profile 有 email 則寄信，否則由 Admin 後台重設 |
-| FR-A-06 | Session 持久化 | 重新整理或關閉瀏覽器再開，仍維持登入（Supabase Auth 預設行為） |
+| ID | 需求 | 狀態 | 驗收條件 |
+| --- | --- | --- | --- |
+| FR-A-01 | 球員以 **username + 密碼** 登入（非 email） | ✅ 已完成 | Given 一個家庭兩位球員共用 email，When 各自註冊 username 後，Then 兩人能獨立登入且資料不互通 |
+| FR-A-02 | 管理員可建立/停用帳號 | ✅ 已完成 | Given Admin 進入帳號管理，When 點「新增」並填 username/姓名/角色，Then 系統建立帳號並產生臨時密碼 |
+| FR-A-03 | 帳號可掛多個角色 | ✅ 已完成 | 一位使用者可同時是 Coach + Finance |
+| FR-A-04 | 頁面級 ACL | ✅ 已完成 | Admin 可勾選「此角色可看 / 可編輯 哪些頁面」，未授權者看不到該選單項 |
+| FR-A-05 | 密碼重設 | ✅ 已完成 | Admin 後台「重設密碼」→ 產生 12 位臨時密碼 → 顯示於安全 modal；登入頁顯示「忘記密碼請聯絡管理員」 |
+| FR-A-06 | Session 持久化 | ✅ 已完成 | 重新整理或關閉瀏覽器再開，仍維持登入（Supabase Auth 預設行為） |
 
 ### 3.2 P1：首頁
 
@@ -686,6 +687,7 @@ using (has_permission(auth.uid(), 'action:announcements:manage'));
 | 教練忘了審核請假 | 中 | Phase 4 in-app 紅點；未來可加 email 提醒 |
 | 球員亂改個人資訊 | 低 | RLS + audit log（profiles 改動寫 `audit_logs` 表） |
 | 翻譯漏掉 | 中 | i18n key 缺漏在 dev 模式拋警告，CI 加 `i18next-parser` 偵測 |
+| **xlsx 套件升版授權變更** | 低 | 目前使用 v0.18.5（Apache-2.0，免費）；v0.19+ SheetJS 已改為商業授權。若需升版，改用 `exceljs`（MIT）作為替代方案。Dependabot 自動 PR 升版時需人工確認授權。 |
 
 ---
 
@@ -693,21 +695,25 @@ using (has_permission(auth.uid(), 'action:announcements:manage'));
 
 - 比賽報名與分組抽籤
 - 器材借還
-- 家長帳號（看自己孩子）
 - 推播通知（OneSignal 或 Web Push）
 - 多隊伍 SaaS 化（移除 `team_id` 固定值）
 - 與校務系統 SSO 串接
+- In-app 紅點通知（Phase 4 持續評估）
 
 ---
 
-## 16. 待回答事項（請審核時確認）
+## 16. 設計決策記錄（ADR）
 
-1. 是否同意以**「家庭共用 email、username 為登入主鍵 + synthetic email」** 作為認證解法？ 是
-2. 球員照片預設可見對象：**全隊** vs **僅教練/管理者**？ 全隊
-3. 是否需要「家長角色」？若要，是否要有**家長對球員的綁定關係**（一位家長看多位孩子）？ 不需要，以孩子名義登入即可
-4. 訓練出席紀錄的填寫者：**教練手動勾**、**球員自助打卡**、或兩者皆可？ 球員自助打卡，教練可以修改
-5. 公告本文是否一定要支援 Markdown？或更簡單的純文字 + 附件即可？ 不一定要，文字
-6. 部署目標 GitHub Pages 是 organization repo 還是 user repo？（影響 `base` 設定）user repo
+| # | 問題 | 決策 | 理由 |
+|---|------|------|------|
+| 1 | 認證主鍵 | username + synthetic email | 同家庭多帳號可共用 email |
+| 2 | 球員照片可見範圍 | 全隊皆可看 | 資訊透明，利於凝聚感 |
+| 3 | 家長角色 | 實作獨立家長帳號 + player_parents 綁定 | 需求確認後決定支援 |
+| 4 | 訓練出席填寫者 | 球員自助打卡（教練可修改） | 降低教練操作負擔 |
+| 5 | 公告格式 | 支援 Markdown（含 XSS SafeLink 防護） | 增加排版彈性 |
+| 6 | 部署目標 | GitHub Pages（user repo，base = `/`） | 免費、易維護 |
+| 7 | 密碼重設 | Admin 後台產生臨時密碼，顯示於安全 modal | 系統使用合成 email，無法走標準 email 重設流程 |
+| 8 | issues / player_parents SELECT 可見度 | 不收緊（全隊透明） | 內部協作專案，透明有助溝通 |
 
 ---
 
@@ -715,4 +721,7 @@ using (has_permission(auth.uid(), 'action:announcements:manage'));
 
 | 版本 | 日期 | 變更 |
 | --- | --- | --- |
-| v0.1 | 2026-05-10 | 初版（Claude） |
+| v0.1 | 2026-05-10 | 初版（架構規劃） |
+| v0.2 | 2026-05-12 | Phase 2 完成：球員/請假/訓練/行事曆 |
+| v0.3 | 2026-05-15 | Phase 3 完成：費用/財務/公告/管理後台/議題追蹤/家長角色 |
+| v1.0 | 2026-05-21 | Phase 4 進行中：Audit Log / Storage RLS / 自助打卡 / 密碼重設 / 安全掃描 CI；文件同步更新 |
