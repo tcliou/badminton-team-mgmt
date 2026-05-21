@@ -57,6 +57,9 @@
     "tempPassword": "一次性密碼（首次登入後須強制修改）",
     "tempPasswordWarning": "此密碼只顯示一次，關閉後無法再查看。",
     "copy": "複製密碼",
+    "copied": "已複製！",
+    "resetPasswordResultTitle": "重設密碼成功",
+    "resetPasswordResultDesc": "「{{name}}」的新一次性密碼如下。請立即轉交給使用者，首次登入後需強制修改。",
     "errors": {
       "required": "此欄位為必填",
       "minLength": "帳號至少需 2 個字元",

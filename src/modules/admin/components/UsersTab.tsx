@@ -6,6 +6,7 @@ import { useAuthStore } from '@/core/store/authStore';
 import { useAllRoles } from '@/modules/announcements/api/rolesApi';
 import { UserRolesEditor } from './UserRolesEditor';
 import { CreateUserDialog } from './CreateUserDialog';
+import { ResetPasswordResultDialog } from './ResetPasswordResultDialog';
 import { Loading } from '@/shared/components/Loading';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Input } from '@/shared/components/Input';
@@ -23,6 +24,8 @@ export function UsersTab() {
   const [q, setQ] = useState('');
   const [editing, setEditing] = useState<UserWithRoles | null>(null);
   const [creating, setCreating] = useState(false);
+  // 重設密碼結果 dialog state
+  const [resetResult, setResetResult] = useState<{ displayName: string; tempPassword: string } | null>(null);
 
   const handleToggleStatus = async (u: UserWithRoles) => {
     const next = u.status === 'active' ? 'suspended' : 'active';
@@ -37,12 +40,8 @@ export function UsersTab() {
   const handleResetPassword = async (u: UserWithRoles) => {
     if (!window.confirm(t('admin:users.resetPasswordConfirm', { name: u.display_name }))) return;
     const result = await resetPassword.mutateAsync(u.id);
-    window.alert(
-      t('admin:users.resetPasswordResult', {
-        name: u.display_name,
-        password: result.tempPassword,
-      }),
-    );
+    // 用安全 modal 顯示，取代 window.alert()（alert 可被瀏覽器 extension 攔截）
+    setResetResult({ displayName: u.display_name, tempPassword: result.tempPassword });
   };
 
   const handleDelete = async (u: UserWithRoles) => {
@@ -194,6 +193,14 @@ export function UsersTab() {
       <CreateUserDialog
         open={creating}
         onClose={() => setCreating(false)}
+      />
+
+      {/* 重設密碼結果 dialog（安全 modal，取代 window.alert）*/}
+      <ResetPasswordResultDialog
+        open={Boolean(resetResult)}
+        displayName={resetResult?.displayName ?? ''}
+        tempPassword={resetResult?.tempPassword ?? ''}
+        onClose={() => setResetResult(null)}
       />
     </div>
   );

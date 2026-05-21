@@ -31,7 +31,8 @@
     "retry": "Retry",
     "language": "Language",
     "theme": "Theme",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "close": "Close"
   },
   "auth": {
     "loginTitle": "Sign in",

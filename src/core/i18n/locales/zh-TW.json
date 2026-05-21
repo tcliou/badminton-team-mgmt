@@ -31,7 +31,8 @@
     "retry": "重試",
     "language": "語言",
     "theme": "主題",
-    "comingSoon": "敬請期待"
+    "comingSoon": "敬請期待",
+    "close": "關閉"
   },
   "auth": {
     "loginTitle": "登入",

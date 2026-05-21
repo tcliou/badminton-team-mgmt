@@ -12,7 +12,8 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+  // Edge Function 的 CORS 應限制在自家起源；若未知則最多开放到 supabase.co
+  'Access-Control-Allow-Origin': Deno.env.get('SUPABASE_URL') ?? '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
@@ -48,7 +49,10 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  const callerClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+  // 用 service role key 建立 client，注入 caller JWT header
+  // （與 create-user / delete-user 一致的模式；不使用 ANON_KEY，
+  //  因為 SUPABASE_ANON_KEY 不被 Edge Function 自動注入）
+  const callerClient = createClient(supabaseUrl, serviceRoleKey, {
     global: { headers: { Authorization: authHeader } },
   });
 
@@ -91,7 +95,15 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // 5. 用 Service Role 重設密碼
+  // 6. 防止 admin 重設自己的密碼
+  if (userId === caller.id) {
+    return new Response(JSON.stringify({ error: 'Cannot reset your own password via admin panel' }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // 7. 用 Service Role 重設密碼
   const adminClient = createClient(supabaseUrl, serviceRoleKey);
   const tempPassword = generatePassword(12);
 
@@ -100,7 +112,9 @@ Deno.serve(async (req: Request) => {
   });
 
   if (updateErr) {
-    return new Response(JSON.stringify({ error: updateErr.message }), {
+    // 不直接暴露 DB 錯誤細節（information disclosure）
+    console.error('auth.admin.updateUserById error:', updateErr.message);
+    return new Response(JSON.stringify({ error: 'Failed to reset password. Please try again.' }), {
       status: 500,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });

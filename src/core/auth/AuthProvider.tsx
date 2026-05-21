@@ -25,11 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { setSession, setProfile, setLoading, reset } = useAuthStore.getState();
     let mounted = true;
-    // 診斷 log 預設只在 dev 啟用；正式環境可在 console 跑：
-    //   localStorage.setItem('debug.auth','1') 後重整
-    const isDebug =
-      import.meta.env.DEV ||
-      (typeof window !== 'undefined' && window.localStorage.getItem('debug.auth') === '1');
+    // 診斷 log 限制在 dev 環境；production 永遠關閉，避免 session 資訊洩露
+    // 注意：我們有意移除此前的 localStorage debug flag，
+    //   因為在 production 開放 localStorage override 会成為資訊洩露向量。
+    const isDebug = import.meta.env.DEV;
     const t0 = performance.now();
     const log = (...args: unknown[]) => {
       if (!isDebug) return;

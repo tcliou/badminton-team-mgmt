@@ -57,6 +57,9 @@
     "tempPassword": "One-time Password (must be changed on first login)",
     "tempPasswordWarning": "This password is shown only once. It cannot be retrieved after closing this dialog.",
     "copy": "Copy Password",
+    "copied": "Copied!",
+    "resetPasswordResultTitle": "Password Reset Successful",
+    "resetPasswordResultDesc": "New one-time password for \"{{name}}\" is shown below. Share it immediately — they will be required to change it on next login.",
     "errors": {
       "required": "This field is required",
       "minLength": "Username must be at least 2 characters",
