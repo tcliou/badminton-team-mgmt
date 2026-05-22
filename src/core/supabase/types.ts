@@ -191,6 +191,26 @@ export type Database = {
           }
         ];
       };
+      training_enrollment_forms: {
+        Row: TrainingEnrollmentFormRow;
+        Insert: Pick<TrainingEnrollmentFormRow, 'title'> & Partial<TrainingEnrollmentFormRow>;
+        Update: Partial<TrainingEnrollmentFormRow>;
+        Relationships: [];
+      };
+      training_enrollment_rows: {
+        Row: TrainingEnrollmentRowRow;
+        Insert: Pick<TrainingEnrollmentRowRow, 'form_id' | 'player_id'> & Partial<TrainingEnrollmentRowRow>;
+        Update: Partial<TrainingEnrollmentRowRow>;
+        Relationships: [
+          {
+            foreignKeyName: "training_enrollment_rows_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
     };
     Views: {
       v_my_profile: {
@@ -454,4 +474,25 @@ export type PlayerParentRow = {
   player_id: string;
   relationship: string | null;
   created_at: string;
+};
+
+export type TrainingEnrollmentFormRow = {
+  id: string;
+  title: string;
+  dates: string[];
+  status: 'draft' | 'published' | 'closed';
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TrainingEnrollmentRowRow = {
+  id: string;
+  form_id: string;
+  player_id: string;
+  enrollment_type: string | null;
+  date_records: Record<string, number>;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
 };

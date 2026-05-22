@@ -1095,6 +1095,106 @@ export type Database = {
         }
         Relationships: []
       }
+      training_enrollment_forms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          dates: Json
+          id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          dates?: Json
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          dates?: Json
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_enrollment_forms_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_enrollment_forms_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_my_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_enrollment_rows: {
+        Row: {
+          created_at: string
+          date_records: Json
+          enrollment_type: string | null
+          form_id: string
+          id: string
+          note: string | null
+          player_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_records?: Json
+          enrollment_type?: string | null
+          form_id: string
+          id?: string
+          note?: string | null
+          player_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_records?: Json
+          enrollment_type?: string | null
+          form_id?: string
+          id?: string
+          note?: string | null
+          player_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_enrollment_rows_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "training_enrollment_forms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_enrollment_rows_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_enrollment_rows_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "v_my_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       training_sessions: {
         Row: {
           batch_id: string | null
