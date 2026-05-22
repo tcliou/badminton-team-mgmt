@@ -8,7 +8,7 @@ import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { CreateEnrollmentFormDialog } from '../components/CreateEnrollmentFormDialog';
-export function formatDateTime(dateString: string): string {
+function formatDateTime(dateString: string): string {
   const d = new Date(dateString);
   return d.toLocaleDateString();
 }

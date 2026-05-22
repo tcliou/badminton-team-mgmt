@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUpdateRow, type EnrollmentRowWithPlayer } from '../api/enrollmentsApi';
+import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
 import { useAuthStore } from '@/core/store/authStore';
 import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
@@ -68,7 +69,7 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
     );
 
     // Debounce or immediate update
-    const patch: any = {};
+    const patch: Partial<TrainingEnrollmentRowRow> = {};
     if (field === 'date' && dateKey) {
       const row = localRows.find((r) => r.id === rowId);
       patch.date_records = { ...row?.date_records, [dateKey]: value };
