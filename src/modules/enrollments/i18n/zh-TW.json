@@ -15,6 +15,7 @@
     "description": "報名規則與公告",
     "dates": "開放日期",
     "datesHint": "請選擇至少一個日期，可多選",
+    "generateSessions": "同時建立每場次報名表",
     "status": "狀態",
     "save": "儲存",
     "cancel": "取消",
@@ -31,20 +32,27 @@
       "clear": "清除區間"
     },
     "table": {
-      "studentId": "班級編號",
+      "studentId": "班級座號",
       "name": "姓名",
       "type": "報名類別",
       "note": "備註",
+      "dailyNote": "當日備註",
+      "dailyInfo": "補充資訊",
       "addPlayer": "+ 加入球員",
       "selectPlayer": "選擇球員",
       "deleteRow": "刪除",
       "deleteRowConfirm": "確定要從這張表單中移除該球員嗎？",
       "total": "已報名總人數",
       "types": {
-        "season": "整季報名",
-        "pre_single": "預先當週單堂",
+        "season": "整季",
+        "pre_single": "預先單堂",
         "single": "當週單堂",
         "skip": "本期不參加"
+      },
+      "dailyNotes": {
+        "leave_early": "需提早離開",
+        "no_change": "不需更動",
+        "leave_of_absence": "需請假（整期 / 預先當週報名者）"
       }
     },
     "messages": {

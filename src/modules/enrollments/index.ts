@@ -16,5 +16,9 @@ export default {
       path: '/enrollments/:id',
       element: lazy(() => import('./pages/EnrollmentDetailPage').then((m) => ({ default: m.EnrollmentDetailPage }))),
     },
+    {
+      path: '/enrollments/:id/sessions/:date',
+      element: lazy(() => import('./pages/EnrollmentSessionPage').then((m) => ({ default: m.EnrollmentSessionPage }))),
+    },
   ],
 } satisfies ModuleDescriptor;

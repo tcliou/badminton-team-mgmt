@@ -13,6 +13,7 @@ const schema = z.object({
   title: z.string().min(1, 'Required'),
   description: z.string().nullable(),
   dates: z.array(z.object({ value: z.string().min(1) })).min(1, 'Select at least one date'),
+  generate_sessions: z.boolean().default(true),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -37,7 +38,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', description: '', dates: [{ value: '' }] },
+    defaultValues: { title: '', description: '', dates: [{ value: '' }], generate_sessions: true },
   });
 
   useEffect(() => {
@@ -45,10 +46,11 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
       reset({
         title: form.title,
         description: form.description || '',
-        dates: form.dates.length > 0 ? form.dates.map(d => ({ value: d })) : [{ value: '' }]
+        dates: form.dates.length > 0 ? form.dates.map(d => ({ value: d })) : [{ value: '' }],
+        generate_sessions: form.generate_sessions ?? true
       });
     } else if (open && !form) {
-      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。\n\n※ 每週球員訓練總人數上限為 24 位。', dates: [{ value: '' }] });
+      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。\n\n※ 每週球員訓練總人數上限為 24 位。', dates: [{ value: '' }], generate_sessions: true });
     }
   }, [open, form, reset]);
 
@@ -64,6 +66,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
       title: data.title,
       description: data.description,
       dates: data.dates.map((d) => d.value).sort(), // sort dates ascending
+      generate_sessions: data.generate_sessions,
       status: 'published' as const,
     };
 
@@ -132,6 +135,18 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
               <Plus className="h-3.5 w-3.5" />
               新增日期
             </Button>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2 border-t">
+            <input
+              type="checkbox"
+              id="generate_sessions"
+              {...register('generate_sessions')}
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label htmlFor="generate_sessions" className="text-sm font-medium">
+              {t('enrollments:form.generateSessions')}
+            </label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">

@@ -1101,6 +1101,7 @@ export type Database = {
           created_by: string | null
           dates: Json
           description: string | null
+          generate_sessions: boolean
           id: string
           status: string
           title: string
@@ -1111,6 +1112,7 @@ export type Database = {
           created_by?: string | null
           dates?: Json
           description?: string | null
+          generate_sessions?: boolean
           id?: string
           status?: string
           title: string
@@ -1121,6 +1123,7 @@ export type Database = {
           created_by?: string | null
           dates?: Json
           description?: string | null
+          generate_sessions?: boolean
           id?: string
           status?: string
           title?: string
@@ -1146,6 +1149,8 @@ export type Database = {
       training_enrollment_rows: {
         Row: {
           created_at: string
+          daily_info: Json
+          daily_status: Json
           date_records: Json
           enrollment_type: string | null
           form_id: string
@@ -1156,6 +1161,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          daily_info?: Json
+          daily_status?: Json
           date_records?: Json
           enrollment_type?: string | null
           form_id: string
@@ -1166,6 +1173,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          daily_info?: Json
+          daily_status?: Json
           date_records?: Json
           enrollment_type?: string | null
           form_id?: string

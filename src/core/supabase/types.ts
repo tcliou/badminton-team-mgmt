@@ -481,6 +481,7 @@ export type TrainingEnrollmentFormRow = {
   title: string;
   description: string | null;
   dates: string[];
+  generate_sessions: boolean;
   status: 'draft' | 'published' | 'closed';
   created_by: string | null;
   created_at: string;
@@ -493,6 +494,8 @@ export type TrainingEnrollmentRowRow = {
   player_id: string;
   enrollment_type: string | null;
   date_records: Record<string, number>;
+  daily_status: Record<string, string>;
+  daily_info: Record<string, string>;
   note: string | null;
   created_at: string;
   updated_at: string;
