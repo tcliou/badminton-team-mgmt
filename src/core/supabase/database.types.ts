@@ -1103,6 +1103,7 @@ export type Database = {
           description: string | null
           generate_sessions: boolean
           id: string
+          session_details: Json
           status: string
           title: string
           updated_at: string
@@ -1114,6 +1115,7 @@ export type Database = {
           description?: string | null
           generate_sessions?: boolean
           id?: string
+          session_details?: Json
           status?: string
           title: string
           updated_at?: string
@@ -1125,6 +1127,7 @@ export type Database = {
           description?: string | null
           generate_sessions?: boolean
           id?: string
+          session_details?: Json
           status?: string
           title?: string
           updated_at?: string

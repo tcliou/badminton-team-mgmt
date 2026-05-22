@@ -482,6 +482,7 @@ export type TrainingEnrollmentFormRow = {
   description: string | null;
   dates: string[];
   generate_sessions: boolean;
+  session_details: Record<string, any>;
   status: 'draft' | 'published' | 'closed';
   created_by: string | null;
   created_at: string;

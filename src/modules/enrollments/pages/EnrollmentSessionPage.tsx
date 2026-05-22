@@ -6,7 +6,10 @@ import { useEnrollmentForm, useEnrollmentRows, useUpdateRow } from '../api/enrol
 import { useAuthStore } from '@/core/store/authStore';
 import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
+import { Settings } from 'lucide-react';
 import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
+import { SessionSettingsDialog, defaultSessionDetails } from '../components/SessionSettingsDialog';
+import { useState } from 'react';
 
 export function EnrollmentSessionPage() {
   const { id, date } = useParams<{ id: string; date: string }>();
@@ -19,6 +22,7 @@ export function EnrollmentSessionPage() {
   
   const currentUser = useAuthStore((s) => s.profile);
   const canManage = currentUser?.permission_keys?.includes(PERMISSIONS.ActionTrainingManage) ?? false;
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleCellChange = (
     rowId: string,
@@ -55,6 +59,9 @@ export function EnrollmentSessionPage() {
   if (!formQuery.data || !date) return null;
 
   const rows = rowsQuery.data || [];
+  
+  const totalPlayers = rows.filter(r => r.date_records[date] === 1 || r.daily_status[date] === 'need_single').length;
+  const sessionDetails = formQuery.data.session_details?.[date] || defaultSessionDetails;
 
   return (
     <div className="space-y-6">
@@ -67,11 +74,27 @@ export function EnrollmentSessionPage() {
             {formQuery.data.title} - {date} 場次
           </h1>
         </div>
+        {canManage && (
+          <Button variant="outline" className="gap-2" onClick={() => setSettingsOpen(true)}>
+            <Settings className="h-4 w-4" />
+            {t('enrollments:detail.sessionSettings')}
+          </Button>
+        )}
       </header>
 
-      <div className="rounded-xl border bg-muted/50 p-4 shadow-sm text-sm whitespace-pre-wrap text-muted-foreground">
-        <h3 className="font-semibold mb-2 text-primary">{date} {t('enrollments:detail.announcement')}</h3>
-        {formQuery.data.description}
+      <div className="rounded-xl border bg-muted/50 p-4 shadow-sm text-sm text-muted-foreground space-y-2">
+        <h3 className="font-semibold mb-2 text-primary">個別場次公告事項：</h3>
+        <p>● {t('enrollments:detail.sessionDetails.time')}： {sessionDetails.time}</p>
+        <p>● {t('enrollments:detail.sessionDetails.location')}： {sessionDetails.location}</p>
+        <p>● {t('enrollments:detail.sessionDetails.items')}： {sessionDetails.items}</p>
+        <div className="flex">
+          <span className="whitespace-nowrap">● {t('enrollments:detail.sessionDetails.notes')}： </span>
+          <span>{sessionDetails.notes}</span>
+        </div>
+        <p>● {t('enrollments:detail.sessionDetails.equipment')}： {sessionDetails.equipment}</p>
+        <p>● {t('enrollments:detail.sessionDetails.fee')}： {sessionDetails.fee}</p>
+        <p>● {t('enrollments:detail.sessionDetails.coaches')}： {sessionDetails.coaches}</p>
+        <p className="font-bold text-primary">● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名</p>
       </div>
 
       <div className="w-full overflow-x-auto rounded-xl border bg-card shadow-sm">
@@ -130,12 +153,12 @@ export function EnrollmentSessionPage() {
                   <td className="px-2 py-2 border-r bg-blue-50/20">
                     <select
                       disabled={!canEditInfo}
-                      value={row.daily_status[date] || ''}
+                      value={row.daily_status[date] || 'no_change'}
                       onChange={(e) => handleCellChange(row.id, 'daily_status', e.target.value, row)}
                       className="w-full bg-background/50 border border-transparent focus:border-primary focus:ring-1 rounded p-1 text-sm disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <option value="">--</option>
                       <option value="no_change">{t('enrollments:detail.table.dailyNotes.no_change')}</option>
+                      <option value="need_single">{t('enrollments:detail.table.dailyNotes.need_single')}</option>
                       <option value="leave_early">{t('enrollments:detail.table.dailyNotes.leave_early')}</option>
                       <option value="leave_of_absence">{t('enrollments:detail.table.dailyNotes.leave_of_absence')}</option>
                     </select>
@@ -156,6 +179,13 @@ export function EnrollmentSessionPage() {
           </tbody>
         </table>
       </div>
+
+      <SessionSettingsDialog 
+        open={settingsOpen} 
+        onClose={() => setSettingsOpen(false)} 
+        form={formQuery.data} 
+        date={date}
+      />
     </div>
   );
 }

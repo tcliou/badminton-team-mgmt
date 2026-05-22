@@ -25,6 +25,7 @@
   "detail": {
     "back": "回列表",
     "settings": "表單設定",
+    "sessionSettings": "編輯本場次公告",
     "announcement": "公告事項",
     "filter": {
       "start": "顯示區間 (起)",
@@ -50,10 +51,21 @@
         "skip": "本期不參加"
       },
       "dailyNotes": {
-        "leave_early": "需提早離開",
         "no_change": "不需更動",
+        "need_single": "需單堂報名",
+        "leave_early": "需提早離開",
         "leave_of_absence": "需請假（整期 / 預先當週報名者）"
       }
+    },
+    "sessionDetails": {
+      "time": "時間",
+      "location": "地點",
+      "items": "請準備物品",
+      "notes": "注意事項",
+      "equipment": "器材認領",
+      "fee": "費用",
+      "coaches": "教練團隊",
+      "totalPlayers": "總訓練人數"
     },
     "messages": {
       "saved": "已儲存",
