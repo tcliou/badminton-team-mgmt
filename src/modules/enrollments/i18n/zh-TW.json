@@ -1,0 +1,55 @@
+{
+  "title": "團練報名",
+  "list": {
+    "title": "報名表列表",
+    "create": "建立報名表",
+    "empty": "目前沒有任何團練報名表",
+    "status": {
+      "draft": "草稿",
+      "published": "開放中",
+      "closed": "已結束"
+    }
+  },
+  "form": {
+    "title": "表單標題",
+    "dates": "開放日期",
+    "datesHint": "請選擇至少一個日期，可多選",
+    "status": "狀態",
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除表單",
+    "deleteConfirm": "確定要刪除這份報名表嗎？所有的填寫紀錄都會一併被刪除。"
+  },
+  "detail": {
+    "back": "回列表",
+    "settings": "表單設定",
+    "filter": {
+      "start": "顯示區間 (起)",
+      "end": "顯示區間 (訖)",
+      "clear": "清除區間"
+    },
+    "table": {
+      "studentId": "班級編號",
+      "name": "姓名",
+      "type": "報名類別",
+      "note": "備註",
+      "addPlayer": "+ 加入球員",
+      "selectPlayer": "選擇球員",
+      "deleteRow": "刪除",
+      "deleteRowConfirm": "確定要從這張表單中移除該球員嗎？",
+      "total": "已報名總人數",
+      "types": {
+        "season": "整季報名",
+        "pre_single": "預先當週單堂",
+        "single": "當週單堂",
+        "skip": "本期不參加"
+      }
+    },
+    "messages": {
+      "saved": "已儲存",
+      "error": "儲存失敗",
+      "permissionDenied": "權限不足，或無法編輯過去日期的資料",
+      "rowAdded": "已成功加入球員"
+    }
+  }
+}
