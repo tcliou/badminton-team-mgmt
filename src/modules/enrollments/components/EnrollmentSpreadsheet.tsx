@@ -72,9 +72,9 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
     const patch: Partial<TrainingEnrollmentRowRow> = {};
     if (field === 'date' && dateKey) {
       const row = localRows.find((r) => r.id === rowId);
-      patch.date_records = { ...row?.date_records, [dateKey]: value };
-    } else {
-      patch[field] = value;
+      patch.date_records = { ...row?.date_records, [dateKey]: value as number };
+    } else if (field !== 'date' && field !== 'player') {
+      (patch as Record<string, unknown>)[field] = value;
     }
 
     updateRow.mutate({ id: rowId, patch });
