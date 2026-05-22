@@ -479,6 +479,7 @@ export type PlayerParentRow = {
 export type TrainingEnrollmentFormRow = {
   id: string;
   title: string;
+  description: string | null;
   dates: string[];
   status: 'draft' | 'published' | 'closed';
   created_by: string | null;

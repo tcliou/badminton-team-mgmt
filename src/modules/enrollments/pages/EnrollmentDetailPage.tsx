@@ -9,6 +9,7 @@ import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
 import { Input } from '@/shared/components/Input';
 import { EnrollmentSpreadsheet } from '../components/EnrollmentSpreadsheet';
+import { EnrollmentFormDialog } from '../components/EnrollmentFormDialog';
 
 export function EnrollmentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +26,7 @@ export function EnrollmentDetailPage() {
   const canManage = currentUser?.permission_keys?.includes(PERMISSIONS.ActionTrainingManage) ?? false;
 
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [editOpen, setEditOpen] = useState(false);
 
   const datesToDisplay = useMemo(() => {
     if (!formQuery.data?.dates) return [];
@@ -64,12 +66,19 @@ export function EnrollmentDetailPage() {
           <h1 className="text-2xl font-bold tracking-tight">{formQuery.data.title}</h1>
         </div>
         {canManage && (
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => setEditOpen(true)}>
             <Settings className="h-4 w-4" />
             {t('enrollments:detail.settings')}
           </Button>
         )}
       </header>
+
+      {formQuery.data.description && (
+        <div className="rounded-xl border bg-muted/50 p-4 shadow-sm text-sm whitespace-pre-wrap text-muted-foreground">
+          <h3 className="font-semibold mb-2 text-primary">{t('enrollments:detail.announcement')}</h3>
+          {formQuery.data.description}
+        </div>
+      )}
 
       <div className="flex flex-wrap items-end gap-4 rounded-xl border bg-card p-4 shadow-sm">
         <div className="space-y-1">
@@ -111,6 +120,12 @@ export function EnrollmentDetailPage() {
           </select>
         </div>
       )}
+
+      <EnrollmentFormDialog 
+        open={editOpen} 
+        onClose={() => setEditOpen(false)} 
+        form={formQuery.data} 
+      />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { useAuthStore } from '@/core/store/authStore';
 import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
 import { EmptyState } from '@/shared/components/EmptyState';
-import { CreateEnrollmentFormDialog } from '../components/CreateEnrollmentFormDialog';
+import { EnrollmentFormDialog } from '../components/EnrollmentFormDialog';
 function formatDateTime(dateString: string): string {
   const d = new Date(dateString);
   return d.toLocaleDateString();
@@ -60,7 +60,7 @@ export function EnrollmentsPage() {
         </div>
       )}
 
-      <CreateEnrollmentFormDialog open={createOpen} onClose={() => setCreateOpen(false)} />
+      <EnrollmentFormDialog open={createOpen} onClose={() => setCreateOpen(false)} />
     </div>
   );
 }

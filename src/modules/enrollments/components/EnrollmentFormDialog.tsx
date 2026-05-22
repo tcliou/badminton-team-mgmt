@@ -1,14 +1,17 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateForm } from '../api/enrollmentsApi';
+import { useCreateForm, useUpdateForm } from '../api/enrollmentsApi';
+import type { TrainingEnrollmentFormRow } from '@/core/supabase/types';
 import { Input } from '@/shared/components/Input';
 import { Button } from '@/shared/components/Button';
 import { Plus, X } from 'lucide-react';
 
 const schema = z.object({
   title: z.string().min(1, 'Required'),
+  description: z.string().nullable(),
   dates: z.array(z.object({ value: z.string().min(1) })).min(1, 'Select at least one date'),
 });
 type FormData = z.infer<typeof schema>;
@@ -16,11 +19,15 @@ type FormData = z.infer<typeof schema>;
 interface Props {
   open: boolean;
   onClose: () => void;
+  form?: TrainingEnrollmentFormRow | null; // if provided, it's edit mode
 }
 
-export function CreateEnrollmentFormDialog({ open, onClose }: Props) {
+export function EnrollmentFormDialog({ open, onClose, form }: Props) {
   const { t } = useTranslation();
   const createForm = useCreateForm();
+  const updateForm = useUpdateForm(form?.id || '');
+
+  const isEdit = !!form;
 
   const {
     register,
@@ -30,8 +37,20 @@ export function CreateEnrollmentFormDialog({ open, onClose }: Props) {
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', dates: [{ value: '' }] },
+    defaultValues: { title: '', description: '', dates: [{ value: '' }] },
   });
+
+  useEffect(() => {
+    if (open && form) {
+      reset({
+        title: form.title,
+        description: form.description || '',
+        dates: form.dates.length > 0 ? form.dates.map(d => ({ value: d })) : [{ value: '' }]
+      });
+    } else if (open && !form) {
+      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。\n\n※ 每週球員訓練總人數上限為 24 位。', dates: [{ value: '' }] });
+    }
+  }, [open, form, reset]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -41,11 +60,18 @@ export function CreateEnrollmentFormDialog({ open, onClose }: Props) {
   if (!open) return null;
 
   const onSubmit = async (data: FormData) => {
-    await createForm.mutateAsync({
+    const payload = {
       title: data.title,
+      description: data.description,
       dates: data.dates.map((d) => d.value).sort(), // sort dates ascending
-      status: 'published',
-    });
+      status: 'published' as const,
+    };
+
+    if (isEdit) {
+      await updateForm.mutateAsync(payload);
+    } else {
+      await createForm.mutateAsync(payload);
+    }
     handleClose();
   };
 
@@ -59,13 +85,24 @@ export function CreateEnrollmentFormDialog({ open, onClose }: Props) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={(e) => e.target === e.currentTarget && handleClose()}
     >
-      <div className="w-full max-w-md rounded-2xl border bg-card shadow-xl p-4">
-        <h2 className="mb-4 text-lg font-semibold">{t('enrollments:list.create')}</h2>
+      <div className="w-full max-w-lg rounded-2xl border bg-card shadow-xl p-4 max-h-[90vh] overflow-y-auto">
+        <h2 className="mb-4 text-lg font-semibold">
+          {isEdit ? t('enrollments:detail.settings') : t('enrollments:list.create')}
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium">{t('enrollments:form.title')}</label>
             <Input {...register('title')} placeholder="e.g., 2026/05 團練表" autoFocus />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">{t('enrollments:form.description')}</label>
+            <textarea
+              {...register('description')}
+              rows={8}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
           </div>
 
           <div className="space-y-2">
@@ -101,7 +138,7 @@ export function CreateEnrollmentFormDialog({ open, onClose }: Props) {
             <Button type="button" variant="outline" onClick={handleClose}>
               {t('enrollments:form.cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting || createForm.isPending}>
+            <Button type="submit" disabled={isSubmitting || createForm.isPending || updateForm.isPending}>
               {isSubmitting ? '...' : t('enrollments:form.save')}
             </Button>
           </div>

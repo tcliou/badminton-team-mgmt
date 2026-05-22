@@ -6,7 +6,7 @@ export default {
   order: 5,
   navLabelKey: 'enrollments:title',
   navIcon: 'CalendarDays',
-  // Accessible to all authenticated users, so no specific permissionKey needed
+  permissionKey: 'page:enrollments:view',
   routes: [
     {
       path: '/enrollments',

@@ -14,6 +14,7 @@ export const PERMISSIONS = {
   PageTraining:       'page:training:view',
   PageAdmin:          'page:admin:view',
   PageIssues:         'page:issues:view',
+  PageEnrollments:    'page:enrollments:view',
   // 動作
   ActionUsersManage:        'action:users:manage',
   ActionRolesManage:        'action:roles:manage',

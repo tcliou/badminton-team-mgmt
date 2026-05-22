@@ -12,6 +12,7 @@
   },
   "form": {
     "title": "表單標題",
+    "description": "報名規則與公告",
     "dates": "開放日期",
     "datesHint": "請選擇至少一個日期，可多選",
     "status": "狀態",
@@ -23,6 +24,7 @@
   "detail": {
     "back": "回列表",
     "settings": "表單設定",
+    "announcement": "公告事項",
     "filter": {
       "start": "顯示區間 (起)",
       "end": "顯示區間 (訖)",

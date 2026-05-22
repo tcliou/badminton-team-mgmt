@@ -1100,6 +1100,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           dates: Json
+          description: string | null
           id: string
           status: string
           title: string
@@ -1109,6 +1110,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           dates?: Json
+          description?: string | null
           id?: string
           status?: string
           title: string
@@ -1118,6 +1120,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           dates?: Json
+          description?: string | null
           id?: string
           status?: string
           title?: string
