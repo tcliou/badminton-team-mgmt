@@ -15,6 +15,7 @@ function loginWith(perms: string[]) {
       username: 'test',
       display_name: 'Test',
       email: null,
+      student_id: null,
       phone: null,
       avatar_url: null,
       birthday: null,

@@ -229,6 +229,7 @@ export type ProfileRow = {
   team_id: string;
   username: string;
   display_name: string;
+  student_id: string | null;
   email: string | null;
   phone: string | null;
   avatar_url: string | null;

@@ -11,6 +11,7 @@ import type { ProfileRow } from '@/core/supabase/types';
 
 const schema = z.object({
   display_name: z.string().min(1),
+  student_id: z.string().min(1, '請輸入班級座號，如 70131，前三碼為班級，後兩碼為座號'),
   email: z.string().email().or(z.literal('')).optional(),
   phone: z.string().optional(),
   birthday: z.string().optional(),
@@ -35,12 +36,13 @@ export function ProfileEditCard({ profile, canEdit }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       display_name: profile.display_name,
+      student_id: profile.student_id ?? '',
       email: profile.email ?? '',
       phone: profile.phone ?? '',
       birthday: profile.birthday ?? '',
@@ -54,6 +56,7 @@ export function ProfileEditCard({ profile, canEdit }: Props) {
   const onSubmit = async (data: FormData) => {
     await update.mutateAsync({
       display_name: data.display_name,
+      student_id: data.student_id,
       email: data.email ? data.email : null,
       phone: data.phone ? data.phone : null,
       birthday: data.birthday ? data.birthday : null,
@@ -80,6 +83,7 @@ export function ProfileEditCard({ profile, canEdit }: Props) {
           ) : null}
         </header>
         <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+          <Field k="studentId" v={profile.student_id} />
           <Field k="email" v={profile.email} />
           <Field k="phone" v={profile.phone} />
           <Field k="birthday" v={profile.birthday} />
@@ -104,6 +108,15 @@ export function ProfileEditCard({ profile, canEdit }: Props) {
       <div className="grid gap-3 sm:grid-cols-2">
         <FieldEdit label={t('players:profile.labels.displayName')}>
           <Input {...register('display_name')} />
+        </FieldEdit>
+        <FieldEdit 
+          label={t('players:profile.labels.studentId')}
+          error={errors.student_id?.message}
+        >
+          <Input 
+            {...register('student_id')} 
+            placeholder={t('players:profile.placeholders.studentId')} 
+          />
         </FieldEdit>
         <FieldEdit label={t('players:profile.labels.email')}>
           <Input type="email" {...register('email')} />
@@ -164,11 +177,20 @@ function Field({ k, v }: { k: string; v: string | number | null | undefined }) {
   );
 }
 
-function FieldEdit({ label, children }: { label: string; children: React.ReactNode }) {
+function FieldEdit({ 
+  label, 
+  error,
+  children 
+}: { 
+  label: string; 
+  error?: string;
+  children: React.ReactNode; 
+}) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium">{label}</label>
       {children}
+      {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
   );
 }

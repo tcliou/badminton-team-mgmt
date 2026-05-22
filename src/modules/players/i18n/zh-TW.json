@@ -13,6 +13,7 @@
     "saved": "已儲存",
     "labels": {
       "displayName": "顯示名稱",
+      "studentId": "班級座號",
       "email": "Email（用於通知，可空）",
       "phone": "電話",
       "birthday": "生日",
@@ -20,6 +21,9 @@
       "height": "身高 (cm)",
       "weight": "體重 (kg)",
       "favoriteRacket": "最愛球拍"
+    },
+    "placeholders": {
+      "studentId": "請輸入班級座號，如 70131，前三碼為班級，後兩碼為座號"
     },
     "hand": {
       "left": "左手",
