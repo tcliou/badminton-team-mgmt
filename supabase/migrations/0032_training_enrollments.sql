@@ -3,7 +3,7 @@
 -- =============================================================================
 
 create table if not exists public.training_enrollment_forms (
-    id          uuid primary key default uuid_generate_v4(),
+    id          uuid primary key default gen_random_uuid(),
     title       text not null,
     dates       jsonb not null default '[]'::jsonb,
     status      text not null default 'draft' check (status in ('draft','published','closed')),
@@ -13,7 +13,7 @@ create table if not exists public.training_enrollment_forms (
 );
 
 create table if not exists public.training_enrollment_rows (
-    id              uuid primary key default uuid_generate_v4(),
+    id              uuid primary key default gen_random_uuid(),
     form_id         uuid not null references public.training_enrollment_forms(id) on delete cascade,
     player_id       uuid not null references public.profiles(id) on delete cascade,
     enrollment_type text,
