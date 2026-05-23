@@ -8,7 +8,8 @@ import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
 import { Settings } from 'lucide-react';
 import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
-import { SessionSettingsDialog, defaultSessionDetails } from '../components/SessionSettingsDialog';
+import { SessionSettingsDialog } from '../components/SessionSettingsDialog';
+import { defaultSessionDetails } from '../constants';
 import { useState } from 'react';
 
 export function EnrollmentSessionPage() {
