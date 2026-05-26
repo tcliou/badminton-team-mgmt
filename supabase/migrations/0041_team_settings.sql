@@ -6,6 +6,7 @@
 create table if not exists public.team_settings (
     team_id uuid primary key default '00000000-0000-0000-0000-000000000001'::uuid,
     nav_order text[] not null default '{}'::text[],
+    nav_hidden text[] not null default '{}'::text[],
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now()
 );

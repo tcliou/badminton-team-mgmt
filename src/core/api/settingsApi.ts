@@ -31,10 +31,10 @@ export function useUpdateTeamSettings() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (nav_order: string[]) => {
+    mutationFn: async (payload: { nav_order?: string[]; nav_hidden?: string[] }) => {
       const { data, error } = await supabase
         .from('team_settings')
-        .update({ nav_order })
+        .update(payload)
         .eq('team_id', '00000000-0000-0000-0000-000000000001')
         .select()
         .single();

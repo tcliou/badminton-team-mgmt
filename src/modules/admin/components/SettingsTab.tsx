@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useTeamSettings, useUpdateTeamSettings } from '@/core/api/settingsApi';
 import { navModules } from '@/core/router/moduleRegistry';
 import { Button } from '@/shared/components/Button';
-import { ChevronUp, ChevronDown, Save, Loader2 } from 'lucide-react';
+import { ChevronUp, ChevronDown, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import { resolveNavIcon } from '@/shared/components/navIcons';
 import { useState, useEffect } from 'react';
 
@@ -12,6 +12,7 @@ export function SettingsTab() {
   const { mutate: updateSettings, isPending } = useUpdateTeamSettings();
   
   const [order, setOrder] = useState<string[]>([]);
+  const [hidden, setHidden] = useState<string[]>([]);
   
   useEffect(() => {
     if (settings) {
@@ -25,6 +26,7 @@ export function SettingsTab() {
       const missing = allModules.filter(m => !savedOrder.includes(m.id)).map(m => m.id);
       
       setOrder([...existing, ...missing]);
+      setHidden(settings.nav_hidden || []);
     }
   }, [settings]);
 
@@ -46,8 +48,14 @@ export function SettingsTab() {
     setOrder(newOrder);
   };
 
+  const handleToggleVisibility = (id: string) => {
+    setHidden(prev => 
+      prev.includes(id) ? prev.filter(h => h !== id) : [...prev, id]
+    );
+  };
+
   const handleSave = () => {
-    updateSettings(order);
+    updateSettings({ nav_order: order, nav_hidden: hidden });
   };
 
   return (
@@ -73,9 +81,21 @@ export function SettingsTab() {
               >
                 <div className="flex items-center gap-3">
                   <Icon className="h-4 w-4 text-muted-foreground" aria-hidden />
-                  <span className="text-sm font-medium">{t(mod.navLabelKey)}</span>
+                  <span className={`text-sm font-medium ${hidden.includes(id) ? 'line-through text-muted-foreground' : ''}`}>
+                    {t(mod.navLabelKey)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 px-0"
+                    onClick={() => handleToggleVisibility(id)}
+                    aria-label="Toggle visibility"
+                  >
+                    {hidden.includes(id) ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
                   <Button
                     type="button"
                     variant="ghost"

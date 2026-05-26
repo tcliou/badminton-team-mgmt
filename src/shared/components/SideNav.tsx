@@ -18,7 +18,7 @@ export function SideNav({ className }: SideNavProps) {
   const { data: settings } = useTeamSettings();
   
   const baseModules = navModules().filter(
-    (m) => !m.permissionKey || hasPermission(perms, m.permissionKey),
+    (m) => (!m.permissionKey || hasPermission(perms, m.permissionKey)) && !settings?.nav_hidden?.includes(m.id),
   );
 
   const modules = settings?.nav_order

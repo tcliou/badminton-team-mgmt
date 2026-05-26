@@ -18,11 +18,12 @@ export type Database = {
         Row: {
           team_id: string;
           nav_order: string[];
+          nav_hidden: string[];
           created_at: string;
           updated_at: string;
         };
-        Insert: { team_id?: string; nav_order?: string[] };
-        Update: Partial<{ nav_order: string[] }>;
+        Insert: { team_id?: string; nav_order?: string[]; nav_hidden?: string[] };
+        Update: Partial<{ nav_order: string[]; nav_hidden: string[] }>;
         Relationships: [];
       };
       profiles: {
