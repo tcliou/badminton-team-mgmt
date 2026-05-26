@@ -1,0 +1,28 @@
+{
+  "title": "日曆",
+  "calendarLegend": {
+    "leaves": "已核准請假",
+    "leaveTag": "請假",
+    "eventType": {
+      "training": "訓練",
+      "match": "比賽",
+      "meeting": "會議",
+      "other": "其他"
+    }
+  },
+  "eventDetails": {
+    "leaveList": "請假名單（{{count}} 人）"
+  },
+  "personalEvent": {
+    "add": "新增個人行程",
+    "title": "標題",
+    "startAt": "開始時間",
+    "endAt": "結束時間",
+    "note": "備註"
+  },
+  "sections": {
+    "calendar": "日曆",
+    "teamEvents": "球隊行程",
+    "personalEvents": "個人行程"
+  }
+}

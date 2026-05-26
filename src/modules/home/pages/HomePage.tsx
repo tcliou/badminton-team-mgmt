@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/core/auth';
 import { AnnouncementsPlaceholder } from '../components/AnnouncementsPlaceholder';
-import { CalendarPanel } from '../components/CalendarPanel';
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -17,10 +16,8 @@ export default function HomePage() {
           </p>
         ) : null}
       </header>
-      {/* 垂直排版：公告在上、行事曆在下，這樣行事曆可以拿全寬顯示更多資訊 */}
       <div className="space-y-4">
         <AnnouncementsPlaceholder />
-        <CalendarPanel />
       </div>
     </div>
   );

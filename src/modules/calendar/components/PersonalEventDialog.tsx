@@ -105,20 +105,20 @@ export function PersonalEventDialog({ open, onClose, event, defaultStart }: Prop
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="mb-3 text-base font-semibold">
-          {event ? t('common.edit') : t('home:personalEvent.add')}
+          {event ? t('common.edit') : t('calendar:personalEvent.add')}
         </h3>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div className="space-y-1">
-            <label className="text-xs font-medium">{t('home:personalEvent.title')}</label>
+            <label className="text-sm font-medium">{t('calendar:personalEvent.title')}</label>
             <Input {...register('title')} />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <label className="text-xs font-medium">{t('home:personalEvent.startAt')}</label>
+              <label className="text-sm font-medium">{t('calendar:personalEvent.startAt')}</label>
               <Input type="datetime-local" {...register('starts_at')} />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-medium">{t('home:personalEvent.endAt')}</label>
+              <label className="text-sm font-medium">{t('calendar:personalEvent.endAt')}</label>
               <Input type="datetime-local" {...register('ends_at')} />
               {errors.ends_at?.message === 'endBeforeStart' ? (
                 <p className="text-xs text-destructive">{t('leaves:validation.endBeforeStart')}</p>
@@ -126,7 +126,7 @@ export function PersonalEventDialog({ open, onClose, event, defaultStart }: Prop
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-xs font-medium">{t('home:personalEvent.note')}</label>
+            <label className="text-sm font-medium">{t('calendar:personalEvent.note')}</label>
             <textarea
               rows={2}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"

@@ -1,0 +1,28 @@
+{
+  "title": "Calendar",
+  "calendarLegend": {
+    "leaves": "Approved Leaves",
+    "leaveTag": "Leave",
+    "eventType": {
+      "training": "Training",
+      "match": "Match",
+      "meeting": "Meeting",
+      "other": "Other"
+    }
+  },
+  "eventDetails": {
+    "leaveList": "Leave List ({{count}} members)"
+  },
+  "personalEvent": {
+    "add": "Add Event",
+    "title": "Title",
+    "startAt": "Start Time",
+    "endAt": "End Time",
+    "note": "Notes"
+  },
+  "sections": {
+    "calendar": "Calendar",
+    "teamEvents": "Team Events",
+    "personalEvents": "Personal Events"
+  }
+}

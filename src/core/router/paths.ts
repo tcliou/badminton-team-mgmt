@@ -16,6 +16,7 @@ export const PATHS = {
   NotFound: '/404',
   Coaches: '/coaches',
   Documents: '/documents',
+  Calendar: '/calendar',
 } as const;
 
 export type AppPath = (typeof PATHS)[keyof typeof PATHS];

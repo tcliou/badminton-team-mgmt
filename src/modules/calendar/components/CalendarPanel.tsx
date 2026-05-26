@@ -83,7 +83,7 @@ export function CalendarPanel() {
       leaves.data.forEach((lv) => {
         out.push({
           id: `leave-${lv.id}`,
-          title: t('home:calendarLegend.leaveTag'),
+          title: t('calendar:calendarLegend.leaveTag'),
           start: lv.start_at,
           end: lv.end_at,
           backgroundColor: LEAVE_COLOR,
@@ -140,11 +140,11 @@ export function CalendarPanel() {
       <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 text-base font-semibold">
           <CalendarDays className="h-5 w-5 text-primary" aria-hidden />
-          {t('home:sections.calendar')}
+          {t('calendar:sections.calendar')}
         </h2>
         <Button size="sm" onClick={() => openCreatePersonal()} className="gap-1">
           <Plus className="h-4 w-4" aria-hidden />
-          {t('home:personalEvent.add')}
+          {t('calendar:personalEvent.add')}
         </Button>
       </header>
 
@@ -153,19 +153,19 @@ export function CalendarPanel() {
           checked={showTeam}
           onChange={setShowTeam}
           color={TEAM_COLOR}
-          label={t('home:sections.teamEvents')}
+          label={t('calendar:sections.teamEvents')}
         />
         <Legend
           checked={showPersonal}
           onChange={setShowPersonal}
           color={PERSONAL_COLOR}
-          label={t('home:sections.personalEvents')}
+          label={t('calendar:sections.personalEvents')}
         />
         <Legend
           checked={showLeaves}
           onChange={setShowLeaves}
           color={LEAVE_COLOR}
-          label={t('home:calendarLegend.leaves')}
+          label={t('calendar:calendarLegend.leaves')}
         />
       </div>
 

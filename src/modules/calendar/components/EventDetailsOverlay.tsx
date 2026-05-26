@@ -59,11 +59,11 @@ export function EventDetailsOverlay({ open, target, onClose, onEditPersonal }: P
                     TYPE_COLOR[teamRow.event_type] ?? TYPE_COLOR.other
                   }`}
                 >
-                  {t(`home:calendarLegend.eventType.${teamRow.event_type}`)}
+                  {t(`calendar:calendarLegend.eventType.${teamRow.event_type}`)}
                 </span>
               ) : (
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
-                  {t('home:sections.personalEvents')}
+                  {t('calendar:sections.personalEvents')}
                 </span>
               )}
             </div>
@@ -108,10 +108,10 @@ export function EventDetailsOverlay({ open, target, onClose, onEditPersonal }: P
         {/* 球隊事件：列出已核准請假名單 */}
         {target.kind === 'team' && target.affectedLeaves.length > 0 ? (
           <section className="mt-4 rounded-md border bg-amber-50/50 p-3">
-            <p className="mb-2 flex items-center gap-1 text-xs font-medium text-amber-800">
+            <h3 className="mb-2 flex items-center gap-1 text-xs font-medium text-amber-800">
               <UserMinus className="h-3.5 w-3.5" aria-hidden />
-              {t('home:eventDetails.leaveList', { count: target.affectedLeaves.length })}
-            </p>
+              {t('calendar:eventDetails.leaveList', { count: target.affectedLeaves.length })}
+            </h3>
             <ul className="space-y-1 text-sm">
               {target.affectedLeaves.map((lv) => (
                 <li key={lv.id} className="text-foreground/90">
