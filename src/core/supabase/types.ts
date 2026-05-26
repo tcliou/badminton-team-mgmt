@@ -225,6 +225,20 @@ export type Database = {
           }
         ];
       };
+      documents: {
+        Row: DocumentRow;
+        Insert: Pick<DocumentRow, 'title' | 'url'> & Partial<DocumentRow>;
+        Update: Partial<DocumentRow>;
+        Relationships: [
+          {
+            foreignKeyName: "documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
     };
     Views: {
       v_my_profile: {
@@ -292,6 +306,18 @@ export type CoachProfile = {
   updated_at: string;
 };
 export type CoachProfileRow = CoachProfile;
+
+export type DocumentRow = {
+  id: string;
+  team_id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  visible_to_role_ids: string[];
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+};
 
 export type CalendarEventType = 'training' | 'match' | 'meeting' | 'other';
 

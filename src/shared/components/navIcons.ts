@@ -8,6 +8,10 @@ import {
   Wallet,
   Shield,
   Circle,
+  UsersRound,
+  CalendarDays,
+  CheckSquare,
+  FileText,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -27,6 +31,10 @@ export const NAV_ICONS = {
   Megaphone,
   Wallet,
   Shield,
+  UsersRound,
+  CalendarDays,
+  CheckSquare,
+  FileText,
 } as const satisfies Record<string, LucideIcon>;
 
 export type NavIconKey = keyof typeof NAV_ICONS;
