@@ -45,14 +45,14 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
 
   useEffect(() => {
     if (open) {
-      const existing = form.session_details?.[date] as any;
+      const existing = form.session_details?.[date] as Record<string, unknown> | undefined;
       reset({
-        time: existing?.time ?? defaultSessionDetails.time,
-        location: existing?.location ?? defaultSessionDetails.location,
-        items: existing?.items ?? defaultSessionDetails.items,
-        notes: existing?.notes ?? defaultSessionDetails.notes,
-        equipment: existing?.equipment ?? defaultSessionDetails.equipment,
-        fee: existing?.fee ?? defaultSessionDetails.fee,
+        time: (existing?.time as string) ?? defaultSessionDetails.time,
+        location: (existing?.location as string) ?? defaultSessionDetails.location,
+        items: (existing?.items as string) ?? defaultSessionDetails.items,
+        notes: (existing?.notes as string) ?? defaultSessionDetails.notes,
+        equipment: (existing?.equipment as string) ?? defaultSessionDetails.equipment,
+        fee: (existing?.fee as string) ?? defaultSessionDetails.fee,
         coaches: Array.isArray(existing?.coaches) ? existing.coaches : defaultSessionDetails.coaches,
       });
     }

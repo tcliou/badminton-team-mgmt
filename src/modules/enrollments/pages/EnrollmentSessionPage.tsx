@@ -64,7 +64,11 @@ export function EnrollmentSessionPage() {
   const rows = rowsQuery.data || [];
   
   const totalPlayers = rows.filter(r => r.date_records[date] === 1 || r.daily_status[date] === 'need_single').length;
-  const sessionDetails = formQuery.data.session_details?.[date] || defaultSessionDetails;
+  const sessionDetailsRaw = formQuery.data.session_details?.[date] || {};
+  const sessionDetails = {
+    ...defaultSessionDetails,
+    ...(sessionDetailsRaw as Record<string, unknown>)
+  };
   const coachNames = Array.isArray(sessionDetails.coaches) 
     ? sessionDetails.coaches.map((coachId: string) => coachesData?.find(c => c.id === coachId)?.name || coachId).join('、')
     : sessionDetails.coaches || '無';
