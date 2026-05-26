@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutateCoach } from '../api/coachesApi';
+import { useMutateCoach, useCoachUserOptions } from '../api/coachesApi';
 import type { CoachProfile } from '@/core/supabase/types';
 import { Input } from '@/shared/components/Input';
 import { Button } from '@/shared/components/Button';
@@ -13,6 +13,7 @@ const schema = z.object({
   cv: z.string().optional(),
   avatar_url: z.string().optional(),
   is_active: z.boolean().default(true),
+  user_id: z.string().optional().nullable(),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -24,6 +25,7 @@ interface Props {
 
 export function CoachFormDialog({ open, onClose, coach }: Props) {
   const mutateCoach = useMutateCoach();
+  const { data: userOptions } = useCoachUserOptions();
 
   const {
     register,
@@ -38,6 +40,7 @@ export function CoachFormDialog({ open, onClose, coach }: Props) {
       cv: '',
       avatar_url: '',
       is_active: true,
+      user_id: null,
     },
   });
 
@@ -50,6 +53,7 @@ export function CoachFormDialog({ open, onClose, coach }: Props) {
           cv: coach.cv || '',
           avatar_url: coach.avatar_url || '',
           is_active: coach.is_active,
+          user_id: coach.user_id || null,
         });
       } else {
         reset({
@@ -58,6 +62,7 @@ export function CoachFormDialog({ open, onClose, coach }: Props) {
           cv: '',
           avatar_url: '',
           is_active: true,
+          user_id: null,
         });
       }
     }
@@ -102,6 +107,20 @@ export function CoachFormDialog({ open, onClose, coach }: Props) {
               placeholder="輸入教練介紹..."
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">連結系統帳號 (選填)</label>
+            <select
+              {...register('user_id')}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">-- 不綁定帳號 --</option>
+              {userOptions?.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.display_name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="is_active" {...register('is_active')} />

@@ -46,3 +46,17 @@ export function useMutateCoach() {
     },
   });
 }
+
+export function useCoachUserOptions() {
+  return useQuery({
+    queryKey: ['coachUserOptions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, display_name')
+        .order('display_name');
+      if (error) throw error;
+      return data;
+    },
+  });
+}

@@ -86,7 +86,14 @@ export function CoachesPage() {
                 {/* Info overlaid on image */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
                   <div className="flex flex-col gap-1">
-                    <h3 className="text-2xl font-bold text-white tracking-tight">{coach.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-2xl font-bold text-white tracking-tight">{coach.name}</h3>
+                      {coach.user_id && (
+                        <div className="rounded-full bg-blue-500/80 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-md shadow-sm border border-white/20">
+                          已綁定帳號
+                        </div>
+                      )}
+                    </div>
                     {coach.title && (
                       <p className="text-sm font-medium text-white/90 bg-white/20 backdrop-blur-md w-fit px-2 py-0.5 rounded">
                         {coach.title}
