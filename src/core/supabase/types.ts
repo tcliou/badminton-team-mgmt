@@ -211,6 +211,20 @@ export type Database = {
           }
         ];
       };
+      coaches: {
+        Row: CoachProfileRow;
+        Insert: Pick<CoachProfileRow, 'name'> & Partial<CoachProfileRow>;
+        Update: Partial<CoachProfileRow>;
+        Relationships: [
+          {
+            foreignKeyName: "coaches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
     };
     Views: {
       v_my_profile: {
@@ -266,6 +280,19 @@ export type ProfileRow = {
   created_by: string | null;
 };
 
+export type CoachProfile = {
+  id: string;
+  name: string;
+  title: string | null;
+  cv: string | null;
+  avatar_url: string | null;
+  is_active: boolean;
+  user_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+export type CoachProfileRow = CoachProfile;
+
 export type CalendarEventType = 'training' | 'match' | 'meeting' | 'other';
 
 export type CalendarEventRow = {
@@ -309,6 +336,7 @@ export type TrainingSessionRow = {
 
 export type LeaveReasonType = 'sick' | 'personal' | 'official' | 'other';
 export type LeaveStatus = 'pending' | 'approved' | 'rejected';
+export type CoachType = 'head' | 'assistant' | 'guest';
 
 export type LeaveRequestRow = {
   id: string;
@@ -482,7 +510,7 @@ export type TrainingEnrollmentFormRow = {
   description: string | null;
   dates: string[];
   generate_sessions: boolean;
-  session_details: Record<string, Record<string, string>>;
+  session_details: Record<string, Record<string, any>>;
   status: 'draft' | 'published' | 'closed';
   created_by: string | null;
   created_at: string;

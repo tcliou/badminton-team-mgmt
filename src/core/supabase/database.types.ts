@@ -274,6 +274,57 @@ export type Database = {
           },
         ]
       }
+      coaches: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          cv: string | null
+          id: string
+          is_active: boolean
+          name: string
+          title: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          cv?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          cv?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coaches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_my_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       finance_transactions: {
         Row: {
           advanced_by_user_id: string | null

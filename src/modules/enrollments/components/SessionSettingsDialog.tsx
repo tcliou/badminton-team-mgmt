@@ -8,6 +8,7 @@ import type { TrainingEnrollmentFormRow } from '@/core/supabase/types';
 import { Input } from '@/shared/components/Input';
 import { Button } from '@/shared/components/Button';
 import { defaultSessionDetails } from '../constants';
+import { useCoaches } from '@/modules/coaches/api/coachesApi';
 
 const schema = z.object({
   time: z.string(),
@@ -16,7 +17,7 @@ const schema = z.object({
   notes: z.string(),
   equipment: z.string(),
   fee: z.string(),
-  coaches: z.string(),
+  coaches: z.array(z.string()),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -30,6 +31,7 @@ interface Props {
 export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
   const { t } = useTranslation();
   const updateForm = useUpdateForm(form.id);
+  const { data: coachesData } = useCoaches();
 
   const {
     register,
@@ -43,7 +45,7 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
 
   useEffect(() => {
     if (open) {
-      const existing = form.session_details?.[date] as Partial<FormData> | undefined;
+      const existing = form.session_details?.[date] as any;
       reset({
         time: existing?.time ?? defaultSessionDetails.time,
         location: existing?.location ?? defaultSessionDetails.location,
@@ -51,7 +53,7 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
         notes: existing?.notes ?? defaultSessionDetails.notes,
         equipment: existing?.equipment ?? defaultSessionDetails.equipment,
         fee: existing?.fee ?? defaultSessionDetails.fee,
-        coaches: existing?.coaches ?? defaultSessionDetails.coaches,
+        coaches: Array.isArray(existing?.coaches) ? existing.coaches : defaultSessionDetails.coaches,
       });
     }
   }, [open, form, date, reset]);
@@ -103,7 +105,22 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">{t('enrollments:detail.sessionDetails.coaches')}</label>
-            <Input {...register('coaches')} />
+            <div className="flex flex-wrap gap-4">
+              {coachesData?.filter(c => c.is_active).map(coach => (
+                <label key={coach.id} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    value={coach.id}
+                    {...register('coaches')}
+                    className="rounded border-input text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm">{coach.name}</span>
+                </label>
+              ))}
+              {(!coachesData || coachesData.filter(c => c.is_active).length === 0) && (
+                <span className="text-sm text-muted-foreground">尚無可選擇的教練，請先至教練模組新增。</span>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">

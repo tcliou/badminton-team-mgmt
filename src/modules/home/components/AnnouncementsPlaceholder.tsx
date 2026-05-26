@@ -40,7 +40,7 @@ export function AnnouncementsPlaceholder() {
             ) : (
               <ul className="space-y-2">
                 {pinned.map((a) => (
-                  <AnnouncementListItem key={a.id} row={a} defaultExpanded />
+                  <AnnouncementListItem key={a.id} row={a} />
                 ))}
               </ul>
             )}

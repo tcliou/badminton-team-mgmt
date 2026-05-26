@@ -11,6 +11,7 @@ import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
 import { SessionSettingsDialog } from '../components/SessionSettingsDialog';
 import { defaultSessionDetails } from '../constants';
 import { useState } from 'react';
+import { useCoaches } from '@/modules/coaches/api/coachesApi';
 
 export function EnrollmentSessionPage() {
   const { id, date } = useParams<{ id: string; date: string }>();
@@ -19,6 +20,7 @@ export function EnrollmentSessionPage() {
   
   const formQuery = useEnrollmentForm(id!);
   const rowsQuery = useEnrollmentRows(id!);
+  const { data: coachesData } = useCoaches();
   const updateRow = useUpdateRow();
   
   const currentUser = useAuthStore((s) => s.profile);
@@ -63,6 +65,9 @@ export function EnrollmentSessionPage() {
   
   const totalPlayers = rows.filter(r => r.date_records[date] === 1 || r.daily_status[date] === 'need_single').length;
   const sessionDetails = formQuery.data.session_details?.[date] || defaultSessionDetails;
+  const coachNames = Array.isArray(sessionDetails.coaches) 
+    ? sessionDetails.coaches.map((coachId: string) => coachesData?.find(c => c.id === coachId)?.name || coachId).join('、')
+    : sessionDetails.coaches || '無';
 
   return (
     <div className="space-y-6">
@@ -94,7 +99,7 @@ export function EnrollmentSessionPage() {
         </div>
         <p>● {t('enrollments:detail.sessionDetails.equipment')}： {sessionDetails.equipment}</p>
         <p>● {t('enrollments:detail.sessionDetails.fee')}： {sessionDetails.fee}</p>
-        <p>● {t('enrollments:detail.sessionDetails.coaches')}： {sessionDetails.coaches}</p>
+        <p>● {t('enrollments:detail.sessionDetails.coaches')}： {coachNames}</p>
         <p className="font-bold text-primary">● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名</p>
       </div>
 

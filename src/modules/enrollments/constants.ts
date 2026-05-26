@@ -5,5 +5,5 @@ export const defaultSessionDetails = {
   notes: '進入球場，遵循教練指示，暫時離場（如洗手間）或提前離場（如請假提早離開），務必跟當日該組教練報備再離開。（提前離場者之家長亦請提前於群組告知，在場家長可一起留意孩子出離席情形）',
   equipment: '睿家家',
   fee: '請 Linepay 睿家媽 鄭阿君',
-  coaches: '萬馨淳、李子晴、高佩勤',
+  coaches: [] as string[],
 };
