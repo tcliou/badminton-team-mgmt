@@ -1,7 +1,7 @@
 -- 0036_coaches_module.sql
 
 create table if not exists public.coaches (
-    id          uuid primary key default uuid_generate_v4(),
+    id          uuid primary key default gen_random_uuid(),
     name        text not null,
     title       text,
     cv          text,
