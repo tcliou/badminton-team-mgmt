@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { navModules } from '@/core/router/moduleRegistry';
 import { useAuthStore } from '@/core/store/authStore';
 import { hasPermission } from '@/core/acl/permissions';
+import { useTeamSettings } from '@/core/api/settingsApi';
 import { cn } from '@/shared/utils/cn';
 import { resolveNavIcon } from './navIcons';
 
@@ -14,9 +15,22 @@ export function SideNav({ className }: SideNavProps) {
   const { t } = useTranslation();
   const profile = useAuthStore((s) => s.profile);
   const perms = profile?.permission_keys ?? [];
-  const modules = navModules().filter(
+  const { data: settings } = useTeamSettings();
+  
+  const baseModules = navModules().filter(
     (m) => !m.permissionKey || hasPermission(perms, m.permissionKey),
   );
+
+  const modules = settings?.nav_order
+    ? [...baseModules].sort((a, b) => {
+        const iA = settings.nav_order.indexOf(a.id);
+        const iB = settings.nav_order.indexOf(b.id);
+        if (iA >= 0 && iB >= 0) return iA - iB;
+        if (iA >= 0) return -1;
+        if (iB >= 0) return 1;
+        return (a.order ?? 100) - (b.order ?? 100);
+      })
+    : baseModules;
 
   return (
     <aside

@@ -1,8 +1,15 @@
 {
   "title": "管理後台",
   "tabs": {
-    "users": "使用者與角色指派",
-    "roles": "角色與權限"
+    "users": "使用者",
+    "roles": "角色與權限",
+    "settings": "系統設定"
+  },
+  "settings": {
+    "navOrder": {
+      "title": "導覽列排序",
+      "description": "拖曳或點擊按鈕來重新排列左側及底部導覽列的分頁順序。新的順序會對所有使用者生效。"
+    }
   },
   "users": {
     "search": "搜尋姓名 / 帳號…",

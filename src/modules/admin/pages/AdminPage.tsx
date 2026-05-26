@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UsersTab } from '../components/UsersTab';
 import { RolesTab } from '../components/RolesTab';
+import { SettingsTab } from '../components/SettingsTab';
 import { cn } from '@/shared/utils/cn';
 
-type Tab = 'users' | 'roles';
+type Tab = 'users' | 'roles' | 'settings';
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ export default function AdminPage() {
       </header>
 
       <div className="flex flex-wrap gap-1 rounded-lg border bg-card p-1">
-        {(['users', 'roles'] as const).map((s) => (
+        {(['users', 'roles', 'settings'] as const).map((s) => (
           <button
             key={s}
             type="button"
@@ -35,7 +36,7 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {tab === 'users' ? <UsersTab /> : <RolesTab />}
+      {tab === 'users' ? <UsersTab /> : tab === 'roles' ? <RolesTab /> : <SettingsTab />}
     </div>
   );
 }

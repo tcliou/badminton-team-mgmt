@@ -1,8 +1,15 @@
 {
   "title": "Admin",
   "tabs": {
-    "users": "Users & roles",
-    "roles": "Roles & permissions"
+    "users": "Users",
+    "roles": "Roles",
+    "settings": "Settings"
+  },
+  "settings": {
+    "navOrder": {
+      "title": "Navigation Order",
+      "description": "Click the up/down buttons to reorder the navigation tabs. The new order will apply to all users."
+    }
   },
   "users": {
     "search": "Search name / username…",

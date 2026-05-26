@@ -14,6 +14,17 @@
 export type Database = {
   public: {
     Tables: {
+      team_settings: {
+        Row: {
+          team_id: string;
+          nav_order: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: { team_id?: string; nav_order?: string[] };
+        Update: Partial<{ nav_order: string[] }>;
+        Relationships: [];
+      };
       profiles: {
         Row: ProfileRow;
         Insert: Pick<ProfileRow, 'id' | 'username' | 'display_name'> & Partial<ProfileRow>;
