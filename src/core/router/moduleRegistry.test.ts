@@ -23,8 +23,8 @@ describe('moduleRegistry', () => {
   it('navModules should be sorted by order', () => {
     const navItems = navModules();
     for (let i = 0; i < navItems.length - 1; i++) {
-      const currentOrder = navItems[i].order ?? 100;
-      const nextOrder = navItems[i + 1].order ?? 100;
+      const currentOrder = navItems[i]!.order ?? 100;
+      const nextOrder = navItems[i + 1]!.order ?? 100;
       expect(currentOrder).toBeLessThanOrEqual(nextOrder);
     }
   });

@@ -5,7 +5,6 @@ import { SideNav } from './SideNav';
 import { useAuthStore } from '@/core/store/authStore';
 import { useTeamSettings } from '@/core/api/settingsApi';
 import { navModules } from '@/core/router/moduleRegistry';
-import React from 'react';
 
 // Mock dependencies
 vi.mock('@/core/store/authStore');
@@ -109,8 +108,8 @@ describe('SideNav', () => {
 
     const items = screen.getAllByRole('link');
     // Expect order: calendar (0), home (1), settings (2)
-    expect(items[0].getAttribute('href')).toBe('/calendar');
-    expect(items[1].getAttribute('href')).toBe('/');
-    expect(items[2].getAttribute('href')).toBe('/settings');
+    expect(items[0]!.getAttribute('href')).toBe('/calendar');
+    expect(items[1]!.getAttribute('href')).toBe('/');
+    expect(items[2]!.getAttribute('href')).toBe('/settings');
   });
 });
