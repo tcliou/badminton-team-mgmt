@@ -1,6 +1,6 @@
 create table public.announcement_reads (
     announcement_id uuid references public.announcements(id) on delete cascade not null,
-    user_id uuid references public.profiles(id) on delete cascade not null,
+    user_id uuid references auth.users(id) on delete cascade not null,
     read_at timestamp with time zone default now() not null,
     primary key (announcement_id, user_id)
 );
