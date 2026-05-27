@@ -22,6 +22,7 @@ interface DesktopTableProps {
   date: string;
   canManage: boolean;
   currentUser?: AuthProfile | null;
+  linkedPlayerIds: Set<string>;
   handleCellChange: (rowId: string, field: 'daily_status' | 'daily_info' | 'enrollment_type' | 'date_records', value: string | number, currentRow: TrainingEnrollmentRowRow) => void;
   getRowBgColor: (type: string | null) => string;
   t: (key: string) => string;
@@ -145,6 +146,7 @@ export function EnrollmentSessionPage() {
                 date={date} 
                 canManage={canManage} 
                 currentUser={currentUser} 
+                linkedPlayerIds={linkedPlayerIds}
                 handleCellChange={handleCellChange}
                 getRowBgColor={getRowBgColor}
                 t={t}
@@ -183,6 +185,7 @@ export function EnrollmentSessionPage() {
               date={date} 
               canManage={canManage} 
               currentUser={currentUser} 
+              linkedPlayerIds={linkedPlayerIds}
               handleCellChange={handleCellChange}
               getRowBgColor={getRowBgColor}
               t={t}
@@ -200,7 +203,7 @@ export function EnrollmentSessionPage() {
   );
 }
 
-function DesktopTable({ rows, date, canManage, currentUser, handleCellChange, getRowBgColor, t }: DesktopTableProps) {
+function DesktopTable({ rows, date, canManage, currentUser, linkedPlayerIds, handleCellChange, getRowBgColor, t }: DesktopTableProps) {
   return (
     <table className="w-full text-left text-sm whitespace-nowrap">
       <thead className="bg-muted text-muted-foreground">
@@ -215,7 +218,7 @@ function DesktopTable({ rows, date, canManage, currentUser, handleCellChange, ge
       </thead>
       <tbody>
         {rows.map((row) => {
-          const canEditInfo = canManage || currentUser?.id === row.player.id;
+          const canEditInfo = canManage || currentUser?.id === row.player.id || linkedPlayerIds.has(row.player.id);
           
           return (
             <tr key={row.id} className={clsx("border-b last:border-b-0 hover:bg-muted/50 transition-colors", getRowBgColor(row.enrollment_type))}>
