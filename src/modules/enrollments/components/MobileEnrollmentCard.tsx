@@ -2,8 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
 
+import type { EnrollmentRowWithPlayer } from '../api/enrollmentsApi';
+
 interface Props {
-  row: any;
+  row: EnrollmentRowWithPlayer;
   date: string;
   canEdit: boolean;
   handleCellChange: (

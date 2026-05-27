@@ -9,6 +9,12 @@ import { Button } from '@/shared/components/Button';
 import type { IssueRow } from '@/core/supabase/types';
 import { cn } from '@/shared/utils/cn';
 
+type IssueWithRelations = IssueRow & {
+  assignee?: { id: string; display_name: string | null; avatar_url: string | null } | null;
+  creator?: { id: string; display_name: string | null; avatar_url: string | null } | null;
+  parent?: { id: string; title: string | null } | null;
+};
+
 export default function IssuesPage() {
   const { t } = useTranslation(['issues', 'common']);
   const { data, isLoading } = useIssues();
@@ -28,9 +34,9 @@ export default function IssuesPage() {
   const epics = data?.filter(i => i.issue_type === 'epic') || [];
   const assignees = Array.from(
     new Map(
-      (data || [])
-        .filter((i) => (i as any).assignee_id && (i as any).assignee)
-        .map((i) => [(i as any).assignee_id, (i as any).assignee])
+      ((data as unknown as IssueWithRelations[]) || [])
+        .filter((i) => i.assigned_to && i.assignee)
+        .map((i) => [i.assigned_to, i.assignee])
     ).values()
   ) as { id: string; display_name: string }[];
 
@@ -149,7 +155,7 @@ export default function IssuesPage() {
               });
             }
             if (filterAssignee !== 'all') {
-              processed = processed.filter(i => filterAssignee === 'unassigned' ? !(i as any).assignee_id : (i as any).assignee_id === filterAssignee);
+              processed = processed.filter(i => filterAssignee === 'unassigned' ? !i.assigned_to : i.assigned_to === filterAssignee);
             }
 
             processed.sort((a, b) => {
@@ -189,10 +195,10 @@ export default function IssuesPage() {
                   )}
                 </div>
 
-                {(issue as unknown as { parent?: { title?: string } }).parent && (
+                {(issue as unknown as IssueWithRelations).parent && (
                   <div className="text-xs text-muted-foreground flex items-center gap-1">
                     <LinkIcon className="h-3 w-3" />
-                    {(issue as unknown as { parent?: { title?: string } }).parent?.title}
+                    {(issue as unknown as IssueWithRelations).parent?.title}
                   </div>
                 )}
 
@@ -226,7 +232,7 @@ export default function IssuesPage() {
               </div>
               
               <div className={cn("text-xs text-muted-foreground flex", viewMode === 'grid' ? "justify-between mt-1" : "flex-col items-end gap-1 ml-4 min-w-[120px]")}>
-                <span>{t('issues:fields.assignedTo')}: {(issue as unknown as { assignee?: { display_name?: string | null } }).assignee?.display_name || '—'}</span>
+                <span>{t('issues:fields.assignedTo')}: {(issue as unknown as IssueWithRelations).assignee?.display_name || '—'}</span>
                 <span>{new Date(issue.created_at).toLocaleDateString()}</span>
               </div>
 
@@ -254,7 +260,7 @@ export default function IssuesPage() {
         let key = '';
         if (groupBy === 'status') key = issue.status;
         if (groupBy === 'epic') {
-          key = issue.issue_type === 'epic' ? 'Epic' : ((issue as unknown as { parent?: { title?: string } }).parent?.title || 'No Epic');
+          key = issue.issue_type === 'epic' ? 'Epic' : ((issue as unknown as IssueWithRelations).parent?.title || 'No Epic');
         }
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key)!.push(issue);

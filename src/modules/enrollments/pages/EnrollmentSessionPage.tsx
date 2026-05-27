@@ -14,6 +14,18 @@ import { defaultSessionDetails } from '../constants';
 import { useState } from 'react';
 import { useCoaches } from '@/modules/coaches/api/coachesApi';
 import { useLinkedPlayers } from '@/modules/parents/api/parentsApi';
+import type { EnrollmentRowWithPlayer } from '../api/enrollmentsApi';
+import type { AuthProfile } from '@/core/store/authStore';
+
+interface DesktopTableProps {
+  rows: EnrollmentRowWithPlayer[];
+  date: string;
+  canManage: boolean;
+  currentUser?: AuthProfile | null;
+  handleCellChange: (rowId: string, field: 'daily_status' | 'daily_info' | 'enrollment_type' | 'date_records', value: string | number, currentRow: TrainingEnrollmentRowRow) => void;
+  getRowBgColor: (type: string | null) => string;
+  t: (key: string) => string;
+}
 
 export function EnrollmentSessionPage() {
   const { id, date } = useParams<{ id: string; date: string }>();
@@ -188,7 +200,7 @@ export function EnrollmentSessionPage() {
   );
 }
 
-function DesktopTable({ rows, date, canManage, currentUser, handleCellChange, getRowBgColor, t }: any) {
+function DesktopTable({ rows, date, canManage, currentUser, handleCellChange, getRowBgColor, t }: DesktopTableProps) {
   return (
     <table className="w-full text-left text-sm whitespace-nowrap">
       <thead className="bg-muted text-muted-foreground">
@@ -202,7 +214,7 @@ function DesktopTable({ rows, date, canManage, currentUser, handleCellChange, ge
         </tr>
       </thead>
       <tbody>
-        {rows.map((row: any) => {
+        {rows.map((row) => {
           const canEditInfo = canManage || currentUser?.id === row.player.id;
           
           return (
