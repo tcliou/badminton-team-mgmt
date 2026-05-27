@@ -55,6 +55,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
   const update = useUpdateAnnouncement();
   const del = useDeleteAnnouncement();
   const [tab, setTab] = useState<'write' | 'preview'>('write');
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   const {
     register,
@@ -150,8 +151,29 @@ export function AnnouncementForm({ editing, onDone }: Props) {
             {...register('body_md')}
           />
         ) : (
-          <div className="min-h-[200px] rounded-md border bg-background p-3">
-            <MarkdownPreview body={body || '_（沒有內容）_'} />
+          <div className="space-y-3">
+            <div className="flex justify-center gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => setPreviewDevice('desktop')}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${previewDevice === 'desktop' ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted'}`}
+              >
+                Desktop
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewDevice('mobile')}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${previewDevice === 'mobile' ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted'}`}
+              >
+                Mobile
+              </button>
+            </div>
+            
+            <div className={`min-h-[200px] bg-background ${previewDevice === 'mobile' ? 'max-w-[375px] mx-auto border-[8px] border-zinc-800 rounded-[2.5rem] p-4 shadow-xl' : 'rounded-md border p-3'}`}>
+              <div className={previewDevice === 'mobile' ? 'h-[500px] overflow-y-auto pr-1 custom-scrollbar' : ''}>
+                <MarkdownPreview body={body || '_（沒有內容）_'} />
+              </div>
+            </div>
           </div>
         )}
       </div>

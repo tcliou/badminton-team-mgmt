@@ -5,6 +5,9 @@ import { MarkdownPreview } from './MarkdownPreview';
 import { formatDateTime } from '@/shared/utils/dates';
 import { cn } from '@/shared/utils/cn';
 import type { AnnouncementRow } from '@/core/supabase/types';
+import { useMarkAnnouncementAsRead, useAnnouncementReaders } from '../api/announcementsApi';
+import { useAuthStore } from '@/core/store/authStore';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 /**
  * 列表中的一筆公告：預設只顯示標題 + 時間 + 置頂 badge，點開展開內文。
@@ -22,12 +25,26 @@ export function AnnouncementListItem({
   const { t } = useTranslation();
   const [open, setOpen] = useState(defaultExpanded);
   const when = row.publish_at ?? row.created_at;
+  
+  const currentUser = useAuthStore(s => s.profile);
+  const markAsRead = useMarkAnnouncementAsRead();
+  const { data: readers = [] } = useAnnouncementReaders(row.id);
+
+  const handleToggle = () => {
+    setOpen((s) => {
+      const next = !s;
+      if (next && currentUser && !readers.some(r => r.user?.id === currentUser.id)) {
+        markAsRead.mutate(row.id);
+      }
+      return next;
+    });
+  };
 
   return (
     <li className={cn('rounded-lg border bg-card', row.is_pinned && 'border-primary/40')}>
       <button
         type="button"
-        onClick={() => setOpen((s) => !s)}
+        onClick={handleToggle}
         className="flex w-full items-start justify-between gap-3 p-3 text-left"
         aria-expanded={open}
       >
@@ -77,6 +94,43 @@ export function AnnouncementListItem({
               </button>
             </div>
           ) : null}
+
+          {readers.length > 0 && (
+            <div className="mt-4 pt-3 border-t">
+              <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                <span className="font-medium">已讀</span>
+                <span>({readers.length})</span>
+              </p>
+              <Tooltip.Provider delayDuration={200}>
+                <div className="flex flex-wrap gap-1">
+                  {readers.map(reader => reader.user && (
+                    <Tooltip.Root key={reader.user.id}>
+                      <Tooltip.Trigger asChild>
+                        <div className="h-6 w-6 rounded-full overflow-hidden bg-muted flex items-center justify-center shrink-0 border border-background shadow-sm hover:z-10 relative">
+                          {reader.user.avatar_url ? (
+                            <img src={reader.user.avatar_url} alt={reader.user.display_name || ''} className="h-full w-full object-cover" />
+                          ) : (
+                            <span className="text-[10px] font-medium uppercase">
+                              {(reader.user.display_name || '?').charAt(0)}
+                            </span>
+                          )}
+                        </div>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content
+                          side="top"
+                          className="z-50 rounded-md bg-zinc-900 px-2 py-1 text-xs text-zinc-50 shadow-md"
+                        >
+                          {reader.user.display_name}
+                          <Tooltip.Arrow className="fill-zinc-900" />
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  ))}
+                </div>
+              </Tooltip.Provider>
+            </div>
+          )}
         </div>
       ) : null}
     </li>

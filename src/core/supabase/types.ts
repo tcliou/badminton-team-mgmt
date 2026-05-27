@@ -112,6 +112,27 @@ export type Database = {
         Update: Partial<AnnouncementRow>;
         Relationships: [];
       };
+      announcement_reads: {
+        Row: AnnouncementReadRow;
+        Insert: Pick<AnnouncementReadRow, 'announcement_id' | 'user_id'> & Partial<AnnouncementReadRow>;
+        Update: Partial<AnnouncementReadRow>;
+        Relationships: [
+          {
+            foreignKeyName: "announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcement_reads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
       payment_items: {
         Row: PaymentItemRow;
         Insert: Pick<PaymentItemRow, 'name' | 'amount'> & Partial<PaymentItemRow>;
@@ -445,6 +466,12 @@ export type AnnouncementRow = {
   author_id: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type AnnouncementReadRow = {
+  announcement_id: string;
+  user_id: string;
+  read_at: string;
 };
 
 export type PaymentItemStatus = 'active' | 'closed';

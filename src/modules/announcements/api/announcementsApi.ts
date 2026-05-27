@@ -108,3 +108,44 @@ export function useDeleteAnnouncement() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['announcements'] }),
   });
 }
+
+export function useMarkAnnouncementAsRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (announcementId: string) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      const { error } = await supabase.from('announcement_reads').insert(
+        { announcement_id: announcementId, user_id: userData.user.id }
+      );
+      // Ignore unique constraint violation (23505) if the user already read it
+      if (error && error.code !== '23505') throw error;
+    },
+    onSuccess: (_, announcementId) => {
+      qc.invalidateQueries({ queryKey: ['announcements', 'readers', announcementId] });
+    },
+  });
+}
+
+export function useAnnouncementReaders(announcementId: string) {
+  return useQuery({
+    queryKey: ['announcements', 'readers', announcementId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('announcement_reads')
+        .select(`
+          read_at,
+          user:profiles(id, display_name, avatar_url)
+        `)
+        .eq('announcement_id', announcementId)
+        .order('read_at', { ascending: false });
+
+      if (error) throw error;
+      return (data ?? []) as {
+        read_at: string;
+        user: { id: string; display_name: string | null; avatar_url: string | null } | null;
+      }[];
+    },
+    enabled: !!announcementId,
+  });
+}
