@@ -20,11 +20,19 @@ export default function IssuesPage() {
 
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterEpic, setFilterEpic] = useState('all');
-  const [groupBy, setGroupBy] = useState<'none' | 'status' | 'epic'>('none');
+  const [filterAssignee, setFilterAssignee] = useState('all');
+  const [groupBy, setGroupBy] = useState<'none' | 'status' | 'epic'>('epic');
   const [sortBy, setSortBy] = useState<'created_at' | 'priority' | 'status'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const epics = data?.filter(i => i.issue_type === 'epic') || [];
+  const assignees = Array.from(
+    new Map(
+      (data || [])
+        .filter((i) => (i as any).assignee_id && (i as any).assignee)
+        .map((i) => [(i as any).assignee_id, (i as any).assignee])
+    ).values()
+  ) as { id: string; display_name: string }[];
 
   const handleEdit = (issue: IssueRow) => {
     setEditing(issue);
@@ -92,9 +100,17 @@ export default function IssuesPage() {
               </select>
               <select className="border rounded px-2 py-1 text-sm bg-background" value={filterEpic} onChange={e => setFilterEpic(e.target.value)}>
                 <option value="all">All Epics</option>
+                <option value="Epic">Epic</option>
                 <option value="none">No Epic</option>
                 {epics.map(epic => (
                   <option key={epic.id} value={epic.id}>{epic.title}</option>
+                ))}
+              </select>
+              <select className="border rounded px-2 py-1 text-sm bg-background" value={filterAssignee} onChange={e => setFilterAssignee(e.target.value)}>
+                <option value="all">All Assignees</option>
+                <option value="unassigned">Unassigned</option>
+                {assignees.map(a => (
+                  <option key={a.id} value={a.id}>{a.display_name}</option>
                 ))}
               </select>
             </div>
@@ -126,7 +142,14 @@ export default function IssuesPage() {
             let processed = [...data];
             if (filterStatus !== 'all') processed = processed.filter(i => i.status === filterStatus);
             if (filterEpic !== 'all') {
-              processed = processed.filter(i => filterEpic === 'none' ? !i.parent_id : i.parent_id === filterEpic);
+              processed = processed.filter(i => {
+                if (filterEpic === 'none') return !i.parent_id && i.issue_type !== 'epic';
+                if (filterEpic === 'Epic') return i.issue_type === 'epic';
+                return i.parent_id === filterEpic;
+              });
+            }
+            if (filterAssignee !== 'all') {
+              processed = processed.filter(i => filterAssignee === 'unassigned' ? !(i as any).assignee_id : (i as any).assignee_id === filterAssignee);
             }
 
             processed.sort((a, b) => {
@@ -230,7 +253,9 @@ export default function IssuesPage() {
       processed.forEach(issue => {
         let key = '';
         if (groupBy === 'status') key = issue.status;
-        if (groupBy === 'epic') key = (issue as unknown as { parent?: { title?: string } }).parent?.title || 'No Epic';
+        if (groupBy === 'epic') {
+          key = issue.issue_type === 'epic' ? 'Epic' : ((issue as unknown as { parent?: { title?: string } }).parent?.title || 'No Epic');
+        }
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key)!.push(issue);
       });
