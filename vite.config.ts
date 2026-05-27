@@ -25,21 +25,15 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {
-          manualChunks: {
-            react: ['react', 'react-dom', 'react-router-dom'],
-            supabase: ['@supabase/supabase-js'],
-            i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
-            'react-query': ['@tanstack/react-query'],
-            forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
-            calendar: [
-              '@fullcalendar/core',
-              '@fullcalendar/react',
-              '@fullcalendar/daygrid',
-              '@fullcalendar/list',
-              '@fullcalendar/interaction',
-            ],
-            markdown: ['react-markdown', 'remark-gfm'],
-            xlsx: ['xlsx'],
+          manualChunks(id) {
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) return 'react';
+            if (id.includes('node_modules/@supabase/supabase-js/')) return 'supabase';
+            if (id.includes('node_modules/i18next/') || id.includes('node_modules/react-i18next/') || id.includes('node_modules/i18next-browser-languagedetector/')) return 'i18n';
+            if (id.includes('node_modules/@tanstack/react-query/')) return 'react-query';
+            if (id.includes('node_modules/react-hook-form/') || id.includes('node_modules/@hookform/resolvers/') || id.includes('node_modules/zod/')) return 'forms';
+            if (id.includes('node_modules/@fullcalendar/')) return 'calendar';
+            if (id.includes('node_modules/react-markdown/') || id.includes('node_modules/remark-gfm/')) return 'markdown';
+            if (id.includes('node_modules/xlsx/')) return 'xlsx';
           },
         },
       },

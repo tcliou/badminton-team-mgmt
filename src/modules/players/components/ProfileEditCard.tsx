@@ -20,7 +20,8 @@ const schema = z.object({
   weight_kg: z.coerce.number().min(0).max(300).optional().or(z.nan()),
   favorite_racket: z.string().optional(),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 interface Props {
   profile: ProfileRow;
@@ -38,7 +39,7 @@ export function ProfileEditCard({ profile, canEdit }: Props) {
     handleSubmit,
     formState: { isSubmitting, errors },
     reset,
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       display_name: profile.display_name,
@@ -53,7 +54,7 @@ export function ProfileEditCard({ profile, canEdit }: Props) {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormOutput) => {
     await update.mutateAsync({
       display_name: data.display_name,
       student_id: data.student_id,

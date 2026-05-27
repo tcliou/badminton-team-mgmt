@@ -15,7 +15,8 @@ const schema = z.object({
   is_active: z.boolean().default(true),
   user_id: z.string().optional().nullable(),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 interface Props {
   open: boolean;
@@ -32,7 +33,7 @@ export function CoachFormDialog({ open, onClose, coach }: Props) {
     handleSubmit,
     reset,
     formState: { isSubmitting },
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
@@ -70,7 +71,7 @@ export function CoachFormDialog({ open, onClose, coach }: Props) {
 
   if (!open) return null;
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormOutput) => {
     await mutateCoach.mutateAsync({
       id: coach?.id,
       ...data,

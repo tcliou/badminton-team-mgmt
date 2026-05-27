@@ -24,7 +24,8 @@ const schema = z.object({
   advanced_by_user_id: z.string().optional(),
   note: z.string().optional(),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 interface Props {
   open: boolean;
@@ -49,7 +50,7 @@ export function TransactionForm({ open, onClose, editing, defaultMonth, defaultD
     watch,
     formState: { isSubmitting },
     reset,
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormInput, unknown, FormOutput>({ resolver: zodResolver(schema) });
 
   const { data: profiles } = useActiveProfiles();
   const direction = watch('direction');
@@ -83,7 +84,7 @@ export function TransactionForm({ open, onClose, editing, defaultMonth, defaultD
 
   if (!open) return null;
 
-  const onSubmit = async (d: FormData) => {
+  const onSubmit = async (d: FormOutput) => {
     const payload = {
       direction: d.direction,
       occurred_on: d.occurred_on,

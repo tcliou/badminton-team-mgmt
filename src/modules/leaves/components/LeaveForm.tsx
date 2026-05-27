@@ -26,7 +26,8 @@ const schema = z
     path: ['end_at'],
     message: 'endBeforeStart',
   });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 interface LeaveFormProps {
   onSuccess?: () => void;
@@ -57,7 +58,7 @@ export function LeaveForm({ onSuccess }: LeaveFormProps) {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       start_at: defaultStart,
@@ -76,7 +77,7 @@ export function LeaveForm({ onSuccess }: LeaveFormProps) {
     affected_event_ids: [],
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormOutput) => {
     const base = {
       start_at: fromDateTimeInputValue(data.start_at),
       end_at: fromDateTimeInputValue(data.end_at),

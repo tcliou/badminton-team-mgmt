@@ -24,9 +24,10 @@ const schema = z.object({
   publish_at_input: z.string().optional(),
   visible_to_role_ids: z.array(z.string()).default([]),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
-function rowToFormValues(row: AnnouncementRow | null): FormData {
+function rowToFormValues(row: AnnouncementRow | null): FormInput {
   return {
     title: row?.title ?? '',
     body_md: row?.body_md ?? '',
@@ -62,15 +63,15 @@ export function AnnouncementForm({ editing, onDone }: Props) {
     watch,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
-    defaultValues: rowToFormValues(editing ?? null),
+    defaultValues: rowToFormValues(editing ?? null) as FormInput,
   });
 
   const publishMode = watch('publishMode');
   const body = watch('body_md');
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormOutput) => {
     let status: AnnouncementStatus;
     let publish_at: string | null;
     if (data.publishMode === 'draft') {

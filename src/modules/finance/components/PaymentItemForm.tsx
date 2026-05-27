@@ -24,7 +24,8 @@ const schema = z.object({
   target_user_ids: z.array(z.string()).default([]),
   status: z.enum(['active', 'closed']),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 export function PaymentItemForm({
   editing,
@@ -44,7 +45,7 @@ export function PaymentItemForm({
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: editing?.name ?? '',
@@ -58,7 +59,7 @@ export function PaymentItemForm({
     },
   });
 
-  const onSubmit = async (d: FormData) => {
+  const onSubmit = async (d: FormOutput) => {
     const payload = {
       name: d.name,
       purpose: d.purpose || null,

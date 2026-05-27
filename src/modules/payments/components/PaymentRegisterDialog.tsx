@@ -30,7 +30,8 @@ const schema = z.object({
   paid_at: z.string().min(1),
   transfer_last5: z.string().max(5).optional(),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 interface Props {
   open: boolean;
@@ -58,7 +59,7 @@ export function PaymentRegisterDialog({ open, onClose, item, editing, forPlayerI
     handleSubmit,
     formState: { isSubmitting },
     reset,
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormInput, unknown, FormOutput>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
     if (!open) return;
@@ -81,7 +82,7 @@ export function PaymentRegisterDialog({ open, onClose, item, editing, forPlayerI
     setProofPath(path);
   };
 
-  const onSubmit = async (d: FormData) => {
+  const onSubmit = async (d: FormOutput) => {
     const payload = {
       channel: d.channel,
       amount: d.amount,

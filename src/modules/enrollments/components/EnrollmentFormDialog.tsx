@@ -15,7 +15,8 @@ const schema = z.object({
   dates: z.array(z.object({ value: z.string().min(1) })).min(1, 'Select at least one date'),
   generate_sessions: z.boolean().default(true),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 interface Props {
   open: boolean;
@@ -36,7 +37,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
     control,
     reset,
     formState: { isSubmitting },
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: { title: '', description: '', dates: [{ value: '' }], generate_sessions: true },
   });
@@ -61,7 +62,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
 
   if (!open) return null;
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormOutput) => {
     const payload = {
       title: data.title,
       description: data.description,

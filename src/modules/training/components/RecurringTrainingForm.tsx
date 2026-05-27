@@ -19,7 +19,8 @@ const schema = z.object({
   weekdays: z.array(z.number()).min(1),
   weeks: z.coerce.number().int().min(1).max(52),
 });
-type FormData = z.infer<typeof schema>;
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 export function RecurringTrainingForm({ onSuccess }: { onSuccess?: (count: number) => void }) {
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ export function RecurringTrainingForm({ onSuccess }: { onSuccess?: (count: numbe
     watch,
     formState: { isSubmitting },
     reset,
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       title: '訓練',
@@ -54,7 +55,7 @@ export function RecurringTrainingForm({ onSuccess }: { onSuccess?: (count: numbe
     setValue('weekdays', next, { shouldValidate: true });
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormOutput) => {
     const result = await create.mutateAsync({
       title: data.title,
       topic: data.topic,
