@@ -11,17 +11,19 @@ interface Props {
   profileId: string;
 }
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 const PREDEFINED_AVATARS = [
-  '/avatars/predefined/boy1.svg',
-  '/avatars/predefined/boy2.svg',
-  '/avatars/predefined/boy3.svg',
-  '/avatars/predefined/girl1.svg',
-  '/avatars/predefined/girl2.svg',
-  '/avatars/predefined/girl3.svg',
-  '/avatars/predefined/robot1.svg',
-  '/avatars/predefined/robot2.svg',
-  '/avatars/predefined/thumbs1.svg',
-  '/avatars/predefined/thumbs2.svg',
+  `${base}/avatars/predefined/boy1.svg`,
+  `${base}/avatars/predefined/boy2.svg`,
+  `${base}/avatars/predefined/boy3.svg`,
+  `${base}/avatars/predefined/girl1.svg`,
+  `${base}/avatars/predefined/girl2.svg`,
+  `${base}/avatars/predefined/girl3.svg`,
+  `${base}/avatars/predefined/robot1.svg`,
+  `${base}/avatars/predefined/robot2.svg`,
+  `${base}/avatars/predefined/thumbs1.svg`,
+  `${base}/avatars/predefined/thumbs2.svg`,
 ];
 
 /**
