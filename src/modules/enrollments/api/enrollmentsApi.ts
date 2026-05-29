@@ -47,14 +47,30 @@ export function useEnrollmentForm(id: string) {
 export function useCreateForm() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: Pick<TrainingEnrollmentFormRow, 'title' | 'dates' | 'status'>) => {
-      const { data, error } = await supabase
+    mutationFn: async (payload: Pick<TrainingEnrollmentFormRow, 'title' | 'dates' | 'status'> & { generate_sessions?: boolean }) => {
+      const { data: form, error: formError } = await supabase
         .from('training_enrollment_forms')
         .insert(payload)
         .select()
         .single();
-      if (error) throw error;
-      return data;
+      if (formError) throw formError;
+
+      // 預設帶入所有有效的球員
+      const { data: activePlayers, error: playersError } = await supabase
+        .from('profiles')
+        .select(`id, user_roles!inner(roles!inner(name))`)
+        .eq('status', 'active')
+        .eq('user_roles.roles.name', 'player');
+        
+      if (!playersError && activePlayers && activePlayers.length > 0) {
+        const rowsToInsert = activePlayers.map(p => ({
+          form_id: form.id,
+          player_id: p.id
+        }));
+        await supabase.from('training_enrollment_rows').insert(rowsToInsert);
+      }
+
+      return form;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: EK.forms() }),
   });

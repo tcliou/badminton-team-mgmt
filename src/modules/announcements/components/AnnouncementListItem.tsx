@@ -78,17 +78,27 @@ export function AnnouncementListItem({
       </button>
       {open ? (
         <div className="border-t bg-background/50 px-3 pb-3 pt-2">
-          {row.image_urls && row.image_urls.length > 0 && (
-            <div className="mb-4 grid gap-2">
-              {row.image_urls.map((url, i) => (
-                <img key={i} src={url} alt={`Image ${i}`} className="w-full rounded-md object-cover" />
-              ))}
-            </div>
-          )}
           {row.body_md ? (
             <MarkdownPreview body={row.body_md} />
           ) : (
             <p className="text-sm text-muted-foreground">—</p>
+          )}
+          {row.image_urls && row.image_urls.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {row.image_urls.map((url, i) => (
+                <button 
+                  key={i} 
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(url, '_blank');
+                  }}
+                  className="overflow-hidden rounded-md border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <img src={url} alt={`Image ${i}`} className="h-24 w-24 object-cover hover:opacity-80 transition-opacity" />
+                </button>
+              ))}
+            </div>
           )}
           {onClickEdit ? (
             <div className="mt-2">
