@@ -87,7 +87,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
       publish_at = data.publish_at_input ? fromDateTimeInputValue(data.publish_at_input) : null;
     } else {
       status = 'published';
-      publish_at = new Date().toISOString();
+      publish_at = data.publish_at_input ? fromDateTimeInputValue(data.publish_at_input) : new Date().toISOString();
     }
 
     const payload = {
@@ -231,7 +231,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
           />
           {t('announcements:form.publishScheduled')}
         </label>
-        {publishMode === 'scheduled' ? (
+        {publishMode === 'scheduled' || publishMode === 'now' ? (
           <div className="ml-6 mt-2 space-y-1">
             <label className="text-xs font-medium">{t('announcements:form.publishAt')}</label>
             <Input type="datetime-local" {...register('publish_at_input')} />

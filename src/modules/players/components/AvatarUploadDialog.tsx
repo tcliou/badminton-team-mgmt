@@ -14,6 +14,8 @@ interface Props {
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const PREDEFINED_AVATARS = [
+  ...Array.from({ length: 10 }, (_, i) => `${base}/avatars/predefined/anime_boy${i + 4}.svg`),
+  ...Array.from({ length: 10 }, (_, i) => `${base}/avatars/predefined/anime_girl${i + 4}.svg`),
   `${base}/avatars/predefined/boy1.svg`,
   `${base}/avatars/predefined/boy2.svg`,
   `${base}/avatars/predefined/boy3.svg`,
