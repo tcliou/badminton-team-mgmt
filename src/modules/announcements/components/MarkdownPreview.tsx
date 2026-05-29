@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { cn } from '@/shared/utils/cn';
 
 /**
@@ -49,7 +50,7 @@ export function MarkdownPreview({
   return (
     <div
       className={cn(
-        'space-y-2 text-sm leading-relaxed text-foreground',
+        'space-y-2 text-sm leading-relaxed text-foreground whitespace-pre-wrap',
         '[&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-semibold',
         '[&_p]:my-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5',
         '[&_a]:text-primary [&_a]:underline',
@@ -60,7 +61,7 @@ export function MarkdownPreview({
       )}
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         components={{ a: SafeLink }}
       >
         {body}
