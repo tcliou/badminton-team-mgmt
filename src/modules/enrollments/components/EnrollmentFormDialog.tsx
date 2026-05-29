@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateForm, useUpdateForm } from '../api/enrollmentsApi';
+import { useNavigate } from 'react-router-dom';
+import { useCreateForm, useUpdateForm, useDeleteForm } from '../api/enrollmentsApi';
 import type { TrainingEnrollmentFormRow } from '@/core/supabase/types';
 import { Input } from '@/shared/components/Input';
 import { Button } from '@/shared/components/Button';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Trash2 } from 'lucide-react';
 
 const schema = z.object({
   title: z.string().min(1, 'Required'),
@@ -26,8 +27,10 @@ interface Props {
 
 export function EnrollmentFormDialog({ open, onClose, form }: Props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const createForm = useCreateForm();
   const updateForm = useUpdateForm(form?.id || '');
+  const deleteForm = useDeleteForm();
 
   const isEdit = !!form;
 
@@ -82,6 +85,14 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
   const handleClose = () => {
     reset();
     onClose();
+  };
+
+  const handleDelete = async () => {
+    if (!form) return;
+    if (!window.confirm('確定要刪除此報名表嗎？這將會刪除所有相關的報名資料，且無法復原。')) return;
+    await deleteForm.mutateAsync(form.id);
+    handleClose();
+    navigate('/enrollments');
   };
 
   return (
@@ -150,13 +161,29 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
             </label>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={handleClose}>
-              {t('enrollments:form.cancel')}
-            </Button>
-            <Button type="submit" disabled={isSubmitting || createForm.isPending || updateForm.isPending}>
-              {isSubmitting ? '...' : t('enrollments:form.save')}
-            </Button>
+          <div className="flex justify-between items-center pt-4">
+            <div>
+              {isEdit && (
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-2"
+                  onClick={handleDelete}
+                  disabled={deleteForm.isPending}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  刪除
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={handleClose}>
+                {t('enrollments:form.cancel')}
+              </Button>
+              <Button type="submit" disabled={isSubmitting || createForm.isPending || updateForm.isPending || deleteForm.isPending}>
+                {isSubmitting ? '...' : t('enrollments:form.save')}
+              </Button>
+            </div>
           </div>
         </form>
       </div>
