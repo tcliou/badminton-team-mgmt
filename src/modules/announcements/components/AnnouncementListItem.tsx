@@ -78,6 +78,13 @@ export function AnnouncementListItem({
       </button>
       {open ? (
         <div className="border-t bg-background/50 px-3 pb-3 pt-2">
+          {row.image_urls && row.image_urls.length > 0 && (
+            <div className="mb-4 grid gap-2">
+              {row.image_urls.map((url, i) => (
+                <img key={i} src={url} alt={`Image ${i}`} className="w-full rounded-md object-cover" />
+              ))}
+            </div>
+          )}
           {row.body_md ? (
             <MarkdownPreview body={row.body_md} />
           ) : (

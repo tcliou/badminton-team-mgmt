@@ -466,6 +466,7 @@ export type AnnouncementRow = {
   author_id: string | null;
   created_at: string;
   updated_at: string;
+  image_urls: string[];
 };
 
 export type AnnouncementReadRow = {

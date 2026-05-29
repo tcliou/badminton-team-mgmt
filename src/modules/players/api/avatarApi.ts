@@ -40,6 +40,26 @@ export function useUploadAvatar() {
   });
 }
 
+/** 直接設定頭像網址 (用於選擇預設頭像) */
+export function useSetAvatarUrl() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { profileId: string; url: string }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: input.url })
+        .eq('id', input.profileId);
+      if (error) throw error;
+      return input.url;
+    },
+    onSuccess: (_url, vars) => {
+      void qc.invalidateQueries({ queryKey: QK.profile.detail(vars.profileId) });
+      void qc.invalidateQueries({ queryKey: QK.profile.list });
+      void qc.invalidateQueries({ queryKey: QK.profile.me });
+    },
+  });
+}
+
 /** 把選擇的圖片 + crop 區域產出方形 JPEG Blob */
 export async function cropImageToBlob(
   imageSrc: string,

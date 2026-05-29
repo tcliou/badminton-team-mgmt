@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Pin, Trash2 } from 'lucide-react';
@@ -14,6 +14,7 @@ import {
 } from '../api/announcementsApi';
 import { useAllRoles } from '../api/rolesApi';
 import { MarkdownPreview } from './MarkdownPreview';
+import { AnnouncementImageUploader } from './AnnouncementImageUploader';
 import type { AnnouncementRow, AnnouncementStatus } from '@/core/supabase/types';
 
 const schema = z.object({
@@ -23,6 +24,7 @@ const schema = z.object({
   publishMode: z.enum(['draft', 'now', 'scheduled']),
   publish_at_input: z.string().optional(),
   visible_to_role_ids: z.array(z.string()).default([]),
+  image_urls: z.array(z.string()).default([]),
 });
 type FormInput = z.input<typeof schema>;
 type FormOutput = z.output<typeof schema>;
@@ -40,6 +42,7 @@ function rowToFormValues(row: AnnouncementRow | null): FormInput {
           : 'draft',
     publish_at_input: row?.publish_at ? toDateTimeInputValue(row.publish_at) : '',
     visible_to_role_ids: row?.visible_to_role_ids ?? [],
+    image_urls: row?.image_urls ?? [],
   };
 }
 
@@ -60,6 +63,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
 
   const {
     register,
+    control,
     watch,
     handleSubmit,
     formState: { isSubmitting, errors },
@@ -70,6 +74,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
 
   const publishMode = watch('publishMode');
   const body = watch('body_md');
+  const imageUrls = watch('image_urls');
 
   const onSubmit = async (data: FormOutput) => {
     let status: AnnouncementStatus;
@@ -92,6 +97,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
       status,
       publish_at,
       visible_to_role_ids: data.visible_to_role_ids ?? [],
+      image_urls: data.image_urls ?? [],
     };
 
     if (editing) {
@@ -110,7 +116,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 rounded-xl border bg-card p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-xl border bg-card p-5">
       <h2 className="text-base font-semibold">
         {editing ? t('announcements:form.edit') : t('announcements:form.new')}
       </h2>
@@ -119,6 +125,18 @@ export function AnnouncementForm({ editing, onDone }: Props) {
         <label className="text-xs font-medium">{t('announcements:form.titleField')}</label>
         <Input {...register('title')} aria-invalid={Boolean(errors.title)} />
       </div>
+
+      <Controller
+        control={control}
+        name="image_urls"
+        render={({ field }) => (
+          <AnnouncementImageUploader
+            value={field.value || []}
+            onChange={field.onChange}
+            disabled={isSubmitting}
+          />
+        )}
+      />
 
       <div className="space-y-1">
         <div className="flex items-center justify-between">
@@ -172,6 +190,13 @@ export function AnnouncementForm({ editing, onDone }: Props) {
             
             <div className={`min-h-[200px] bg-background ${previewDevice === 'mobile' ? 'max-w-[375px] mx-auto border-[8px] border-zinc-800 rounded-[2.5rem] p-4 shadow-xl' : 'rounded-md border p-3'}`}>
               <div className={previewDevice === 'mobile' ? 'h-[500px] overflow-y-auto pr-1 custom-scrollbar' : ''}>
+                {imageUrls && imageUrls.length > 0 && (
+                  <div className="mb-4 grid gap-2">
+                    {imageUrls.map((url, i) => (
+                      <img key={i} src={url} alt={`Preview ${i}`} className="w-full rounded-md object-cover" />
+                    ))}
+                  </div>
+                )}
                 <MarkdownPreview body={body || '_（沒有內容）_'} />
               </div>
             </div>
@@ -231,7 +256,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 pt-2">
         <div>
           {editing ? (
             <Button
@@ -246,7 +271,7 @@ export function AnnouncementForm({ editing, onDone }: Props) {
           ) : null}
         </div>
         <div className="flex gap-2">
-          <Button type="button" variant="outline" onClick={() => onDone?.()}>
+          <Button type="button" variant="outline" onClick={() => onDone?.()} disabled={isSubmitting}>
             {t('announcements:form.cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>

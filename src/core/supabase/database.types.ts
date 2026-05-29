@@ -34,12 +34,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcement_reads: {
+        Row: {
+          announcement_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcement_reads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcement_reads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_my_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       announcements: {
         Row: {
           author_id: string | null
           body_md: string
           created_at: string
           id: string
+          image_urls: string[]
           is_pinned: boolean
           publish_at: string | null
           status: string
@@ -53,6 +94,7 @@ export type Database = {
           body_md?: string
           created_at?: string
           id?: string
+          image_urls?: string[]
           is_pinned?: boolean
           publish_at?: string | null
           status?: string
@@ -66,6 +108,7 @@ export type Database = {
           body_md?: string
           created_at?: string
           id?: string
+          image_urls?: string[]
           is_pinned?: boolean
           publish_at?: string | null
           status?: string
@@ -1194,6 +1237,30 @@ export type Database = {
           id?: string
           is_system?: boolean
           name?: string
+        }
+        Relationships: []
+      }
+      team_settings: {
+        Row: {
+          created_at: string
+          nav_hidden: string[]
+          nav_order: string[]
+          team_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          nav_hidden?: string[]
+          nav_order?: string[]
+          team_id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          nav_hidden?: string[]
+          nav_order?: string[]
+          team_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
