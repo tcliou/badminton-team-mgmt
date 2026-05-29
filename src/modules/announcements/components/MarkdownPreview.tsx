@@ -50,9 +50,9 @@ export function MarkdownPreview({
   return (
     <div
       className={cn(
-        'space-y-2 text-sm leading-relaxed text-foreground whitespace-pre-wrap',
+        'text-sm leading-normal text-foreground whitespace-pre-wrap break-words',
         '[&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-semibold',
-        '[&_p]:my-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5',
+        '[&_p]:mb-1 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:mb-1 [&_ol]:mb-1',
         '[&_a]:text-primary [&_a]:underline',
         '[&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs',
         '[&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-muted [&_pre]:p-2',
