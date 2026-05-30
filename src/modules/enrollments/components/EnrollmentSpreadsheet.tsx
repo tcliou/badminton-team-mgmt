@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUpdateRow, type EnrollmentRowWithPlayer } from '../api/enrollmentsApi';
 import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
 import { useAuthStore } from '@/core/store/authStore';
 import { PERMISSIONS } from '@/core/acl/permissions';
 import { Button } from '@/shared/components/Button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ArrowUpDown } from 'lucide-react';
 import { clsx } from 'clsx';
 import { isBefore, startOfDay, parseISO } from 'date-fns';
 
@@ -22,6 +22,8 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
   const canManage = currentUser?.permission_keys?.includes(PERMISSIONS.ActionTrainingManage) ?? false;
 
   const [localRows, setLocalRows] = useState<EnrollmentRowWithPlayer[]>(rows);
+  const [sortColumn, setSortColumn] = useState<'student_id' | 'name' | 'type' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     setLocalRows(rows);
@@ -29,21 +31,41 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
 
   const today = startOfDay(new Date());
 
+  const handleSort = (column: 'student_id' | 'name' | 'type') => {
+    if (sortColumn === column) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortedRows = useMemo(() => {
+    if (!sortColumn) return localRows;
+    return [...localRows].sort((a, b) => {
+      let valA = '';
+      let valB = '';
+      if (sortColumn === 'student_id') {
+        valA = a.player.student_id || '';
+        valB = b.player.student_id || '';
+      } else if (sortColumn === 'name') {
+        valA = a.player.display_name || '';
+        valB = b.player.display_name || '';
+      } else if (sortColumn === 'type') {
+        valA = a.enrollment_type || '';
+        valB = b.enrollment_type || '';
+      }
+      
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [localRows, sortColumn, sortDirection]);
+
   const canEditRow = (playerId: string) => {
     if (canManage) return true;
     if (currentUser?.id === playerId) return true;
-    // Note: Assuming currentUser?.id can be checked against a parent-child map if loaded into UI. 
-    // Wait, the UI doesn't know all parent-child relationships easily unless we provide it. 
-    // But backend enforces it. We can optimistic-allow edit if not admin but we might get an error.
-    // To be safe, if we aren't admin and not ourselves, we can disable it in UI.
-    // Since we don't have the parent's children list easily accessible in authStore right now,
-    // let's just let backend reject if they don't have permission, or assume read-only if not self.
-    // We'll leave it optimistic (enabled) if we don't know, or strictly disabled if not self/admin.
-    // Actually, let's just disable if not admin and not self, because parents might be a smaller use case here, 
-    // or we just enable it and let backend handle the error. 
-    // Let's implement strict UI:
     return canManage || currentUser?.id === playerId; 
-    // (In a real scenario, we might fetch children IDs for the parent, but keeping it simple for now)
   };
 
   const isDateLocked = (dateStr: string) => {
@@ -94,14 +116,26 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
     return acc;
   }, {} as Record<string, number>);
 
+  const renderSortableHeader = (column: 'student_id' | 'name' | 'type', label: string, className: string) => (
+    <th 
+      className={clsx(className, "cursor-pointer hover:bg-muted/80 transition-colors select-none")}
+      onClick={() => handleSort(column)}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        <ArrowUpDown className={clsx("h-3 w-3", sortColumn === column ? "text-primary font-bold" : "text-muted-foreground")} />
+      </div>
+    </th>
+  );
+
   return (
     <div className="w-full overflow-x-auto rounded-xl border bg-card shadow-sm">
       <table className="w-full text-left text-sm whitespace-nowrap">
         <thead className="bg-muted text-muted-foreground">
           <tr>
-            <th className="px-4 py-3 font-medium border-b border-r sticky left-0 z-20 bg-muted">{t('enrollments:detail.table.studentId')}</th>
-            <th className="px-4 py-3 font-medium border-b border-r sticky left-[80px] z-20 bg-muted min-w-[120px]">{t('enrollments:detail.table.name')}</th>
-            <th className="px-4 py-3 font-medium border-b border-r min-w-[140px]">{t('enrollments:detail.table.type')}</th>
+            {renderSortableHeader('student_id', t('enrollments:detail.table.studentId'), "px-4 py-3 font-medium border-b border-r sticky left-0 z-20 bg-muted")}
+            {renderSortableHeader('name', t('enrollments:detail.table.name'), "px-4 py-3 font-medium border-b border-r sticky left-[80px] z-20 bg-muted min-w-[120px]")}
+            {renderSortableHeader('type', t('enrollments:detail.table.type'), "px-4 py-3 font-medium border-b border-r min-w-[140px]")}
             {dates.map((d) => (
               <th key={d} className="px-4 py-3 font-medium border-b border-r text-center">{d}</th>
             ))}
@@ -110,7 +144,7 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
           </tr>
         </thead>
         <tbody>
-          {localRows.map((row) => {
+          {sortedRows.map((row) => {
             const canEdit = canEditRow(row.player.id);
             return (
               <tr key={row.id} className={clsx("border-b last:border-b-0 hover:bg-muted/50 transition-colors", getRowBgColor(row.enrollment_type))}>

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ArrowUpDown } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useEnrollmentForm, useEnrollmentRows, useUpdateRow } from '../api/enrollmentsApi';
 import { useAuthStore } from '@/core/store/authStore';
@@ -11,7 +11,7 @@ import type { TrainingEnrollmentRowRow } from '@/core/supabase/types';
 import { SessionSettingsDialog } from '../components/SessionSettingsDialog';
 import { MobileEnrollmentCard } from '../components/MobileEnrollmentCard';
 import { defaultSessionDetails } from '../constants';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useCoaches } from '@/modules/coaches/api/coachesApi';
 import { useLinkedPlayers } from '@/modules/parents/api/parentsApi';
 import type { EnrollmentRowWithPlayer } from '../api/enrollmentsApi';
@@ -214,20 +214,69 @@ export function EnrollmentSessionPage() {
 }
 
 function DesktopTable({ rows, date, canManage, currentUser, linkedPlayerIds, handleCellChange, getRowBgColor, t }: DesktopTableProps) {
+  const [sortColumn, setSortColumn] = useState<'student_id' | 'name' | 'type' | 'attend' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  const handleSort = (column: 'student_id' | 'name' | 'type' | 'attend') => {
+    if (sortColumn === column) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortedRows = useMemo(() => {
+    if (!sortColumn) return rows;
+    return [...rows].sort((a, b) => {
+      let valA: string | number = '';
+      let valB: string | number = '';
+      if (sortColumn === 'student_id') {
+        valA = a.player.student_id || '';
+        valB = b.player.student_id || '';
+      } else if (sortColumn === 'name') {
+        valA = a.player.display_name || '';
+        valB = b.player.display_name || '';
+      } else if (sortColumn === 'type') {
+        valA = a.enrollment_type || '';
+        valB = b.enrollment_type || '';
+      } else if (sortColumn === 'attend') {
+        valA = a.date_records[date] ?? 0;
+        valB = b.date_records[date] ?? 0;
+      }
+      
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [rows, sortColumn, sortDirection, date]);
+
+  const renderSortableHeader = (column: 'student_id' | 'name' | 'type' | 'attend', label: string, className: string) => (
+    <th 
+      className={clsx(className, "cursor-pointer hover:bg-muted/80 transition-colors select-none")}
+      onClick={() => handleSort(column)}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        <ArrowUpDown className={clsx("h-3 w-3", sortColumn === column ? "text-primary font-bold" : "text-muted-foreground")} />
+      </div>
+    </th>
+  );
+
   return (
     <table className="w-full text-left text-sm whitespace-nowrap">
       <thead className="bg-muted text-muted-foreground">
         <tr>
-          <th className="px-4 py-3 font-medium border-b border-r sticky left-0 z-20 bg-muted">{t('enrollments:detail.table.studentId')}</th>
-          <th className="px-4 py-3 font-medium border-b border-r sticky left-[80px] z-20 bg-muted min-w-[120px]">{t('enrollments:detail.table.name')}</th>
-          <th className="px-4 py-3 font-medium border-b border-r min-w-[120px]">{t('enrollments:detail.table.type')}</th>
-          <th className="px-4 py-3 font-medium border-b border-r min-w-[80px] text-center">報名 (1/0)</th>
+          {renderSortableHeader('student_id', t('enrollments:detail.table.studentId'), "px-4 py-3 font-medium border-b border-r sticky left-0 z-20 bg-muted")}
+          {renderSortableHeader('name', t('enrollments:detail.table.name'), "px-4 py-3 font-medium border-b border-r sticky left-[80px] z-20 bg-muted min-w-[120px]")}
+          {renderSortableHeader('type', t('enrollments:detail.table.type'), "px-4 py-3 font-medium border-b border-r min-w-[120px]")}
+          {renderSortableHeader('attend', '報名 (1/0)', "px-4 py-3 font-medium border-b border-r min-w-[80px] text-center justify-center")}
           <th className="px-4 py-3 font-medium border-b border-r min-w-[160px] bg-blue-50/50 text-blue-800">{t('enrollments:detail.table.dailyNote')}</th>
           <th className="px-4 py-3 font-medium border-b min-w-[200px] bg-blue-50/50 text-blue-800">{t('enrollments:detail.table.dailyInfo')}</th>
         </tr>
       </thead>
       <tbody>
-        {rows.map((row) => {
+        {sortedRows.map((row) => {
           const canEditInfo = canManage || currentUser?.id === row.player.id || linkedPlayerIds.has(row.player.id);
           
           return (
