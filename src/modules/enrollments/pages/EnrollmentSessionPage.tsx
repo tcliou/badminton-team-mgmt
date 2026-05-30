@@ -81,7 +81,12 @@ export function EnrollmentSessionPage() {
 
   const rows = rowsQuery.data || [];
   
-  const totalPlayers = rows.filter(r => r.date_records[date] === 1 || r.daily_status[date] === 'need_single').length;
+  const attendingRows = rows.filter(r => r.date_records[date] === 1 || r.daily_status[date] === 'need_single');
+  const totalPlayers = attendingRows.length;
+  const seasonCount = attendingRows.filter(r => r.enrollment_type === 'season').length;
+  const preSingleCount = attendingRows.filter(r => r.enrollment_type === 'pre_single').length;
+  const singleCount = attendingRows.length - seasonCount - preSingleCount;
+  
   const sessionDetailsRaw = formQuery.data.session_details?.[date] || {};
   const sessionDetails = {
     ...defaultSessionDetails,
@@ -126,7 +131,12 @@ export function EnrollmentSessionPage() {
           <p>● {t('enrollments:detail.sessionDetails.fee')}： {sessionDetails.fee}</p>
           <p>● {t('enrollments:detail.sessionDetails.coaches')}： {coachNames}</p>
           <p className="sm:col-span-2">● {t('enrollments:detail.sessionDetails.notes')}： {sessionDetails.notes}</p>
-          <p className="font-bold text-primary sm:col-span-2">● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名</p>
+          <p className="font-bold text-primary sm:col-span-2">
+            ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名
+            <span className="text-muted-foreground text-xs font-normal ml-2 block sm:inline mt-1 sm:mt-0">
+              (整季報名 {seasonCount} 位 + 預先單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位)
+            </span>
+          </p>
         </div>
       </div>
 
