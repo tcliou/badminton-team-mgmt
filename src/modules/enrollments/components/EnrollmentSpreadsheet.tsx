@@ -80,15 +80,21 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
     value: string | number,
     dateKey?: string,
   ) => {
-    const allowedFields = ['daily_status', 'daily_info', 'enrollment_type', 'date_records', 'note', 'date'];
-    if (typeof field === 'string' && !allowedFields.includes(field)) return;
-    if (dateKey && (dateKey === '__proto__' || dateKey === 'constructor' || dateKey === 'prototype')) return;
+    const allowedFields = ['player', 'enrollment_type', 'date', 'note'];
+    if (!allowedFields.includes(field)) return;
+
+    let safeDate = '';
+    if (dateKey) {
+      const match = dateKey.match(/^(\d{4}-\d{2}-\d{2})$/);
+      if (!match) return; // Drop invalid date injections
+      safeDate = match[1] as string;
+    }
 
     setLocalRows((prev) =>
       prev.map((r) => {
         if (r.id !== rowId) return r;
-        if (field === 'date' && dateKey) {
-          return { ...r, date_records: { ...r.date_records, [dateKey]: value as number } };
+        if (field === 'date' && safeDate) {
+          return { ...r, date_records: { ...r.date_records, [safeDate]: value as number } };
         }
         return { ...r, [field]: value };
       }),
@@ -96,9 +102,9 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
 
     // Debounce or immediate update
     const patch: Partial<TrainingEnrollmentRowRow> = {};
-    if (field === 'date' && dateKey) {
+    if (field === 'date' && safeDate) {
       const row = localRows.find((r) => r.id === rowId);
-      patch.date_records = { ...row?.date_records, [dateKey]: value as number };
+      patch.date_records = { ...row?.date_records, [safeDate]: value as number };
     } else if (field !== 'date' && field !== 'player') {
       (patch as Record<string, unknown>)[field] = value;
     }

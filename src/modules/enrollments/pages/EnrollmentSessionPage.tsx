@@ -53,15 +53,21 @@ export function EnrollmentSessionPage() {
   ) => {
     const allowedFields = ['daily_status', 'daily_info', 'enrollment_type', 'date_records', 'note'];
     if (!allowedFields.includes(field)) return;
-    if (date && (date === '__proto__' || date === 'constructor' || date === 'prototype')) return;
+
+    let safeDate = '';
+    if (date) {
+      const match = date.match(/^(\d{4}-\d{2}-\d{2})$/);
+      if (!match) return; // Drop invalid date injections
+      safeDate = match[1] as string;
+    }
 
     const patch: Partial<TrainingEnrollmentRowRow> = {};
     if (field === 'daily_status') {
-      patch.daily_status = { ...currentRow.daily_status, [date!]: value as string };
+      patch.daily_status = { ...currentRow.daily_status, [safeDate]: value as string };
     } else if (field === 'daily_info') {
-      patch.daily_info = { ...currentRow.daily_info, [date!]: value as string };
+      patch.daily_info = { ...currentRow.daily_info, [safeDate]: value as string };
     } else if (field === 'date_records') {
-      patch.date_records = { ...currentRow.date_records, [date!]: value as number };
+      patch.date_records = { ...currentRow.date_records, [safeDate]: value as number };
     } else {
       (patch as Record<string, unknown>)[field] = value;
     }
