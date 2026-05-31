@@ -129,7 +129,7 @@ for each row execute function public.trg_audit_profiles();
 -- ---------------------------------------------------------------------------
 -- 5. 開放 admin 查詢用的輔助 view（方便閱讀，欄位已對齊中文需求）
 -- ---------------------------------------------------------------------------
-create or replace view public.v_audit_logs as
+create or replace view public.v_audit_logs with (security_invoker = true) as
 select
   al.id,
   al.action,
