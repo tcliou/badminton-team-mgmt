@@ -60,7 +60,7 @@ async function ensureAccount(
 
   if (existing) {
     userId = existing.id as string;
-    console.log(`[globalSetup] ${username} 已存在 (id=${userId})，更新設定`);
+    console.log(`[globalSetup] ${email} 已存在 (id=${userId})，更新設定`);
 
     // 確保 must_change_password=false 且 status=active
     await supabase
@@ -77,11 +77,11 @@ async function ensureAccount(
     });
 
     if (error || !created.user) {
-      throw new Error(`[globalSetup] 建立 ${username} 失敗: ${error?.message}`);
+      throw new Error(`[globalSetup] 建立 ${email} 失敗: ${error?.message}`);
     }
 
     userId = created.user.id;
-    console.log(`[globalSetup] ✅ ${username} auth 帳號建立 (id=${userId})`);
+    console.log(`[globalSetup] ✅ ${email} auth 帳號建立 (id=${userId})`);
 
     // 3. 建立 profile
     const { error: profileErr } = await supabase.from('profiles').upsert({
@@ -101,7 +101,7 @@ async function ensureAccount(
   );
   if (roleErr) throw new Error(`[globalSetup] user_roles upsert 失敗: ${roleErr.message}`);
 
-  console.log(`[globalSetup] ✅ ${username} 設定完成`);
+  console.log(`[globalSetup] ✅ ${email} 設定完成`);
 }
 
 export default async function globalSetup() {
