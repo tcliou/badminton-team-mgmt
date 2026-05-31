@@ -1,0 +1,9 @@
+
+
+# Optional Gitleaks hook
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "🔍 執行 Gitleaks 安全掃描..."
+  gitleaks protect --staged
+else
+  echo "⚠️  未安裝 Gitleaks，跳過本機機密掃描。建議安裝 Gitleaks 以確保安全。"
+fi

@@ -4,11 +4,19 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
+import pluginSecurity from 'eslint-plugin-security';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'coverage', 'supabase/.branches'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettier],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      pluginSecurity.configs.recommended,
+      jsxA11y.flatConfigs.recommended,
+      prettier
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2022,
@@ -26,7 +34,15 @@ export default tseslint.config(
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/purity': 'off',
       'react-hooks/incompatible-library': 'off',
-      'react-hooks/preserve-manual-memoization': 'off'
+      'react-hooks/preserve-manual-memoization': 'off',
+      // Downgrade overly strict rules for existing codebase
+      'security/detect-object-injection': 'off',
+      'jsx-a11y/click-events-have-key-events': 'off',
+      'jsx-a11y/no-static-element-interactions': 'off',
+      'jsx-a11y/no-noninteractive-element-interactions': 'off',
+      'jsx-a11y/label-has-associated-control': 'off',
+      'jsx-a11y/img-redundant-alt': 'off',
+      'jsx-a11y/no-autofocus': 'off'
     },
   },
   {

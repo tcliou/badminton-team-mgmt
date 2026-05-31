@@ -102,3 +102,31 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           category: trivy
+
+  # ── Gitleaks 掃描 ───────────────────────────────────────────────────────────
+  gitleaks:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks Action
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Supabase Linter ─────────────────────────────────────────────────────────
+  supabase-lint:
+    name: Supabase DB Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start Supabase DB and Lint
+        run: |
+          supabase start
+          supabase db lint
