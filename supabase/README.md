@@ -26,7 +26,16 @@ supabase/
 │   ├── 0027_parent_rls.sql              # Phase 3：家長讀取子女資料的 RLS 擴充
 │   ├── 0028_audit_logs.sql              # Phase 4：稽核日誌表 + profiles 變更觸發器
 │   ├── 0029_storage_rls_fixes.sql       # Phase 4：Storage RLS 補強（關聯球員讀取）
-│   └── 0030_attendance_self_checkin.sql # Phase 4：球員自助打卡 RLS（限 present/late）
+│   ├── 0030_attendance_self_checkin.sql # Phase 4：球員自助打卡 RLS（限 present/late）
+│   ├── 0031_add_student_id.sql          # Phase 5：球員新增班級座號
+│   ├── 0032_training_enrollments.sql    # Phase 5：訓練報名與出席狀態（各別場次）
+│   ├── 0033_enrollments_enhancements.sql# Phase 5：報名系統功能擴充
+│   ├── 0034_enrollments_sessions.sql    # Phase 5：報名場次細節
+│   ├── 0036_coaches_module.sql          # Phase 5：教練模組表結構
+│   ├── 0038_documents_module.sql        # Phase 5：共享文件模組與權限
+│   ├── 0040_calendar_module.sql         # Phase 5：行事曆標註功能
+│   ├── 0041_team_settings.sql           # Phase 5：球隊全域設定表
+│   └── 20260529_announcement_images...  # Phase 5：多圖公告與預設頭像功能
 ├── functions/                           # Edge Functions（Deno runtime）
 │   ├── create-user/                     # 建立新帳號 + 臨時密碼
 │   ├── delete-user/                     # 完整刪除帳號（含 Auth + Cascade）
@@ -66,7 +75,7 @@ supabase db push
 
 **方法 B — 手動 SQL Editor：**
 
-進入 Dashboard → SQL Editor，依序貼上並執行 `migrations/` 下所有 `.sql` 檔（`0001` → `0030`，跳過 `0004`）。
+進入 Dashboard → SQL Editor，依序貼上並執行 `migrations/` 下所有 `.sql` 檔（按編號/日期順序，跳過 `0004`）。
 
 ### 步驟三：建立第一個 Admin 帳號
 
