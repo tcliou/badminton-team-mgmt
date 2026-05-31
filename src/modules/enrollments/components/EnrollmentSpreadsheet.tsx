@@ -80,6 +80,10 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
     value: string | number,
     dateKey?: string,
   ) => {
+    const allowedFields = ['daily_status', 'daily_info', 'enrollment_type', 'date_records', 'note', 'date'];
+    if (typeof field === 'string' && !allowedFields.includes(field)) return;
+    if (dateKey && (dateKey === '__proto__' || dateKey === 'constructor' || dateKey === 'prototype')) return;
+
     setLocalRows((prev) =>
       prev.map((r) => {
         if (r.id !== rowId) return r;

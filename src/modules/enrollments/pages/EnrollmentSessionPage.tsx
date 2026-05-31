@@ -51,6 +51,10 @@ export function EnrollmentSessionPage() {
     value: string | number,
     currentRow: TrainingEnrollmentRowRow
   ) => {
+    const allowedFields = ['daily_status', 'daily_info', 'enrollment_type', 'date_records', 'note'];
+    if (!allowedFields.includes(field)) return;
+    if (date && (date === '__proto__' || date === 'constructor' || date === 'prototype')) return;
+
     const patch: Partial<TrainingEnrollmentRowRow> = {};
     if (field === 'daily_status') {
       patch.daily_status = { ...currentRow.daily_status, [date!]: value as string };
