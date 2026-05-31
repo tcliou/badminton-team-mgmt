@@ -63,13 +63,19 @@ export function EnrollmentSessionPage() {
 
     const patch: Partial<TrainingEnrollmentRowRow> = {};
     if (field === 'daily_status') {
-      patch.daily_status = { ...currentRow.daily_status, [safeDate]: value as string };
+      const map = new Map(Object.entries(currentRow.daily_status || {}));
+      map.set(safeDate, value as string);
+      patch.daily_status = Object.fromEntries(map);
     } else if (field === 'daily_info') {
-      patch.daily_info = { ...currentRow.daily_info, [safeDate]: value as string };
+      const map = new Map(Object.entries(currentRow.daily_info || {}));
+      map.set(safeDate, value as string);
+      patch.daily_info = Object.fromEntries(map);
     } else if (field === 'date_records') {
-      patch.date_records = { ...currentRow.date_records, [safeDate]: value as number };
+      const map = new Map(Object.entries(currentRow.date_records || {}));
+      map.set(safeDate, value as number);
+      patch.date_records = Object.fromEntries(map);
     } else {
-      (patch as Record<string, unknown>)[field] = value;
+      if (field === 'enrollment_type') patch.enrollment_type = value as string;
     }
     updateRow.mutate({ id: rowId, patch });
   };

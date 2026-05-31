@@ -94,7 +94,9 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
       prev.map((r) => {
         if (r.id !== rowId) return r;
         if (field === 'date' && safeDate) {
-          return { ...r, date_records: { ...r.date_records, [safeDate]: value as number } };
+          const map = new Map(Object.entries(r.date_records || {}));
+          map.set(safeDate, value as number);
+          return { ...r, date_records: Object.fromEntries(map) };
         }
         return { ...r, [field]: value };
       }),
@@ -104,9 +106,12 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
     const patch: Partial<TrainingEnrollmentRowRow> = {};
     if (field === 'date' && safeDate) {
       const row = localRows.find((r) => r.id === rowId);
-      patch.date_records = { ...row?.date_records, [safeDate]: value as number };
+      const map = new Map(Object.entries(row?.date_records || {}));
+      map.set(safeDate, value as number);
+      patch.date_records = Object.fromEntries(map);
     } else if (field !== 'date' && field !== 'player') {
-      (patch as Record<string, unknown>)[field] = value;
+      if (field === 'enrollment_type') patch.enrollment_type = value as string;
+      if (field === 'note') patch.note = value as string;
     }
 
     updateRow.mutate({ id: rowId, patch });
