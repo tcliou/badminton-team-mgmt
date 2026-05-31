@@ -61,7 +61,15 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
   if (!open) return null;
 
   const onSubmit = async (data: FormData) => {
-    const newSessionDetails = { ...form.session_details, [date]: data };
+    let safeDate = date;
+    const match = date.match(/^(\d{4}-\d{2}-\d{2})$/);
+    if (match) {
+      safeDate = match[1] as string;
+    }
+    const map = new Map(Object.entries(form.session_details || {}));
+    map.set(safeDate, data);
+    const newSessionDetails = Object.fromEntries(map);
+    
     await updateForm.mutateAsync({ session_details: newSessionDetails });
     onClose();
   };
