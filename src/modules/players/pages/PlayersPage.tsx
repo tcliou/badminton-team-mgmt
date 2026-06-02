@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { useActivePlayers } from '../api/playersApi';
-// Avatar import removed
+import { Avatar } from '../components/Avatar';
 import { Loading } from '@/shared/components/Loading';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Input } from '@/shared/components/Input';
@@ -12,6 +12,7 @@ export default function PlayersPage() {
   const { t } = useTranslation();
   const { data, isLoading } = useActivePlayers();
   const [q, setQ] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const filtered = useMemo(() => {
     if (!data) return [];
@@ -28,18 +29,44 @@ export default function PlayersPage() {
     <div className="mx-auto max-w-5xl space-y-4">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-bold md:text-2xl">{t('players:title')}</h1>
-        <div className="relative w-full sm:w-72">
-          <Search
-            className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={t('players:search')}
-            className="pl-8"
-            aria-label={t('common.search')}
-          />
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+          <div className="relative w-full sm:w-72">
+            <Search
+              className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={t('players:search')}
+              className="pl-8"
+              aria-label={t('common.search')}
+            />
+          </div>
+          <div className="flex items-center rounded-md border p-1 bg-muted/30 self-end sm:self-auto">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`rounded px-2.5 py-1.5 transition-colors ${
+                viewMode === 'grid' 
+                  ? 'bg-background shadow-sm text-foreground' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+              title="大尺寸卡片"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`rounded px-2.5 py-1.5 transition-colors ${
+                viewMode === 'list' 
+                  ? 'bg-background shadow-sm text-foreground' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+              title="小圖示列表"
+            >
+              <ListIcon className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -47,6 +74,23 @@ export default function PlayersPage() {
         <Loading />
       ) : filtered.length === 0 ? (
         <EmptyState title={t('players:list.empty')} />
+      ) : viewMode === 'list' ? (
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((p) => (
+            <li key={p.id}>
+              <Link
+                to={`/players/${p.id}`}
+                className="flex items-center gap-3 rounded-xl border bg-card p-3 transition hover:border-primary"
+              >
+                <Avatar url={p.avatar_url} name={p.display_name} username={p.username} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{p.display_name}</p>
+                  <p className="truncate text-xs text-muted-foreground">@{p.username}</p>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((p) => (
