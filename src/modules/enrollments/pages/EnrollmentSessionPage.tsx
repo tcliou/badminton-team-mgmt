@@ -150,7 +150,7 @@ export function EnrollmentSessionPage() {
           <p className="font-bold text-primary sm:col-span-2">
             ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名
             <span className="text-muted-foreground text-xs font-normal ml-2 block sm:inline mt-1 sm:mt-0">
-              (整季報名 {seasonCount} 位 + 預先單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位)
+              (整季報名 {seasonCount} 位 + 預先當週單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位)
             </span>
           </p>
         </div>

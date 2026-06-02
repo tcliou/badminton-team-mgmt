@@ -46,7 +46,7 @@
       "total": "已報名總人數",
       "types": {
         "season": "整季",
-        "pre_single": "預先單堂",
+        "pre_single": "預先當週單堂",
         "single": "當週單堂",
         "skip": "本期不參加"
       },

@@ -54,7 +54,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
         generate_sessions: form.generate_sessions ?? true
       });
     } else if (open && !form) {
-      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。\n\n※ 每週球員訓練總人數上限為 24 位。', dates: [{ value: '' }], generate_sessions: true });
+      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先當週單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。\n\n※ 每週球員訓練總人數上限為 24 位。', dates: [{ value: '' }], generate_sessions: true });
     }
   }, [open, form, reset]);
 
