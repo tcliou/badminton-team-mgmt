@@ -15,10 +15,15 @@ interface Props {
     currentRow: TrainingEnrollmentRowRow
   ) => void;
   getRowBgColor: (type: string | null) => string;
+  isFull: boolean;
 }
 
-export function MobileEnrollmentCard({ row, date, canEdit, handleCellChange, getRowBgColor }: Props) {
+export function MobileEnrollmentCard({ row, date, canEdit, handleCellChange, getRowBgColor, isFull }: Props) {
   const { t } = useTranslation();
+
+  const currentDailyStatus = row.daily_status[date];
+  const isCurrentlySingle = currentDailyStatus === 'need_single';
+  const disableSingle = isFull && !isCurrentlySingle;
 
   return (
     <div className={clsx("flex flex-col gap-3 rounded-lg border p-4 shadow-sm", getRowBgColor(row.enrollment_type))}>
@@ -74,7 +79,10 @@ export function MobileEnrollmentCard({ row, date, canEdit, handleCellChange, get
           className="w-full bg-white border border-blue-200 focus:border-primary focus:ring-1 rounded p-2 text-sm disabled:opacity-70 disabled:cursor-not-allowed h-[44px]"
         >
           <option value="no_change">{t('enrollments:detail.table.dailyNotes.no_change')}</option>
-          <option value="need_single">{t('enrollments:detail.table.dailyNotes.need_single')}</option>
+          <option value="need_single" disabled={disableSingle}>
+            {t('enrollments:detail.table.dailyNotes.need_single')}
+            {disableSingle ? ' (名額已滿)' : ''}
+          </option>
           <option value="leave_early">{t('enrollments:detail.table.dailyNotes.leave_early')}</option>
           <option value="leave_of_absence">{t('enrollments:detail.table.dailyNotes.leave_of_absence')}</option>
         </select>

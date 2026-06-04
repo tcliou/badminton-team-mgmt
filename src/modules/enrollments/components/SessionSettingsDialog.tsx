@@ -18,6 +18,7 @@ const schema = z.object({
   equipment: z.string(),
   fee: z.string(),
   coaches: z.array(z.string()),
+  player_limit: z.number().min(1),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -40,7 +41,7 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: defaultSessionDetails,
+    defaultValues: { ...defaultSessionDetails, player_limit: 24 },
   });
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
         equipment: (existing?.equipment as string) ?? defaultSessionDetails.equipment,
         fee: (existing?.fee as string) ?? defaultSessionDetails.fee,
         coaches: Array.isArray(existing?.coaches) ? existing.coaches : defaultSessionDetails.coaches,
+        player_limit: (existing?.player_limit as number) ?? form.default_player_limit ?? 24,
       });
     }
   }, [open, form, date, reset]);
@@ -84,6 +86,13 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
+            <label className="text-sm font-medium">本週訓練總人數上限為</label>
+            <div className="flex items-center gap-2">
+              <Input type="number" min="1" {...register('player_limit', { valueAsNumber: true })} className="w-24" />
+              <span className="text-sm">名</span>
+            </div>
+          </div>
+          <div className="space-y-1.5">
             <label className="text-sm font-medium">{t('enrollments:detail.sessionDetails.time')}</label>
             <Input {...register('time')} />
           </div>
@@ -99,7 +108,7 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
             <label className="text-sm font-medium">{t('enrollments:detail.sessionDetails.notes')}</label>
             <textarea
               {...register('notes')}
-              rows={3}
+              rows={4}
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
@@ -131,7 +140,7 @@ export function SessionSettingsDialog({ open, onClose, form, date }: Props) {
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-end gap-2 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               {t('enrollments:form.cancel')}
             </Button>

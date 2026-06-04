@@ -6,4 +6,5 @@ export const defaultSessionDetails = {
   equipment: '睿家家',
   fee: '請 Linepay 睿家媽 鄭阿君',
   coaches: [] as string[],
+  player_limit: undefined as number | undefined,
 };

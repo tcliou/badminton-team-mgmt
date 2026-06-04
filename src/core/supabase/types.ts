@@ -340,6 +340,7 @@ export type CoachProfile = {
 };
 export type CoachProfileRow = CoachProfile;
 
+
 export type DocumentRow = {
   id: string;
   team_id: string;
@@ -577,6 +578,7 @@ export type TrainingEnrollmentFormRow = {
   dates: string[];
   generate_sessions: boolean;
   session_details: Record<string, Record<string, unknown>>;
+  default_player_limit: number;
   status: 'draft' | 'published' | 'closed';
   created_by: string | null;
   created_at: string;

@@ -26,6 +26,7 @@ interface DesktopTableProps {
   handleCellChange: (rowId: string, field: 'daily_status' | 'daily_info' | 'enrollment_type' | 'date_records', value: string | number, currentRow: TrainingEnrollmentRowRow) => void;
   getRowBgColor: (type: string | null) => string;
   t: (key: string) => string;
+  isFull: boolean;
 }
 
 export function EnrollmentSessionPage() {
@@ -125,6 +126,9 @@ export function EnrollmentSessionPage() {
     ? sessionDetails.coaches.map((coachId: string) => coachesData?.find(c => c.id === coachId)?.name || coachId).join('、')
     : sessionDetails.coaches || '無';
 
+  const currentPlayerLimit = (sessionDetails.player_limit as number) ?? formQuery.data.default_player_limit ?? 24;
+  const isFull = totalPlayers >= currentPlayerLimit;
+
   // Filter My Rows
   const linkedPlayerIds = new Set(linkedPlayers?.map(lp => lp.player_id) || []);
   const myRows = rows.filter(
@@ -161,7 +165,7 @@ export function EnrollmentSessionPage() {
           <p>● {t('enrollments:detail.sessionDetails.coaches')}： {coachNames}</p>
           <p className="sm:col-span-2">● {t('enrollments:detail.sessionDetails.notes')}： {sessionDetails.notes}</p>
           <p className="font-bold text-primary sm:col-span-2">
-            ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名
+            ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} / {currentPlayerLimit} 名 {isFull && <span className="text-red-500">(額滿)</span>}
             <span className="text-muted-foreground text-xs font-normal ml-2 block sm:inline mt-1 sm:mt-0">
               (整季報名 {seasonCount} 位 + 預先當週單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位 + 整季報名但當週請假者 {seasonLeaveCount} 位)
             </span>
@@ -189,6 +193,7 @@ export function EnrollmentSessionPage() {
                 handleCellChange={handleCellChange}
                 getRowBgColor={getRowBgColor}
                 t={t}
+                isFull={isFull}
               />
             </div>
             {/* 手機版 */}
@@ -201,6 +206,7 @@ export function EnrollmentSessionPage() {
                   canEdit={true}
                   handleCellChange={handleCellChange}
                   getRowBgColor={getRowBgColor}
+                  isFull={isFull}
                 />
               ))}
             </div>
@@ -228,6 +234,7 @@ export function EnrollmentSessionPage() {
               handleCellChange={handleCellChange}
               getRowBgColor={getRowBgColor}
               t={t}
+              isFull={isFull}
             />
           </div>
         </div>
@@ -242,7 +249,7 @@ export function EnrollmentSessionPage() {
   );
 }
 
-function DesktopTable({ rows, date, canManage, currentUser, linkedPlayerIds, handleCellChange, getRowBgColor, t }: DesktopTableProps) {
+function DesktopTable({ rows, date, canManage, currentUser, linkedPlayerIds, handleCellChange, getRowBgColor, t, isFull }: DesktopTableProps) {
   const [sortColumn, setSortColumn] = useState<'student_id' | 'name' | 'type' | 'attend' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -307,6 +314,9 @@ function DesktopTable({ rows, date, canManage, currentUser, linkedPlayerIds, han
       <tbody>
         {sortedRows.map((row) => {
           const canEditInfo = canManage || currentUser?.id === row.player.id || linkedPlayerIds.has(row.player.id);
+          const currentDailyStatus = row.daily_status[date];
+          const isCurrentlySingle = currentDailyStatus === 'need_single';
+          const disableSingle = isFull && !isCurrentlySingle;
           
           return (
             <tr key={row.id} className={clsx("border-b last:border-b-0 hover:bg-muted/50 transition-colors", getRowBgColor(row.enrollment_type))}>
@@ -353,7 +363,10 @@ function DesktopTable({ rows, date, canManage, currentUser, linkedPlayerIds, han
                   className="w-full bg-background/50 border border-transparent focus:border-primary focus:ring-1 rounded p-1 text-sm disabled:opacity-70 disabled:cursor-not-allowed h-[44px] md:h-auto"
                 >
                   <option value="no_change">{t('enrollments:detail.table.dailyNotes.no_change')}</option>
-                  <option value="need_single">{t('enrollments:detail.table.dailyNotes.need_single')}</option>
+                  <option value="need_single" disabled={disableSingle}>
+                    {t('enrollments:detail.table.dailyNotes.need_single')}
+                    {disableSingle ? ' (名額已滿)' : ''}
+                  </option>
                   <option value="leave_early">{t('enrollments:detail.table.dailyNotes.leave_early')}</option>
                   <option value="leave_of_absence">{t('enrollments:detail.table.dailyNotes.leave_of_absence')}</option>
                 </select>
