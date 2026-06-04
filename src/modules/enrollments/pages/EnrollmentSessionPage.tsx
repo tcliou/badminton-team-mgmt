@@ -98,8 +98,11 @@ export function EnrollmentSessionPage() {
   const rows = rowsQuery.data || [];
   
   const attendingRows = rows.filter(r => {
-    if (r.date_records[date] === 1 || r.daily_status[date] === 'need_single') return true;
-    if (r.date_records[date] === 0 || r.daily_status[date] === 'leave_of_absence') return false;
+    // 若明確標示請假，則不計入
+    if (r.daily_status[date] === 'leave_of_absence' || r.date_records[date] === 0) return false;
+    // 若明確標示出席
+    if (r.daily_status[date] === 'need_single' || r.date_records[date] === 1) return true;
+    // 預設
     if (r.enrollment_type === 'season') return true;
     return false;
   });
@@ -107,6 +110,7 @@ export function EnrollmentSessionPage() {
   const seasonCount = attendingRows.filter(r => r.enrollment_type === 'season').length;
   const preSingleCount = attendingRows.filter(r => r.enrollment_type === 'pre_single').length;
   const singleCount = attendingRows.length - seasonCount - preSingleCount;
+  const seasonLeaveCount = rows.filter(r => r.enrollment_type === 'season').length - seasonCount;
   
   const sessionDetailsRaw = formQuery.data.session_details?.[date] || {};
   const sessionDetails = {
@@ -155,7 +159,7 @@ export function EnrollmentSessionPage() {
           <p className="font-bold text-primary sm:col-span-2">
             ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} 名
             <span className="text-muted-foreground text-xs font-normal ml-2 block sm:inline mt-1 sm:mt-0">
-              (整季報名 {seasonCount} 位 + 預先當週單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位)
+              (整季報名 {seasonCount} 位 + 預先當週單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位 + 整季報名但當週請假者 {seasonLeaveCount} 位)
             </span>
           </p>
         </div>
