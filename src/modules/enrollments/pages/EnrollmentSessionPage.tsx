@@ -98,11 +98,15 @@ export function EnrollmentSessionPage() {
   const rows = rowsQuery.data || [];
   
   const attendingRows = rows.filter(r => {
-    // 若明確標示請假，則不計入
-    if (r.daily_status[date] === 'leave_of_absence' || r.date_records[date] === 0) return false;
-    // 若明確標示出席
-    if (r.daily_status[date] === 'need_single' || r.date_records[date] === 1) return true;
-    // 預設
+    // 1. 最優先：當日備註覆寫
+    if (r.daily_status[date] === 'leave_of_absence') return false;
+    if (r.daily_status[date] === 'need_single') return true;
+    
+    // 2. 次優先：明確的出席/請假標記
+    if (r.date_records[date] === 0) return false;
+    if (r.date_records[date] === 1) return true;
+    
+    // 3. 預設：依據報名類型
     if (r.enrollment_type === 'season') return true;
     return false;
   });
