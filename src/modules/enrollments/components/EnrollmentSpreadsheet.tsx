@@ -127,7 +127,12 @@ export function EnrollmentSpreadsheet({ rows, dates, onDeleteRow }: Props) {
   };
 
   const dateTotals = dates.reduce((acc, d) => {
-    acc[d] = localRows.reduce((sum, r) => sum + (Number(r.date_records[d]) || 0), 0);
+    acc[d] = localRows.reduce((sum, r) => {
+      if (r.date_records[d] === 1 || r.daily_status[d] === 'need_single') return sum + 1;
+      if (r.date_records[d] === 0 || r.daily_status[d] === 'leave_of_absence') return sum;
+      if (r.enrollment_type === 'season') return sum + 1;
+      return sum;
+    }, 0);
     return acc;
   }, {} as Record<string, number>);
 
