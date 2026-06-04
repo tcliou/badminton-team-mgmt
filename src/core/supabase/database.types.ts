@@ -1269,6 +1269,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           dates: Json
+          default_player_limit: number
           description: string | null
           generate_sessions: boolean
           id: string
@@ -1281,6 +1282,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           dates?: Json
+          default_player_limit?: number
           description?: string | null
           generate_sessions?: boolean
           id?: string
@@ -1293,6 +1295,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           dates?: Json
+          default_player_limit?: number
           description?: string | null
           generate_sessions?: boolean
           id?: string

@@ -15,6 +15,7 @@ const schema = z.object({
   description: z.string().nullable(),
   dates: z.array(z.object({ value: z.string().min(1) })).min(1, 'Select at least one date'),
   generate_sessions: z.boolean().default(true),
+  default_player_limit: z.number().min(1).default(24),
 });
 type FormInput = z.input<typeof schema>;
 type FormOutput = z.output<typeof schema>;
@@ -42,7 +43,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
     formState: { isSubmitting },
   } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', description: '', dates: [{ value: '' }], generate_sessions: true },
+    defaultValues: { title: '', description: '', dates: [{ value: '' }], generate_sessions: true, default_player_limit: 24 },
   });
 
   useEffect(() => {
@@ -51,10 +52,11 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
         title: form.title,
         description: form.description || '',
         dates: form.dates.length > 0 ? form.dates.map(d => ({ value: d })) : [{ value: '' }],
-        generate_sessions: form.generate_sessions ?? true
+        generate_sessions: form.generate_sessions ?? true,
+        default_player_limit: form.default_player_limit ?? 24
       });
     } else if (open && !form) {
-      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先當週單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。\n\n※ 每週球員訓練總人數上限為 24 位。', dates: [{ value: '' }], generate_sessions: true });
+      reset({ title: '', description: '1 為已報名\n0 為報名整季，但當天請假\n\n📌 報名規則\n1. 整季報名：基礎訓練費計算，可請假一次並辦理退費。\n2. 預先當週單堂報名：基礎訓練費 + 60 元，請假不退費。\n3. 當週單堂報名：基礎訓練費 + 100 元。', dates: [{ value: '' }], generate_sessions: true, default_player_limit: 24 });
     }
   }, [open, form, reset]);
 
@@ -72,6 +74,7 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
       dates: data.dates.map((d) => d.value).sort(), // sort dates ascending
       generate_sessions: data.generate_sessions,
       status: 'published' as const,
+      default_player_limit: data.default_player_limit,
     };
 
     if (isEdit) {
@@ -156,9 +159,22 @@ export function EnrollmentFormDialog({ open, onClose, form }: Props) {
               {...register('generate_sessions')}
               className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
             />
-            <label htmlFor="generate_sessions" className="text-sm font-medium">
+            <label htmlFor="generate_sessions" className="text-sm font-medium cursor-pointer">
               {t('enrollments:form.generateSessions')}
             </label>
+          </div>
+
+          <div className="space-y-1.5 pt-2 border-t">
+            <label className="text-sm font-medium">每週球員訓練總人數上限為</label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min="1"
+                {...register('default_player_limit', { valueAsNumber: true })}
+                className="w-24"
+              />
+              <span className="text-sm">名</span>
+            </div>
           </div>
 
           <div className="flex justify-between items-center pt-4">
