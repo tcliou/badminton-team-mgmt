@@ -73,6 +73,8 @@ jobs:
         uses: supabase/setup-cli@v2
         with:
           version: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy Edge Functions
         env:
@@ -98,6 +100,8 @@ jobs:
         uses: supabase/setup-cli@v2
         with:
           version: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push migrations to production
         env:
