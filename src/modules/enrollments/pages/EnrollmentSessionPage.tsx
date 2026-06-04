@@ -97,7 +97,12 @@ export function EnrollmentSessionPage() {
 
   const rows = rowsQuery.data || [];
   
-  const attendingRows = rows.filter(r => r.date_records[date] === 1 || r.daily_status[date] === 'need_single');
+  const attendingRows = rows.filter(r => {
+    if (r.date_records[date] === 1 || r.daily_status[date] === 'need_single') return true;
+    if (r.date_records[date] === 0 || r.daily_status[date] === 'leave_of_absence') return false;
+    if (r.enrollment_type === 'season') return true;
+    return false;
+  });
   const totalPlayers = attendingRows.length;
   const seasonCount = attendingRows.filter(r => r.enrollment_type === 'season').length;
   const preSingleCount = attendingRows.filter(r => r.enrollment_type === 'pre_single').length;
