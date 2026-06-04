@@ -165,9 +165,9 @@ export function EnrollmentSessionPage() {
           <p>● {t('enrollments:detail.sessionDetails.coaches')}： {coachNames}</p>
           <p className="sm:col-span-2">● {t('enrollments:detail.sessionDetails.notes')}： {sessionDetails.notes}</p>
           <p className="font-bold text-primary sm:col-span-2">
-            ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} / {currentPlayerLimit} 名 {isFull && <span className="text-red-500">(額滿)</span>}
+            ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} / {currentPlayerLimit} 名 {isFull && <span className="text-red-500">(額滿)</span>}。
             <span className="text-muted-foreground text-xs font-normal ml-2 block sm:inline mt-1 sm:mt-0">
-              (整季報名 {seasonCount} 位 + 預先當週單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位 + 整季報名但當週請假者 {seasonLeaveCount} 位)
+              出席 {totalPlayers} 位是「整季報名」 {seasonCount} 位 + 「預先當週單堂報名且本週出席」 {preSingleCount} 位 + 「本週單堂報名」 {singleCount} 位。另外，「整季報名但當週請假」 {seasonLeaveCount} 位已排除統計。
             </span>
           </p>
           <div className="sm:col-span-2 pl-4 text-muted-foreground space-y-1">
