@@ -170,6 +170,14 @@ export function EnrollmentSessionPage() {
               (整季報名 {seasonCount} 位 + 預先當週單堂報名且本週出席 {preSingleCount} 位 + 單堂報名 {singleCount} 位 + 整季報名但當週請假者 {seasonLeaveCount} 位)
             </span>
           </p>
+          <div className="sm:col-span-2 pl-4 text-muted-foreground space-y-1">
+            <p className="text-xs">
+              - 本週單堂報名者為（需另外繳費）：{attendingRows.filter(r => r.enrollment_type !== 'season' && r.enrollment_type !== 'pre_single').map(r => r.player.display_name).join('、') || '無'}
+            </p>
+            <p className="text-xs">
+              - 整季報名但當週請假者為：{rows.filter(r => r.enrollment_type === 'season' && !attendingRows.includes(r)).map(r => r.player.display_name).join('、') || '無'}
+            </p>
+          </div>
         </div>
       </div>
 
