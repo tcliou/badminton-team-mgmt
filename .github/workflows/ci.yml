@@ -98,7 +98,7 @@ jobs:
       # 即使上一步失敗，仍上傳結果給 Security tab 檢視
       - name: Upload Trivy SARIF results
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
           category: trivy
