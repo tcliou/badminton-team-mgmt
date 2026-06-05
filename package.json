@@ -46,7 +46,7 @@
     "date-fns": "^4.4.0",
     "i18next": "^26.3.0",
     "i18next-browser-languagedetector": "^8.0.0",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.17.0",
     "mitt": "^3.0.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
