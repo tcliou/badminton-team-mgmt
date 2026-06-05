@@ -112,10 +112,6 @@ export function EnrollmentSessionPage() {
     return false;
   });
   const totalPlayers = attendingRows.length;
-  const seasonCount = attendingRows.filter(r => r.enrollment_type === 'season').length;
-  const preSingleCount = attendingRows.filter(r => r.enrollment_type === 'pre_single').length;
-  const singleCount = attendingRows.length - seasonCount - preSingleCount;
-  const seasonLeaveCount = rows.filter(r => r.enrollment_type === 'season').length - seasonCount;
   
   const sessionDetailsRaw = formQuery.data.session_details?.[date] || {};
   const sessionDetails = {
@@ -134,6 +130,33 @@ export function EnrollmentSessionPage() {
   const myRows = rows.filter(
     (row) => row.player.id === currentUser?.id || linkedPlayerIds.has(row.player.id)
   );
+
+  const stats = {
+    season: { leave: 0, single: 0 },
+    single: { leave: 0, single: 0 },
+    pre_single: { leave: 0, single: 0 },
+    none: { leave: 0, single: 0 },
+  };
+
+  rows.forEach(r => {
+    let typeKey = r.enrollment_type || 'none';
+    if (typeKey !== 'season' && typeKey !== 'single' && typeKey !== 'pre_single') {
+      typeKey = 'none';
+    }
+    
+    if (r.daily_status[date] === 'leave_of_absence') {
+      stats[typeKey as keyof typeof stats].leave += 1;
+    } else if (r.daily_status[date] === 'need_single') {
+      stats[typeKey as keyof typeof stats].single += 1;
+    }
+  });
+
+  const totalLeave = stats.season.leave + stats.single.leave + stats.pre_single.leave + stats.none.leave;
+  const totalSingle = stats.season.single + stats.single.single + stats.pre_single.single + stats.none.single;
+  const originalAttendingCount = rows.filter(r => r.date_records[date] === 1 || (r.enrollment_type === 'season' && r.date_records[date] !== 0)).length;
+
+  const singlePlayerNames = attendingRows.filter(r => r.enrollment_type !== 'season' && r.enrollment_type !== 'pre_single').map(r => r.player.display_name).join('、') || '無';
+  const seasonLeavePlayerNames = rows.filter(r => r.enrollment_type === 'season' && !attendingRows.includes(r)).map(r => r.player.display_name).join('、') || '無';
 
   return (
     <div className="space-y-6">
@@ -166,18 +189,7 @@ export function EnrollmentSessionPage() {
           <p className="sm:col-span-2">● {t('enrollments:detail.sessionDetails.notes')}： {sessionDetails.notes}</p>
           <p className="font-bold text-primary sm:col-span-2">
             ● {t('enrollments:detail.sessionDetails.totalPlayers')}： {totalPlayers} / {currentPlayerLimit} 名 {isFull && <span className="text-red-500">(額滿)</span>}。
-            <span className="text-muted-foreground text-xs font-normal ml-2 block sm:inline mt-1 sm:mt-0">
-              出席 {totalPlayers} 位是「整季報名」 {seasonCount} 位 + 「預先當週單堂報名且本週出席」 {preSingleCount} 位 + 「本週單堂報名」 {singleCount} 位。另外，「整季報名但當週請假」 {seasonLeaveCount} 位已排除統計。
-            </span>
           </p>
-          <div className="sm:col-span-2 pl-4 text-muted-foreground space-y-1">
-            <p className="text-xs">
-              - 本週單堂報名者為（需另外繳費）：{attendingRows.filter(r => r.enrollment_type !== 'season' && r.enrollment_type !== 'pre_single').map(r => r.player.display_name).join('、') || '無'}
-            </p>
-            <p className="text-xs">
-              - 整季報名但當週請假者為：{rows.filter(r => r.enrollment_type === 'season' && !attendingRows.includes(r)).map(r => r.player.display_name).join('、') || '無'}
-            </p>
-          </div>
         </div>
       </div>
 
@@ -220,6 +232,68 @@ export function EnrollmentSessionPage() {
             </div>
           </>
         )}
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-semibold text-primary">當日統計表</h3>
+        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+          <table className="w-full text-sm text-center">
+            <tbody>
+              <tr className="border-b">
+                <td className="p-3 font-medium bg-muted text-left w-1/3 border-r">訓練人數上限</td>
+                <td className="p-3 w-1/3 border-r">{currentPlayerLimit}</td>
+                <td className="p-3 w-1/3"></td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-3 font-medium bg-muted text-left border-r">原報名人數</td>
+                <td className="p-3 border-r">{originalAttendingCount}</td>
+                <td className="p-3"></td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-3 font-medium bg-muted text-left border-r">當日增減</td>
+                <td className="p-3 border-r">{totalSingle - totalLeave}</td>
+                <td className="p-3"></td>
+              </tr>
+              <tr className="border-b bg-primary/5">
+                <td className="p-3 font-medium bg-muted text-left border-r text-primary">當日實際人數</td>
+                <td className="p-3 border-r font-bold text-primary">{originalAttendingCount + totalSingle - totalLeave}</td>
+                <td className="p-3"></td>
+              </tr>
+              <tr className="bg-muted text-muted-foreground border-b font-medium">
+                <td className="p-3 text-left border-r">當日備註統計</td>
+                <td className="p-3 border-r">請假 (人數 -1)</td>
+                <td className="p-3">單堂報名 (人數 +1)</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-3 text-left border-r">整季報名</td>
+                <td className="p-3 border-r text-red-500">{stats.season.leave > 0 ? `-${stats.season.leave}` : '0'}</td>
+                <td className="p-3 text-blue-500">{stats.season.single > 0 ? `+${stats.season.single}` : '0'}</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-3 text-left border-r">當週單堂</td>
+                <td className="p-3 border-r text-red-500">{stats.single.leave > 0 ? `-${stats.single.leave}` : '0'}</td>
+                <td className="p-3 text-blue-500">{stats.single.single > 0 ? `+${stats.single.single}` : '0'}</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-3 text-left border-r">預先當週單堂</td>
+                <td className="p-3 border-r text-red-500">{stats.pre_single.leave > 0 ? `-${stats.pre_single.leave}` : '0'}</td>
+                <td className="p-3 text-blue-500">{stats.pre_single.single > 0 ? `+${stats.pre_single.single}` : '0'}</td>
+              </tr>
+              <tr>
+                <td className="p-3 text-left border-r">本期不參加</td>
+                <td className="p-3 border-r text-red-500">{stats.none.leave > 0 ? `-${stats.none.leave}` : '0'}</td>
+                <td className="p-3 text-blue-500">{stats.none.single > 0 ? `+${stats.none.single}` : '0'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="pl-2 text-sm text-muted-foreground space-y-1 mt-2">
+          <p>單堂報名名單：{singlePlayerNames}</p>
+          <p>當週請假名單：{seasonLeavePlayerNames}</p>
+          <p className="font-medium text-foreground mt-2 flex items-center gap-1">
+            <span role="img" aria-label="money">💲</span> 單堂報名者，請撥冗另外繳費
+          </p>
+        </div>
       </div>
 
       <details 
