@@ -12,7 +12,7 @@ export function TopBar() {
   const appName = import.meta.env.VITE_APP_NAME || t('appName');
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-card/80 px-4 backdrop-blur md:px-8">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-background/80 px-4 backdrop-blur shadow-sm md:shadow-none md:border-b transition-all md:px-8">
       <div className="flex items-center gap-2">
         <span className="text-base font-semibold md:text-lg">{appName}</span>
       </div>

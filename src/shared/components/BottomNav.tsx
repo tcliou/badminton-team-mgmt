@@ -84,7 +84,7 @@ export function BottomNav({ className }: BottomNavProps) {
       
       <nav
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-50 grid border-t bg-card safe-area-bottom pb-env-bottom shadow-[0_-1px_3px_rgba(0,0,0,0.05)]',
+          'fixed bottom-0 left-0 right-0 z-50 grid border-t-0 bg-card/95 backdrop-blur safe-area-bottom pb-env-bottom shadow-[0_-4px_16px_rgba(0,0,0,0.05)] md:shadow-none md:border-t md:bg-card min-h-[80px]',
           className,
         )}
         style={{ gridTemplateColumns: `repeat(${visible.length + (needsMore ? 1 : 0) || 1}, minmax(0, 1fr))` }}
@@ -100,14 +100,16 @@ export function BottomNav({ className }: BottomNavProps) {
             end={path === '/'}
             className={({ isActive }) =>
               cn(
-                'flex min-h-[64px] flex-col items-center justify-center gap-1.5 px-1 py-2 text-[10px] md:text-xs font-medium transition-colors',
-                isActive && !isMoreOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
+                'group flex min-h-[80px] flex-col items-center justify-center gap-1 px-1 py-2 text-[11px] md:text-xs font-medium transition-colors',
+                isActive && !isMoreOpen ? 'text-primary font-semibold' : 'text-muted-foreground hover:text-foreground',
               )
             }
           >
             {({ isActive }) => (
               <>
-                <Icon className={cn("h-6 w-6 md:h-7 md:w-7 transition-transform", isActive && !isMoreOpen && "scale-110")} aria-hidden />
+                <div className={cn("flex h-8 items-center justify-center rounded-full px-4 transition-all duration-300", isActive && !isMoreOpen ? "bg-primary/15" : "bg-transparent group-hover:bg-muted/50")}>
+                  <Icon className={cn("h-5 w-5 transition-transform", isActive && !isMoreOpen && "scale-110")} aria-hidden />
+                </div>
                 <span className="leading-none text-center line-clamp-1">{t(m.navLabelKey)}</span>
               </>
             )}
@@ -120,11 +122,13 @@ export function BottomNav({ className }: BottomNavProps) {
           type="button"
           onClick={() => setIsMoreOpen(!isMoreOpen)}
           className={cn(
-            'flex min-h-[64px] flex-col items-center justify-center gap-1.5 px-1 py-2 text-[10px] md:text-xs font-medium transition-colors',
-            isMoreOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
+            'group flex min-h-[80px] flex-col items-center justify-center gap-1 px-1 py-2 text-[11px] md:text-xs font-medium transition-colors',
+            isMoreOpen ? 'text-primary font-semibold' : 'text-muted-foreground hover:text-foreground',
           )}
         >
-          <Menu className={cn("h-6 w-6 md:h-7 md:w-7 transition-transform", isMoreOpen && "scale-110")} aria-hidden />
+          <div className={cn("flex h-8 items-center justify-center rounded-full px-4 transition-all duration-300", isMoreOpen ? "bg-primary/15" : "bg-transparent group-hover:bg-muted/50")}>
+            <Menu className={cn("h-5 w-5 transition-transform", isMoreOpen && "scale-110")} aria-hidden />
+          </div>
           <span className="leading-none text-center">{t('common:nav.more', '更多')}</span>
         </button>
       )}
