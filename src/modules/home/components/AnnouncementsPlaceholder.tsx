@@ -18,7 +18,7 @@ export function AnnouncementsPlaceholder() {
   const general = (data ?? []).filter((a) => !a.is_pinned);
 
   return (
-    <section className="rounded-xl border bg-card p-4 shadow-sm">
+    <section className="rounded-[1.5rem] bg-secondary/30 p-5 shadow-sm md:rounded-2xl md:border md:bg-card">
       <header className="mb-3 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-base font-semibold">
           <Megaphone className="h-5 w-5 text-primary" aria-hidden />
