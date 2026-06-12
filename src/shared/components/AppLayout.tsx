@@ -14,7 +14,7 @@ export function AppLayout() {
       <SideNav className="hidden md:flex" />
       <div className="flex min-h-screen flex-1 flex-col">
         <TopBar />
-        <main className="flex-1 overflow-y-auto px-4 pb-28 pt-4 md:px-8 md:pb-8">
+        <main className="flex-1 overflow-y-auto px-5 pb-28 pt-6 md:px-8 md:pb-8 md:pt-8">
           <Outlet />
         </main>
         <BottomNav className="md:hidden" />

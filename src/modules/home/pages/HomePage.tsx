@@ -7,11 +7,11 @@ export default function HomePage() {
   const { profile } = useAuth();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-4">
-      <header>
-        <h1 className="text-xl font-bold md:text-2xl">{t('home:title')}</h1>
+    <div className="mx-auto max-w-6xl space-y-6">
+      <header className="mb-2">
+        <h1 className="text-3xl font-bold tracking-tight md:text-2xl">{t('home:title')}</h1>
         {profile ? (
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-2 text-base text-muted-foreground">
             {t('home:welcome', { name: profile.display_name })}
           </p>
         ) : null}
