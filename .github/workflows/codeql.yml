@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # 初始化 CodeQL，載入 security-extended query（比預設更嚴格）
       # security-extended 涵蓋：
