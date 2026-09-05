@@ -112,15 +112,13 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "pnpm": {
-    "overrides": {
-      "browserslist": "^4.28.7",
-      "postcss": "^8.5.23",
-      "undici": "^7.29.0",
-      "brace-expansion": "^5.0.7",
-      "minimatch@3>brace-expansion": "^1.1.16",
-      "@babel/core": "^7.29.6",
-      "vite": "^8.0.16"
-    }
+  "overrides": {
+    "browserslist": "^4.28.7",
+    "postcss": "^8.5.23",
+    "undici": "^7.29.0",
+    "brace-expansion": "^5.0.7",
+    "minimatch@3>brace-expansion": "^1.1.16",
+    "@babel/core": "^7.29.6",
+    "vite": "^8.0.16"
   }
 }
