@@ -24,10 +24,14 @@ updates:
       supabase:
         patterns:
           - "@supabase/*"
+      fullcalendar:
+        patterns:
+          - "@fullcalendar/*"
       build-tools:
         patterns:
           - "vite*"
           - "@vitejs/*"
+          - "@vitest/*"
           - "eslint*"
           - "@typescript-eslint/*"
     # PR 標籤（方便 filter）
