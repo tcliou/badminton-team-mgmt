@@ -34,6 +34,13 @@ updates:
           - "@vitest/*"
           - "eslint*"
           - "@typescript-eslint/*"
+          - "typescript-eslint*"
+    # 忽略尚未相容的大版本更新
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@fullcalendar/*"
+        update-types: ["version-update:semver-major"]
     # PR 標籤（方便 filter）
     labels:
       - "dependencies"
