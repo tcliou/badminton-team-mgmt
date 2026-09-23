@@ -35,6 +35,15 @@ updates:
           - "eslint*"
           - "@typescript-eslint/*"
           - "typescript-eslint*"
+          - "prettier*"
+          - "jsdom*"
+          - "@types/*"
+      styling:
+        patterns:
+          - "tailwind*"
+          - "@tailwindcss/*"
+          - "postcss*"
+          - "autoprefixer*"
     # 忽略尚未相容的大版本更新
     ignore:
       - dependency-name: "typescript"
