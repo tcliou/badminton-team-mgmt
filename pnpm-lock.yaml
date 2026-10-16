@@ -57,8 +57,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       i18next:
-        specifier: ^26.4.2
-        version: 26.4.2(typescript@6.0.3)
+        specifier: ^26.4.4
+        version: 26.4.4(typescript@6.0.3)
       i18next-browser-languagedetector:
         specifier: ^8.2.1
         version: 8.2.1
@@ -82,7 +82,7 @@ importers:
         version: 7.90.0(@types/react@19.3.0)(react@19.3.0)
       react-i18next:
         specifier: ^17.0.16
-        version: 17.0.16(i18next@26.4.2(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
+        version: 17.0.16(i18next@26.4.4(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.3.0)(react@19.3.0)
@@ -91,7 +91,7 @@ importers:
         version: 7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       recharts:
         specifier: ^3.10.1
-        version: 3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1)
+        version: 3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@16.13.1)(react@19.3.0)(redux@5.0.1)
       remark-breaks:
         specifier: ^4.0.0
         version: 4.0.0
@@ -2182,8 +2182,8 @@ packages:
   i18next-browser-languagedetector@8.2.1:
     resolution: {integrity: sha512-bZg8+4bdmaOiApD7N7BPT9W8MLZG+nPTOFlLiJiT8uzKXFjhxw4v2ierCXOwB5sFDMtuA5G4kgYZ0AznZxQ/cw==}
 
-  i18next@26.4.2:
-    resolution: {integrity: sha512-RX+R0VLg13IbvRuJSxnqykUFS9vQZTl8wYpWPCIUDWVrSGjsQywB5Y+pjzrkboxGAuYfJZVH1InFTdgBdxq6ug==}
+  i18next@26.4.4:
+    resolution: {integrity: sha512-O+rqmQUi54OwAgnZ4SAwO6aRrbXZt36VZXWt6zvq0FpC3vJbH46oQRs6u4Uwm1vf8ZI7UqOXQiJhQVTor7vRiQ==}
     peerDependencies:
       typescript: ^5 || ^6 || ^7
     peerDependenciesMeta:
@@ -3553,9 +3553,6 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
-
-  zod@4.6.4:
-    resolution: {integrity: sha512-AXSD6hvGdvRjajG/l1cC+d6IrhH+sjmPKtYeQdJIK8MFJl3LyClzS+o/YsVC+zQZPupAaeH5skwwm8YqYH7BqA==}
 
   zod@4.6.5:
     resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
@@ -5223,8 +5220,8 @@ snapshots:
       '@babel/parser': 7.29.8
       eslint: 10.12.0(jiti@2.7.0)
       hermes-parser: 0.25.1
-      zod: 4.6.4
-      zod-validation-error: 4.0.2(zod@4.6.4)
+      zod: 4.6.5
+      zod-validation-error: 4.0.2(zod@4.6.5)
     transitivePeerDependencies:
       - supports-color
 
@@ -5509,7 +5506,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.7
 
-  i18next@26.4.2(typescript@6.0.3):
+  i18next@26.4.4(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
@@ -6419,11 +6416,11 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-i18next@17.0.16(i18next@26.4.2(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3):
+  react-i18next@17.0.16(i18next@26.4.4(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3):
     dependencies:
       '@babel/runtime': 7.29.7
       html-parse-stringify: 4.0.1
-      i18next: 26.4.2(typescript@6.0.3)
+      i18next: 26.4.4(typescript@6.0.3)
       react: 19.3.0
       use-sync-external-store: 1.6.0(react@19.3.0)
     optionalDependencies:
@@ -6504,7 +6501,7 @@ snapshots:
 
   react@19.3.0: {}
 
-  recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1):
+  recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@16.13.1)(react@19.3.0)(redux@5.0.1):
     dependencies:
       '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(@types/react@19.3.0)(react@19.3.0)(redux@5.0.1))(react@19.3.0)
       clsx: 2.1.1
@@ -6514,7 +6511,7 @@ snapshots:
       immer: 11.1.18
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      react-is: 17.0.2
+      react-is: 16.13.1
       react-redux: 9.3.0(@types/react@19.3.0)(react@19.3.0)(redux@5.0.1)
       reselect: 5.2.0
       tiny-invariant: 1.3.3
@@ -7122,11 +7119,9 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod-validation-error@4.0.2(zod@4.6.4):
+  zod-validation-error@4.0.2(zod@4.6.5):
     dependencies:
-      zod: 4.6.4
-
-  zod@4.6.4: {}
+      zod: 4.6.5
 
   zod@4.6.5: {}
 
