@@ -21,6 +21,10 @@ updates:
         patterns:
           - "react*"
           - "@tanstack/*"
+          - "lucide-react*"
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
       supabase:
         patterns:
           - "@supabase/*"
@@ -38,6 +42,9 @@ updates:
           - "prettier*"
           - "jsdom*"
           - "@types/*"
+          - "@playwright/*"
+          - "globals*"
+          - "lint-staged*"
       styling:
         patterns:
           - "tailwind*"
