@@ -45,6 +45,7 @@ updates:
           - "jsdom*"
           - "@types/*"
           - "@playwright/*"
+          - "@testing-library/*"
           - "globals*"
           - "lint-staged*"
       styling:
