@@ -22,6 +22,8 @@ updates:
           - "react*"
           - "@tanstack/*"
           - "lucide-react*"
+          - "i18next*"
+          - "zod*"
       radix-ui:
         patterns:
           - "@radix-ui/*"
