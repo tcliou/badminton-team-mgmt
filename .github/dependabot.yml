@@ -24,6 +24,8 @@ updates:
           - "lucide-react*"
           - "i18next*"
           - "zod*"
+          - "zustand*"
+          - "@hookform/*"
       radix-ui:
         patterns:
           - "@radix-ui/*"
